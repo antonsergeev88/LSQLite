@@ -2,9 +2,7 @@ import SQLite3
 
 extension Database {
     public typealias ExecCallback = @convention(c) (_ context: UnsafeMutableRawPointer?, _ count: Int32, _ values: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?, _ columns: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?) -> Int32
-}
 
-extension Database {
     @frozen public struct ExecCallbackResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
