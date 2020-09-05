@@ -2,7 +2,7 @@ import SQLite3
 
 @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
 extension Database {
-    public typealias TraceEventCallback = @convention(c) (_ traceEventCode: UInt32, _ context: UnsafeMutableRawPointer?, _ p: UnsafeMutableRawPointer?, _ x: UnsafeMutableRawPointer?) -> Int32
+    public typealias TraceEventCallback = @convention(c) (_ traceEventCode: UInt32, _ userData: UnsafeMutableRawPointer?, _ p: UnsafeMutableRawPointer?, _ x: UnsafeMutableRawPointer?) -> Int32
 
     @frozen public struct TraceEventCallbackResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
@@ -44,7 +44,7 @@ extension Database {
         }
     }
 
-    @inlinable public func setTraceCallback(for events: TraceEventCode, context: UnsafeMutableRawPointer? = nil, callback: TraceEventCallback? = nil) -> ResultCode {
-        sqlite3_trace_v2(rawValue, events.rawValue, callback, context).resultCode
+    @inlinable public func setTraceCallback(for events: TraceEventCode, userData: UnsafeMutableRawPointer? = nil, callback: TraceEventCallback? = nil) -> ResultCode {
+        sqlite3_trace_v2(rawValue, events.rawValue, callback, userData).resultCode
     }
 }

@@ -38,8 +38,8 @@ class ExecTests: XCTestCase {
         XCTAssertEqual(database.exec("INSERT INTO t VALUES(1, 'text1');"), .ok)
         XCTAssertEqual(database.exec("INSERT INTO t VALUES(2, NULL);"), .ok)
         let counter = RefWrappedValue(0)
-        let resultCode = database.exec("SELECT num, txt FROM t;", context: Unmanaged.passUnretained(counter).toOpaque()) { context, count, values, columns in
-            let counter = Unmanaged<RefWrappedValue<Int>>.fromOpaque(context!).takeUnretainedValue()
+        let resultCode = database.exec("SELECT num, txt FROM t;", userData: Unmanaged.passUnretained(counter).toOpaque()) { userData, count, values, columns in
+            let counter = Unmanaged<RefWrappedValue<Int>>.fromOpaque(userData!).takeUnretainedValue()
             counter.value += 1
             let mappedValues: [String: String] = {
                 var typedValues: [String?] = []

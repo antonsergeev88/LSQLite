@@ -1,7 +1,7 @@
 import SQLite3
 
 extension Database {
-    public typealias ProgressHandler = @convention(c) (_ context: UnsafeMutableRawPointer?) -> Int32
+    public typealias ProgressHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Int32
 
     @frozen public struct ProgressHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
@@ -22,7 +22,7 @@ extension Database {
         }
     }
 
-    @inlinable public func setProgressHandler(instructionCount: Int32, context: UnsafeMutableRawPointer? = nil, handler: ProgressHandler? = nil) {
-        sqlite3_progress_handler(rawValue, instructionCount, handler, context)
+    @inlinable public func setProgressHandler(instructionCount: Int32, userData: UnsafeMutableRawPointer? = nil, handler: ProgressHandler? = nil) {
+        sqlite3_progress_handler(rawValue, instructionCount, handler, userData)
     }
 }

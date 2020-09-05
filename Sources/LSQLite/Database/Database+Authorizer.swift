@@ -1,7 +1,7 @@
 import SQLite3
 
 extension Database {
-    public typealias AuthorizerHandler = @convention(c) (_ context: UnsafeMutableRawPointer?, _ actionCode: Int32, UnsafePointer<Int8>?, UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32
+    public typealias AuthorizerHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ actionCode: Int32, UnsafePointer<Int8>?, UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32
 
     @frozen public struct AuthorizerHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
@@ -107,7 +107,7 @@ extension Database {
         }
     }
 
-    @inlinable public func setAuthorizerHandler(context: UnsafeMutableRawPointer? = nil, _ handler: AuthorizerHandler? = nil) -> ResultCode {
-        sqlite3_set_authorizer(rawValue, handler, context).resultCode
+    @inlinable public func setAuthorizerHandler(userData: UnsafeMutableRawPointer? = nil, _ handler: AuthorizerHandler? = nil) -> ResultCode {
+        sqlite3_set_authorizer(rawValue, handler, userData).resultCode
     }
 }
