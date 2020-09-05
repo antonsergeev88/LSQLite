@@ -2,9 +2,10 @@ import SQLite3
 import MissedSwiftSQLite
 
 extension Statement {
-    public typealias BindDestructor = @convention(c) (_ context: UnsafeMutableRawPointer?) -> Void
+    public typealias BindBlobDestructor = @convention(c) (_ blob: UnsafeMutableRawPointer?) -> Void
+    public typealias BindTextDestructor = @convention(c) (_ text: UnsafeMutableRawPointer?) -> Void
 
-    @inlinable public func bindBlob(_ blob: UnsafeRawPointer, length: Int32, at index: Int32, destructor: BindDestructor? = nil) -> ResultCode {
+    @inlinable public func bindBlob(_ blob: UnsafeRawPointer, length: Int32, at index: Int32, destructor: BindBlobDestructor? = nil) -> ResultCode {
         sqlite3_bind_blob(rawValue, index, blob, length, destructor).resultCode
     }
 
@@ -32,7 +33,7 @@ extension Statement {
         sqlite3_bind_null(rawValue, index).resultCode
     }
 
-    @inlinable public func bindText(_ text: UnsafePointer<Int8>?, length: Int32 = -1, at index: Int32, destructor: BindDestructor? = nil) -> ResultCode {
+    @inlinable public func bindText(_ text: UnsafePointer<Int8>?, length: Int32 = -1, at index: Int32, destructor: BindTextDestructor? = nil) -> ResultCode {
         sqlite3_bind_text(rawValue, index, text, length, destructor).resultCode
     }
 
