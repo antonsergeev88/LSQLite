@@ -48,8 +48,11 @@ extension Mutex {
         }
     }
 
-    @inlinable public static func alloc(_ type: MutexType) -> Mutex {
-        Mutex(rawValue: sqlite3_mutex_alloc(type.rawValue))
+    @inlinable public static func alloc(_ type: MutexType) -> Mutex? {
+        guard let mutexPointer = sqlite3_mutex_alloc(type.rawValue) else {
+            return nil
+        }
+        return Mutex(rawValue: mutexPointer)
     }
 
     @inlinable public func free() {

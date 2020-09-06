@@ -25,12 +25,12 @@ class FunctionTests: XCTestCase {
             return database
         }()
         let myFiveResultCode = database.createFunction(name: "my_five", argumentCount: 0, flags: .utf8, userData: nil, funcHandler: { context, _, _ in
-            let context = Context(rawValue: context)
+            let context = Context(rawValue: context!)
             context.resultInt(5)
         })
         XCTAssertEqual(myFiveResultCode, .ok)
         let myCountResultCode = database.createFunction(name: "my_count", argumentCount: 0, flags: .utf8, userData: nil, stepHandler: { context, _, _ in
-            let context = Context(rawValue: context)
+            let context = Context(rawValue: context!)
             let aggregatePointer = context.aggregateContext(size: Int32(MemoryLayout<Int32>.stride))
             guard let valuePointer = aggregatePointer?.assumingMemoryBound(to: Int32.self) else {
                 context.resultNoMemoryError()
@@ -38,7 +38,7 @@ class FunctionTests: XCTestCase {
             }
             valuePointer.pointee += 1
         }, finalHandler: { context in
-            let context = Context(rawValue: context)
+            let context = Context(rawValue: context!)
             let value = context.aggregateContext(size: Int32(MemoryLayout<Int32>.stride))!.assumingMemoryBound(to: Int32.self).pointee
             context.resultInt(value)
         })

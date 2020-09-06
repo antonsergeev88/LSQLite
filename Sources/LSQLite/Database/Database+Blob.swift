@@ -20,9 +20,12 @@ extension Database {
         }
     }
 
-    public func openBlob(_ blob: inout Blob, databaseName: UnsafePointer<Int8>, tableName: UnsafePointer<Int8>, columnName: UnsafePointer<Int8>, rowID: RowID, flags: OpenBlobFlag) -> ResultCode {
-        withUnsafeMutablePointer(to: &blob.rawValue) { blobPointer in
-            sqlite3_blob_open(rawValue, databaseName, tableName, columnName, rowID.rawValue, flags.rawValue, blobPointer).resultCode
+    @inlinable public func openBlob(_ blob: inout Blob?, databaseName: UnsafePointer<Int8>, tableName: UnsafePointer<Int8>, columnName: UnsafePointer<Int8>, rowID: RowID, flags: OpenBlobFlag) -> ResultCode {
+        var blobPointer: OpaquePointer? = nil
+        let resultCode = sqlite3_blob_open(rawValue, databaseName, tableName, columnName, rowID.rawValue, flags.rawValue, &blobPointer).resultCode
+        if let blobPointer = blobPointer {
+            blob = Blob(rawValue: blobPointer)
         }
+        return resultCode
     }
 }

@@ -1,7 +1,7 @@
 @frozen public struct Mutex: RawRepresentable {
-    public internal(set) var rawValue: OpaquePointer?
+    public let rawValue: OpaquePointer
 
-    public init(rawValue: OpaquePointer? = nil) {
+    public init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 }
