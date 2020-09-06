@@ -22,6 +22,14 @@ extension Database {
         }
     }
 
+    /**
+     CAPI3REF: Determine if a database is read-only
+     METHOD: sqlite3
+
+     ^The sqlite3_db_readonly(D,N) interface returns 1 if the database N
+     of connection D is read-only, 0 if it is read/write, or -1 if N is not
+     the name of a database on connection D.
+    */
     @inlinable public func readWriteAccessState(forDatabaseNamed name: UnsafePointer<Int8>) -> ReadWriteAccessState {
         ReadWriteAccessState(rawValue: sqlite3_db_readonly(rawValue, name))
     }

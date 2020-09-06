@@ -1,43 +1,96 @@
 import MissedSwiftSQLite
 import MissedSwiftSQLite
 
-@frozen public struct ResultCode: Equatable, CustomDebugStringConvertible {
+/**
+ CAPI3REF: Result Codes
+ KEYWORDS: {result code definitions}
+
+ Many SQLite functions return an integer result code from the set shown
+ here in order to indicate success or failure.
+
+ New error codes may be added in future versions of SQLite.
+
+ In its default configuration, SQLite API routines return one of 30 integer
+ [result codes].  However, experience has shown that many of
+ these result codes are too coarse-grained.  They do not provide as
+ much information about problems as programmers might like.  In an effort to
+ address this, newer versions of SQLite (version 3.3.8 [dateof:3.3.8]
+ and later) include
+ support for additional result codes that provide more detailed information
+ about errors. These [extended result codes] are enabled or disabled
+ on a per database connection basis using the
+ [sqlite3_extended_result_codes()] API.  Or, the extended code for
+ the most recent error can be obtained using
+ [sqlite3_extended_errcode()].
+*/
+@frozen public struct ResultCode: Equatable, RawRepresentable, CustomDebugStringConvertible {
     public let rawValue: Int32
 
     @inlinable public init(rawValue: Int32) {
         self.rawValue = rawValue
     }
 
+    /** Successful result */
     public static let ok = Self(rawValue: SQLITE_OK)
+    /** Generic error */
     public static let error = Self(rawValue: SQLITE_ERROR)
+    /** Internal logic error in SQLite */
     public static let `internal` = Self(rawValue: SQLITE_INTERNAL)
+    /** Access permission denied */
     public static let permission = Self(rawValue: SQLITE_PERM)
+    /** Callback routine requested an abort */
     public static let abort = Self(rawValue: SQLITE_ABORT)
+    /** The database file is locked */
     public static let busy = Self(rawValue: SQLITE_BUSY)
+    /** A table in the database is locked */
     public static let locked = Self(rawValue: SQLITE_LOCKED)
+    /** A malloc() failed */
     public static let noMemory = Self(rawValue: SQLITE_NOMEM)
+    /** Attempt to write a readonly database */
     public static let readonly = Self(rawValue: SQLITE_READONLY)
+    /** Operation terminated by sqlite3_interrupt()*/
     public static let interrupt = Self(rawValue: SQLITE_INTERRUPT)
+    /** Some kind of disk I/O error occurred */
     public static let ioError = Self(rawValue: SQLITE_IOERR)
+    /** The database disk image is malformed */
     public static let corrupt = Self(rawValue: SQLITE_CORRUPT)
+    /** Unknown opcode in sqlite3_file_control() */
     public static let notFound = Self(rawValue: SQLITE_NOTFOUND)
+    /** Insertion failed because database is full */
     public static let full = Self(rawValue: SQLITE_FULL)
+    /** Unable to open the database file */
     public static let cantOpen = Self(rawValue: SQLITE_CANTOPEN)
+    /** Database lock protocol error */
     public static let `protocol` = Self(rawValue: SQLITE_PROTOCOL)
+    /** Internal use only */
     public static let empty = Self(rawValue: SQLITE_EMPTY)
+    /** The database schema changed */
     public static let schema = Self(rawValue: SQLITE_SCHEMA)
+    /** String or BLOB exceeds size limit */
     public static let tooBig = Self(rawValue: SQLITE_TOOBIG)
+    /** Abort due to constraint violation */
     public static let constraint = Self(rawValue: SQLITE_CONSTRAINT)
+    /** Data type mismatch */
     public static let mismatch = Self(rawValue: SQLITE_MISMATCH)
+    /** Library used incorrectly */
     public static let misuse = Self(rawValue: SQLITE_MISUSE)
+    /** Uses OS features not supported on host */
     public static let noLFS = Self(rawValue: SQLITE_NOLFS)
+    /** Authorization denied */
     public static let auth = Self(rawValue: SQLITE_AUTH)
+    /** Not used */
     public static let format = Self(rawValue: SQLITE_FORMAT)
+    /** 2nd parameter to sqlite3_bind out of range */
     public static let range = Self(rawValue: SQLITE_RANGE)
+    /** File opened that is not a database file */
     public static let notADB = Self(rawValue: SQLITE_NOTADB)
+    /** Notifications from sqlite3_log() */
     public static let notice = Self(rawValue: SQLITE_NOTICE)
+    /** Warnings from sqlite3_log() */
     public static let warning = Self(rawValue: SQLITE_WARNING)
+    /** sqlite3_step() has another row ready */
     public static let row = Self(rawValue: SQLITE_ROW)
+    /** sqlite3_step() has finished executing */
     public static let done = Self(rawValue: SQLITE_DONE)
 
     public static let errorMissingCollSeq = Self(rawValue: LSQLITE_ERROR_MISSING_COLLSEQ)
@@ -82,6 +135,7 @@ import MissedSwiftSQLite
     public static let cantOpenIsDir = Self(rawValue: LSQLITE_CANTOPEN_ISDIR)
     public static let cantOpenFullPath = Self(rawValue: LSQLITE_CANTOPEN_FULLPATH)
     public static let cantOpenConvPath = Self(rawValue: LSQLITE_CANTOPEN_CONVPATH)
+    /** Not Used */
     public static let cantOpenDirtyWAL = Self(rawValue: LSQLITE_CANTOPEN_DIRTYWAL)
     public static let corruptVTab = Self(rawValue: LSQLITE_CORRUPT_VTAB)
     public static let corruptSequence = Self(rawValue: LSQLITE_CORRUPT_SEQUENCE)
@@ -108,8 +162,60 @@ import MissedSwiftSQLite
     public static let authUser = Self(rawValue: LSQLITE_AUTH_USER)
     public static let okLoadPermanently = Self(rawValue: LSQLITE_OK_LOAD_PERMANENTLY)
 
+    /**
+     CAPI3REF: Error Codes And Messages
+     METHOD: sqlite3
+
+     ^If the most recent sqlite3_* API call associated with
+     [database connection] D failed, then the sqlite3_errcode(D) interface
+     returns the numeric [result code] or [extended result code] for that
+     API call.
+     ^The sqlite3_extended_errcode()
+     interface is the same except that it always returns the
+     [extended result code] even when extended result codes are
+     disabled.
+
+     The values returned by sqlite3_errcode() and/or
+     sqlite3_extended_errcode() might change with each API call.
+     Except, there are some interfaces that are guaranteed to never
+     change the value of the error code.  The error-code preserving
+     interfaces are:
+
+
+      sqlite3_errcode()
+      sqlite3_extended_errcode()
+      sqlite3_errmsg()
+      sqlite3_errmsg16()
+
+
+     ^The sqlite3_errmsg() and sqlite3_errmsg16() return English-language
+     text that describes the error, as either UTF-8 or UTF-16 respectively.
+     ^(Memory to hold the error message string is managed internally.
+     The application does not need to worry about freeing the result.
+     However, the error string might be overwritten or deallocated by
+     subsequent calls to other SQLite interface functions.)^
+
+     ^The sqlite3_errstr() interface returns the English-language text
+     that describes the [result code], as UTF-8.
+     ^(Memory to hold the error message string is managed internally
+     and must not be freed by the application)^.
+
+     When the serialized [threading mode] is in use, it might be the
+     case that a second error occurs on a separate thread in between
+     the time of the first error and the call to these interfaces.
+     When that happens, the second error will be reported since these
+     interfaces always report the most recent result.  To avoid
+     this, each thread can obtain exclusive use of the [database connection] D
+     by invoking [sqlite3_mutex_enter]([sqlite3_db_mutex](D)) before beginning
+     to use D and invoking [sqlite3_mutex_leave]([sqlite3_db_mutex](D)) after
+     all calls to the interfaces listed here are completed.
+
+     If an interface fails with SQLITE_MISUSE, that means the interface
+     was invoked incorrectly by the application.  In that case, the
+     error code and message may or may not be set.
+    */
     @available(iOS 8.2, macOS 10.10, tvOS 8.2, watchOS 2.0, *)
-    @inlinable public var errorMessage: UnsafePointer<Int8> {
+    @inlinable public var errorString: UnsafePointer<Int8> {
         sqlite3_errstr(rawValue)
     }
 
