@@ -40,7 +40,7 @@ extension Database {
             case .delete: return "SQLITE_DELETE"
             case .insert: return "SQLITE_INSERT"
             case .update: return "SQLITE_UPDATE"
-            default: return "AuthorizerHandlerActionCode(rawValue: \(rawValue))"
+            default: return "UpdateOperation(rawValue: \(rawValue))"
             }
         }
     }
