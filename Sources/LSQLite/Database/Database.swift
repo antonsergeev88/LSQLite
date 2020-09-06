@@ -1,4 +1,4 @@
-public struct Database: RawRepresentable {
+@frozen public struct Database: RawRepresentable {
     public internal(set) var rawValue: OpaquePointer?
 
     public init(rawValue: OpaquePointer? = nil) {

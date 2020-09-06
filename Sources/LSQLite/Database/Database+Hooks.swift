@@ -4,6 +4,7 @@ extension Database {
     public typealias CommitHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Int32
     public typealias RollbackHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Void
     public typealias UpdateHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ updateOperation: Int32, _ databaseName: UnsafePointer<Int8>?, _ tableName: UnsafePointer<Int8>?, _ rowID: sqlite3_int64) -> Void
+    public typealias WALHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ database: OpaquePointer?, _ databaseName: UnsafePointer<Int8>?, _ pageInWALFileCount: Int32) -> Int32
 
     @frozen public struct CommitHookHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
@@ -55,5 +56,9 @@ extension Database {
 
     @inlinable public func updateHook(_ userData: UnsafeMutableRawPointer? = nil, updateHookHandler: UpdateHookHandler? = nil) -> UnsafeMutableRawPointer? {
         sqlite3_update_hook(rawValue, updateHookHandler, userData)
+    }
+
+    @inlinable public func walHook(_ userData: UnsafeMutableRawPointer? = nil, walHookHandler: WALHookHandler? = nil) -> UnsafeMutableRawPointer? {
+        sqlite3_wal_hook(rawValue, walHookHandler, userData)
     }
 }
