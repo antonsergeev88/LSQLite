@@ -13,12 +13,18 @@ extension Statement {
         public static let noVTab = Self(rawValue: UInt32(SQLITE_PREPARE_NO_VTAB))
     }
 
-    public mutating func prepare(_ sql: UnsafePointer<Int8>, tail: UnsafeMutablePointer<UnsafePointer<Int8>?>? = nil, for database: Database) -> ResultCode {
-        sqlite3_prepare_v2(database.rawValue, sql, -1, &rawValue, tail).resultCode
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: UnsafePointer<Int8>, tail: UnsafeMutablePointer<UnsafePointer<Int8>?>? = nil, for database: Database) -> ResultCode {
+        var statementPointer: OpaquePointer? = nil
+        let resultCode = sqlite3_prepare_v2(database.rawValue, sql, -1, &statementPointer, tail).resultCode
+        statement = statementPointer.map(Statement.init(rawValue:))
+        return resultCode
     }
 
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
-    public mutating func prepare(_ sql: UnsafePointer<Int8>, tail: UnsafeMutablePointer<UnsafePointer<Int8>?>? = nil, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
-        sqlite3_prepare_v3(database.rawValue, sql, -1, prepareFlag.rawValue, &rawValue, tail).resultCode
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: UnsafePointer<Int8>, tail: UnsafeMutablePointer<UnsafePointer<Int8>?>? = nil, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
+        var statementPointer: OpaquePointer? = nil
+        let resultCode = sqlite3_prepare_v3(database.rawValue, sql, -1, prepareFlag.rawValue, &statementPointer, tail).resultCode
+        statement = statementPointer.map(Statement.init(rawValue:))
+        return resultCode
     }
 }

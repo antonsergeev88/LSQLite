@@ -18,9 +18,13 @@ class ExecTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         database = try {
-            var database = Database()
-            guard database.open(at: .memory, withOpenFlags: [.readwrite, .create, .memory]) == .ok else {
-                throw Error.result(database.lastErrorCode)
+            var database: Database? = nil
+            guard Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create, .memory]) == .ok else {
+                if let database = database {
+                    throw Error.result(database.lastErrorCode)
+                } else {
+                    throw Error.unknown
+                }
             }
             return database
         }()

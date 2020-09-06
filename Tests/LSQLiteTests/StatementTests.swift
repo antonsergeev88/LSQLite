@@ -18,9 +18,13 @@ class StatementTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         database = try {
-            var database = Database()
-            guard database.open(at: .memory, withOpenFlags: [.readwrite, .create, .memory]) == .ok else {
-                throw Error.result(database.lastErrorCode)
+            var database: Database? = nil
+            guard Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create, .memory]) == .ok, database != nil else {
+                if let database = database {
+                    throw Error.result(database.lastErrorCode)
+                } else {
+                    throw Error.unknown
+                }
             }
             return database
         }()
@@ -33,19 +37,25 @@ class StatementTests: XCTestCase {
         }
     }
 
-    func testCreateDatabaseInsertRowRowsAndGetThemBack() {
-        let createTableStatement: Statement = {
-            var statement = Statement()
-            XCTAssertEqual(statement.prepare("CREATE TABLE t(num INTEGER, txt TEXT);", for: database), .ok)
-            return statement
+    func testCreateDatabaseInsertRowRowsAndGetThemBack() throws {
+        let createTableStatement: Statement = try {
+            var statement: Statement? = nil
+            let resultCode = Statement.prepare(&statement, sql: "CREATE TABLE t(num INTEGER, txt TEXT);", for: database)
+            guard resultCode == .ok, statement != nil else {
+                throw Error.result(resultCode)
+            }
+            return statement!
         }()
         XCTAssertEqual(createTableStatement.step(), .done)
         XCTAssertEqual(createTableStatement.finalize(), .ok)
 
-        let insertStatement: Statement = {
-            var statement = Statement()
-            XCTAssertEqual(statement.prepare("INSERT INTO t VALUES(?, ?);", for: database), .ok)
-            return statement
+        let insertStatement: Statement = try {
+            var statement: Statement? = nil
+            let resultCode = Statement.prepare(&statement, sql: "INSERT INTO t VALUES(?, ?);", for: database)
+            guard resultCode == .ok, statement != nil else {
+                throw Error.result(resultCode)
+            }
+            return statement!
         }()
 
         XCTAssertEqual(insertStatement.bindInt(1, at: 1), .ok)
@@ -62,10 +72,13 @@ class StatementTests: XCTestCase {
 
         XCTAssertEqual(insertStatement.finalize(), .ok)
 
-        let selectStatement: Statement = {
-            var statement = Statement()
-            XCTAssertEqual(statement.prepare("SELECT num, txt FROM t;", for: database), .ok)
-            return statement
+        let selectStatement: Statement = try {
+            var statement: Statement? = nil
+            let resultCode = Statement.prepare(&statement, sql: "SELECT num, txt FROM t;", for: database)
+            guard resultCode == .ok, statement != nil else {
+                throw Error.result(resultCode)
+            }
+            return statement!
         }()
 
         XCTAssertEqual(selectStatement.step(), .row)

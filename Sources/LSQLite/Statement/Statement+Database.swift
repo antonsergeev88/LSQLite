@@ -1,7 +1,7 @@
 import MissedSwiftSQLite
 
 extension Statement {
-    @inlinable public var database: Database {
-        Database(rawValue: sqlite3_db_handle(rawValue))
+    @inlinable public var database: Database? {
+        return sqlite3_db_handle(rawValue).map(Database.init(rawValue:))
     }
 }

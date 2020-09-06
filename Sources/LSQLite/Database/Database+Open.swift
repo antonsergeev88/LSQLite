@@ -48,7 +48,10 @@ extension Database {
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
     }
 
-    public mutating func open(at filename: FileName, withOpenFlags openFlag: OpenFlag) -> ResultCode {
-        sqlite3_open_v2(filename.rawValue, &rawValue, openFlag.rawValue, nil).resultCode
+    @inlinable public static func open(_ database: inout Database?, at filename: FileName, withOpenFlags openFlag: OpenFlag) -> ResultCode {
+        var databasePointer: OpaquePointer? = nil
+        let resultCode = sqlite3_open_v2(filename.rawValue, &databasePointer, openFlag.rawValue, nil).resultCode
+        database = databasePointer.map(Database.init(rawValue:))
+        return resultCode
     }
 }
