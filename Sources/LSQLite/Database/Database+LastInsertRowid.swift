@@ -1,7 +1,7 @@
 import MissedSwiftSQLite
 
 extension Database {
-    @inlinable public var lastInsertRowid: RowID {
+    @inlinable public var lastInsertRowID: RowID {
         get {
             RowID(rawValue: sqlite3_last_insert_rowid(rawValue))
         }
