@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 import MissedSwiftSQLite
 
 @frozen public struct ResultCode: Equatable, CustomDebugStringConvertible {

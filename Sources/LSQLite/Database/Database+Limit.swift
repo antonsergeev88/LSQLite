@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     @frozen public struct LimitCategory: Equatable, RawRepresentable, CustomDebugStringConvertible {

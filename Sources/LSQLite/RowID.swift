@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 @frozen public struct RowID: Equatable, RawRepresentable {
     public let rawValue: sqlite3_int64

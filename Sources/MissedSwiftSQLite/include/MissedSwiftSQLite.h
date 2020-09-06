@@ -1,2 +1,4 @@
-#include "../ResultCode.h"
-#include "../Bind.h"
+#import <sqlite3.h>
+#import "../Bind.h"
+#import "../Result.h"
+#import "../ResultCode.h"

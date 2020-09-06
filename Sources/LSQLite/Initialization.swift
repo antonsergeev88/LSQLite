@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 @inlinable public func initialize() -> ResultCode {
     sqlite3_initialize().resultCode

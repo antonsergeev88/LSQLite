@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 import MissedSwiftSQLite
 
 extension Statement {
@@ -33,15 +33,15 @@ extension Statement {
         sqlite3_bind_null(rawValue, index).resultCode
     }
 
-    @inlinable public func bindText(_ text: UnsafePointer<Int8>?, length: Int32 = -1, at index: Int32, destructor: BindTextDestructor? = nil) -> ResultCode {
+    @inlinable public func bindText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32, destructor: BindTextDestructor? = nil) -> ResultCode {
         sqlite3_bind_text(rawValue, index, text, length, destructor).resultCode
     }
 
-    @inlinable public func bindTransientText(_ text: UnsafePointer<Int8>?, length: Int32 = -1, at index: Int32) -> ResultCode {
+    @inlinable public func bindTransientText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32) -> ResultCode {
         sqlite3_bind_transient_text(rawValue, index, text, length).resultCode
     }
 
-    @inlinable public func bindStaticText(_ text: UnsafePointer<Int8>?, length: Int32 = -1, at index: Int32) -> ResultCode {
+    @inlinable public func bindStaticText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32) -> ResultCode {
         sqlite3_bind_static_text(rawValue, index, text, length).resultCode
     }
 

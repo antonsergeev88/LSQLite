@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     public typealias BusyHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ attempt: Int32) -> Int32

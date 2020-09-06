@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 @frozen public struct MemoryHighWaterResetFlag: Equatable, RawRepresentable, CustomDebugStringConvertible {
     public let rawValue: Int32

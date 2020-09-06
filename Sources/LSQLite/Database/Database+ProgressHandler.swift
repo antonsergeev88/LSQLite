@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     public typealias ProgressHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Int32

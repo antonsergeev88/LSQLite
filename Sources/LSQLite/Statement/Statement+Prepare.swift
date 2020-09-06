@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     @frozen public struct PrepareFlag: OptionSet {

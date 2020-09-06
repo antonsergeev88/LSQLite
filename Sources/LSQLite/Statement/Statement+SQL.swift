@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     @inlinable public var sql: UnsafePointer<Int8>? {
