@@ -1,12 +1,12 @@
 import MissedSwiftSQLite
 
 extension Database {
-    public typealias FuncHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
-    public typealias StepHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
-    public typealias FinalHandler = @convention(c) (_ context: OpaquePointer?) -> Void
-    public typealias ValueHandler = @convention(c) (_ context: OpaquePointer?) -> Void
-    public typealias InverseHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
-    public typealias DestroyHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Void
+    public typealias FunctionFuncHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
+    public typealias FunctionStepHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
+    public typealias FunctionFinalHandler = @convention(c) (_ context: OpaquePointer?) -> Void
+    public typealias FunctionValueHandler = @convention(c) (_ context: OpaquePointer?) -> Void
+    public typealias FunctionInverseHandler = @convention(c) (_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) -> Void
+    public typealias FunctionDestroyHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Void
 
     @frozen public struct FunctionFlag: Equatable, OptionSet, CustomDebugStringConvertible {
         public let rawValue: Int32
@@ -37,12 +37,12 @@ extension Database {
         }
     }
 
-    @inlinable public func createFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer?, funcHandler: FuncHandler? = nil, stepHandler: StepHandler? = nil, finalHandler: FinalHandler? = nil, destroyHandler: DestroyHandler? = nil) -> ResultCode {
+    @inlinable public func createFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, funcHandler: FunctionFuncHandler? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
         sqlite3_create_function_v2(rawValue, name, argumentCount, flag.rawValue, userData, funcHandler, stepHandler, finalHandler, destroyHandler).resultCode
     }
 
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    @inlinable public func createWindowFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer?, stepHandler: StepHandler? = nil, finalHandler: FinalHandler? = nil, valueHandler: ValueHandler? = nil, inverseHandler: InverseHandler? = nil, destroyHandler: DestroyHandler? = nil) -> ResultCode {
+    @inlinable public func createWindowFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, valueHandler: FunctionValueHandler? = nil, inverseHandler: FunctionInverseHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
         sqlite3_create_window_function(rawValue, name, argumentCount, flag.rawValue, userData, stepHandler, finalHandler, valueHandler, inverseHandler, destroyHandler).resultCode
     }
 }
