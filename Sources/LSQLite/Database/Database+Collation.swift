@@ -3,7 +3,7 @@ import MissedSwiftSQLite
 extension Database {
     public typealias CollationCompareHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ lhsLength: Int32, _ lhs: UnsafeRawPointer?, _ rhsLength: Int32, _ rhs: UnsafeRawPointer?) -> Int32
     public typealias CollationDestroyHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Void
-    public typealias CollationNeededHandler = @convention(c) (UnsafeMutableRawPointer?, OpaquePointer?, Int32, UnsafePointer<Int8>?) -> Void
+    public typealias CollationNeededHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ database: OpaquePointer?, _ collationFlag: Int32, _ name: UnsafePointer<Int8>?) -> Void
 
     @frozen public struct CollationFlag: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
