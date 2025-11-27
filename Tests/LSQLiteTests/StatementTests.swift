@@ -59,7 +59,7 @@ class StatementTests: XCTestCase {
         }()
 
         XCTAssertEqual(insertStatement.bindInt(1, at: 1), .ok)
-        XCTAssertEqual(insertStatement.bindText("text1", at: 2), .ok)
+        XCTAssertEqual(insertStatement.bindTransientText("text1", at: 2), .ok)
         XCTAssertEqual(insertStatement.step(), .done)
         XCTAssertEqual(insertStatement.clearBindings(), .ok)
         XCTAssertEqual(insertStatement.reset(), .ok)

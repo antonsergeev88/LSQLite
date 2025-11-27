@@ -1,8 +1,14 @@
 import MissedSwiftSQLite
 
 extension Database {
+    /// Callback invoked periodically during virtual machine execution; return a code indicating whether to continue.
+    ///
+    /// Related SQLite: `sqlite3_progress_handler`
     public typealias ProgressHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?) -> Int32
 
+    /// Return codes from a progress handler to keep running or interrupt.
+    ///
+    /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
     @frozen public struct ProgressHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
@@ -13,6 +19,9 @@ extension Database {
         public static let `continue` = Self(rawValue: 0)
         public static let interrupt = Self(rawValue: 1)
 
+        /// Debug label for the progress handler result.
+        ///
+        /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
         public var debugDescription: String {
             switch self {
             case .continue: return "LSQLITE_CONTINUE"
@@ -22,38 +31,13 @@ extension Database {
         }
     }
 
-    /**
-     CAPI3REF: Query Progress Callbacks
-     METHOD: sqlite3
-
-     ^The sqlite3_progress_handler(D,N,X,P) interface causes the callback
-     function X to be invoked periodically during long running calls to
-     [sqlite3_exec()], [sqlite3_step()] and [sqlite3_get_table()] for
-     database connection D.  An example use for this
-     interface is to keep a GUI updated during a large query.
-
-     ^The parameter P is passed through as the only parameter to the
-     callback function X.  ^The parameter N is the approximate number of
-     [virtual machine instructions] that are evaluated between successive
-     invocations of the callback X.  ^If N is less than one then the progress
-     handler is disabled.
-
-     ^Only a single progress handler may be defined at one time per
-     [database connection]; setting a new progress handler cancels the
-     old one.  ^Setting parameter X to NULL disables the progress handler.
-     ^The progress handler is also disabled by setting N to a value less
-     than 1.
-
-     ^If the progress callback returns non-zero, the operation is
-     interrupted.  This feature can be used to implement a
-     "Cancel" button on a GUI progress dialog box.
-
-     The progress handler callback must not do anything that will modify
-     the database connection that invoked the progress handler.
-     Note that [sqlite3_prepare_v2()] and [sqlite3_step()] both modify their
-     database connections for the meaning of "modify" in this paragraph.
-
-    */
+    /// Registers a progress handler invoked every `instructionCount` virtual machine steps; return `.interrupt` to halt the operation.
+    /// - Parameters:
+    ///   - instructionCount: Approximate number of VDBE instructions between callbacks; `<= 0` disables the handler.
+    ///   - userData: Custom context passed to the handler.
+    ///   - handler: Progress callback; `nil` to clear.
+    ///
+    /// Related SQLite: `sqlite3_progress_handler`, `sqlite3_exec`, `sqlite3_step`
     @inlinable public func setProgressHandler(instructionCount: Int32, userData: UnsafeMutableRawPointer? = nil, handler: ProgressHandler? = nil) {
         sqlite3_progress_handler(rawValue, instructionCount, handler, userData)
     }
