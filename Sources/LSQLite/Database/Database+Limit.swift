@@ -1,15 +1,9 @@
 import MissedSwiftSQLite
 
 extension Database {
-    /**
-     CAPI3REF: Run-Time Limit Categories
-     KEYWORDS: {limit category} {*limit categories}
-
-     These constants define various performance limits
-     that can be lowered at run-time using [sqlite3_limit()].
-     The synopsis of the meanings of the various limits is shown below.
-     Additional information is available at [limits | Limits in SQLite].
-    */
+    /// Runtime limit categories used with `Database.limit(for:)` and `Database.setLimit(_:for:)`.
+    ///
+    /// Related SQLite: `sqlite3_limit`, `SQLITE_LIMIT_*`
     @frozen public struct LimitCategory: Equatable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
@@ -17,38 +11,58 @@ extension Database {
             self.rawValue = rawValue
         }
 
-        /// The maximum size of any string or BLOB or table row, in bytes.
+        /// Maximum size of any string, BLOB, or table row in bytes.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_LENGTH`
         public static let length = Self(rawValue: SQLITE_LIMIT_LENGTH)
-        /// The maximum length of an SQL statement, in bytes.
+        /// Maximum length of an SQL statement in bytes.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_SQL_LENGTH`
         public static let sqlLength = Self(rawValue: SQLITE_LIMIT_SQL_LENGTH)
-        /// The maximum number of columns in a table definition or in the
-        /// result set of a [SELECT] or the maximum number of columns in an index
-        /// or in an ORDER BY or GROUP BY clause.
+        /// Maximum number of columns in a table definition, result set, index, ORDER BY, or GROUP BY.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_COLUMN`
         public static let column = Self(rawValue: SQLITE_LIMIT_COLUMN)
-        /// The maximum depth of the parse tree on any expression.
+        /// Maximum expression parse-tree depth.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_EXPR_DEPTH`
         public static let exprDepth = Self(rawValue: SQLITE_LIMIT_EXPR_DEPTH)
-        /// The maximum number of terms in a compound SELECT statement.
+        /// Maximum terms in a compound SELECT.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_COMPOUND_SELECT`
         public static let compoundSelect = Self(rawValue: SQLITE_LIMIT_COMPOUND_SELECT)
-        /// The maximum number of instructions in a virtual machine program
-        /// used to implement an SQL statement.  If [sqlite3_prepare_v2()] or
-        /// the equivalent tries to allocate space for more than this many opcodes
-        /// in a single prepared statement, an SQLITE_NOMEM error is returned.
+        /// Maximum opcodes in a single prepared statement VM program.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_VDBE_OP`
         public static let vdbeOp = Self(rawValue: SQLITE_LIMIT_VDBE_OP)
-        /// The maximum number of arguments on a function.
+        /// Maximum number of arguments on a function.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_FUNCTION_ARG`
         public static let functionArg = Self(rawValue: SQLITE_LIMIT_FUNCTION_ARG)
-        /// The maximum number of [ATTACH | attached databases].
+        /// Maximum number of attached databases.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_ATTACHED`
         public static let attached = Self(rawValue: SQLITE_LIMIT_ATTACHED)
-        /// The maximum length of the pattern argument to the [LIKE] or
-        /// [GLOB] operators.
+        /// Maximum pattern length for LIKE or GLOB.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_LIKE_PATTERN_LENGTH`
         public static let likePatternLength = Self(rawValue: SQLITE_LIMIT_LIKE_PATTERN_LENGTH)
-        /// The maximum index number of any [parameter] in an SQL statement.
+        /// Maximum parameter index in a statement.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_VARIABLE_NUMBER`
         public static let variableNumber = Self(rawValue: SQLITE_LIMIT_VARIABLE_NUMBER)
-        /// The maximum depth of recursion for triggers.
+        /// Maximum trigger recursion depth.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_TRIGGER_DEPTH`
         public static let triggerDepth = Self(rawValue: SQLITE_LIMIT_TRIGGER_DEPTH)
-        /// The maximum number of auxiliary worker threads that a single
-        /// [prepared statement] may start.
+        /// Maximum auxiliary worker threads a prepared statement may start.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_WORKER_THREADS`
         public static let workerThreads = Self(rawValue: SQLITE_LIMIT_WORKER_THREADS)
 
+        /// Debug label for the limit category.
+        ///
+        /// Related SQLite: `SQLITE_LIMIT_*`
         public var debugDescription: String {
             switch self {
             case .length: return "SQLITE_LIMIT_LENGTH"
@@ -68,90 +82,22 @@ extension Database {
         }
     }
 
-    /**
-     CAPI3REF: Run-time Limits
-     METHOD: sqlite3
-
-     ^(This interface allows the size of various constructs to be limited
-     on a connection by connection basis.  The first parameter is the
-     [database connection] whose limit is to be set or queried.  The
-     second parameter is one of the [limit categories] that define a
-     class of constructs to be size limited.  The third parameter is the
-     new limit for that construct.)^
-
-     ^If the new limit is a negative number, the limit is unchanged.
-     ^(For each limit category SQLITE_LIMIT_<i>NAME</i> there is a
-     [limits | hard upper bound]
-     set at compile-time by a C preprocessor macro called
-     [limits | SQLITE_MAX_<i>NAME</i>].
-     (The "_LIMIT_" in the name is changed to "_MAX_".))^
-     ^Attempts to increase a limit above its hard upper bound are
-     silently truncated to the hard upper bound.
-
-     ^Regardless of whether or not the limit was changed, the
-     [sqlite3_limit()] interface returns the prior value of the limit.
-     ^Hence, to find the current value of a limit without changing it,
-     simply invoke this interface with the third parameter set to -1.
-
-     Run-time limits are intended for use in applications that manage
-     both their own internal database and also databases that are controlled
-     by untrusted external sources.  An example application might be a
-     web browser that has its own databases for storing history and
-     separate databases controlled by JavaScript applications downloaded
-     off the Internet.  The internal databases can be given the
-     large, default limits.  Databases managed by external sources can
-     be given much smaller limits designed to prevent a denial of service
-     attack.  Developers might also want to use the [sqlite3_set_authorizer()]
-     interface to further control untrusted SQL.  The size of the database
-     created by an untrusted script can be contained using the
-     [max_page_count] [PRAGMA].
-
-     New run-time limit categories may be added in future releases.
-    */
+    /// Reads the current run-time limit for the given category on this connection.
+    /// - Parameter category: Limit to query.
+    /// - Returns: Current value for the limit.
+    ///
+    /// Related SQLite: `sqlite3_limit`, `SQLITE_LIMIT_*`
     @inlinable public func limit(for category: LimitCategory) -> Int32 {
         sqlite3_limit(rawValue, category.rawValue, -1)
     }
 
-    /**
-     CAPI3REF: Run-time Limits
-     METHOD: sqlite3
-
-     ^(This interface allows the size of various constructs to be limited
-     on a connection by connection basis.  The first parameter is the
-     [database connection] whose limit is to be set or queried.  The
-     second parameter is one of the [limit categories] that define a
-     class of constructs to be size limited.  The third parameter is the
-     new limit for that construct.)^
-
-     ^If the new limit is a negative number, the limit is unchanged.
-     ^(For each limit category SQLITE_LIMIT_<i>NAME</i> there is a
-     [limits | hard upper bound]
-     set at compile-time by a C preprocessor macro called
-     [limits | SQLITE_MAX_<i>NAME</i>].
-     (The "_LIMIT_" in the name is changed to "_MAX_".))^
-     ^Attempts to increase a limit above its hard upper bound are
-     silently truncated to the hard upper bound.
-
-     ^Regardless of whether or not the limit was changed, the
-     [sqlite3_limit()] interface returns the prior value of the limit.
-     ^Hence, to find the current value of a limit without changing it,
-     simply invoke this interface with the third parameter set to -1.
-
-     Run-time limits are intended for use in applications that manage
-     both their own internal database and also databases that are controlled
-     by untrusted external sources.  An example application might be a
-     web browser that has its own databases for storing history and
-     separate databases controlled by JavaScript applications downloaded
-     off the Internet.  The internal databases can be given the
-     large, default limits.  Databases managed by external sources can
-     be given much smaller limits designed to prevent a denial of service
-     attack.  Developers might also want to use the [sqlite3_set_authorizer()]
-     interface to further control untrusted SQL.  The size of the database
-     created by an untrusted script can be contained using the
-     [max_page_count] [PRAGMA].
-
-     New run-time limit categories may be added in future releases.
-    */
+    /// Sets a run-time limit for this connection and returns the previous value.
+    /// - Parameters:
+    ///   - limit: New limit value; pass a negative number to leave the limit unchanged.
+    ///   - category: Limit to update.
+    /// - Returns: Prior value of the limit.
+    ///
+    /// Related SQLite: `sqlite3_limit`, `SQLITE_LIMIT_*`
     @discardableResult @inlinable public func setLimit(_ limit: Int32, for category: LimitCategory) -> Int32 {
         sqlite3_limit(rawValue, category.rawValue, limit)
     }
