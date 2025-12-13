@@ -14,11 +14,19 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        private static let memoryCString: StaticString = ":memory:"
+        private static let temporaryCString: StaticString = ""
+        private static func staticCStringPointer(from staticString: StaticString) -> UnsafePointer<Int8> {
+            UnsafeRawPointer(staticString.utf8Start).assumingMemoryBound(to: Int8.self)
+        }
+        private static let memoryRawValue = staticCStringPointer(from: memoryCString)
+        private static let temporaryRawValue = staticCStringPointer(from: temporaryCString)
+
         /// Helper filenames for in-memory or temporary databases.
         ///
         /// Related SQLite: `":memory:"`, `sqlite3_open`, `sqlite3_open_v2`
-        public static let memory = Self(rawValue: ":memory:")
-        public static let temporary = Self(rawValue: "")
+        public static let memory = Self(rawValue: memoryRawValue)
+        public static let temporary = Self(rawValue: temporaryRawValue)
     }
 
     /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
