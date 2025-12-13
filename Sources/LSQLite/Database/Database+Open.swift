@@ -51,11 +51,13 @@ extension Database {
         public static let sharedCache = Self(rawValue: SQLITE_OPEN_SHAREDCACHE)
         public static let privateCache = Self(rawValue: SQLITE_OPEN_PRIVATECACHE)
         public static let wal = Self(rawValue: SQLITE_OPEN_WAL)
+#if canImport(Darwin)
         public static let fileProtectionComplete = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETE)
         public static let fileProtectionCompleteUnlessOpen = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN)
         public static let fileProtectionCompleteUntilFirstUserAuthentication = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION)
         public static let fileProtectionNone = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_NONE)
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
+#endif
     }
 
     /// Opens a database connection at the given filename using the supplied flags.
