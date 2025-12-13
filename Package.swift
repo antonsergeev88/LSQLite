@@ -20,7 +20,10 @@ let package = Package(
             dependencies: ["MissedSwiftSQLite"]
         ),
         .target(
-            name: "MissedSwiftSQLite"
+            name: "MissedSwiftSQLite",
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         ),
         .testTarget(
             name: "LSQLiteTests",
