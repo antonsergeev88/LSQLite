@@ -3,7 +3,9 @@ import MissedSwiftSQLite
 extension Database {
     /// SQLite filename wrapper used when opening a connection.
     ///
-    /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
+    /// To construct a `file:` URI filename, use `Database.FileName.uri(...)` and open with `.uri` in the flags.
+    ///
+    /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`, `SQLITE_OPEN_URI`
     @frozen public struct FileName: RawRepresentable, Sendable {
         public let rawValue: String
 
