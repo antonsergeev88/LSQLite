@@ -4,31 +4,25 @@ extension Database {
     /// SQLite filename wrapper used when opening a connection.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
-    @frozen public struct FileName: RawRepresentable, @unchecked Sendable {
-        public let rawValue: UnsafePointer<Int8>
+    @frozen public struct FileName: RawRepresentable, Sendable {
+        public let rawValue: String
 
-        /// Creates a filename wrapper from an existing C string.
+        /// Creates a filename wrapper from a Swift string.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`
-        @inlinable public init(rawValue: UnsafePointer<Int8>) {
+        @inlinable public init(rawValue: String) {
             self.rawValue = rawValue
-        }
-
-        private static let memoryCString: StaticString = ":memory:"
-        private static let temporaryCString: StaticString = ""
-        private static func staticCStringPointer(from staticString: StaticString) -> UnsafePointer<Int8> {
-            UnsafeRawPointer(staticString.utf8Start).assumingMemoryBound(to: Int8.self)
         }
 
         /// Filename for an in-memory database.
         ///
         /// Related SQLite: `":memory:"`, `sqlite3_open`, `sqlite3_open_v2`
-        public static let memory = Self(rawValue: staticCStringPointer(from: memoryCString))
+        public static let memory = Self(rawValue: ":memory:")
 
         /// Filename for a temporary on-disk database.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
-        public static let temporary = Self(rawValue: staticCStringPointer(from: temporaryCString))
+        public static let temporary = Self(rawValue: "")
     }
 
     /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
