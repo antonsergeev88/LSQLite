@@ -20,10 +20,14 @@ extension Database {
             UnsafeRawPointer(staticString.utf8Start).assumingMemoryBound(to: Int8.self)
         }
 
-        /// Helper filenames for in-memory or temporary databases.
+        /// Filename for an in-memory database.
         ///
         /// Related SQLite: `":memory:"`, `sqlite3_open`, `sqlite3_open_v2`
         public static let memory = Self(rawValue: staticCStringPointer(from: memoryCString))
+
+        /// Filename for a temporary on-disk database.
+        ///
+        /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
         public static let temporary = Self(rawValue: staticCStringPointer(from: temporaryCString))
     }
 
