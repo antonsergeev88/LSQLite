@@ -4,7 +4,7 @@ import MissedSwiftSQLite
 /// Set `dataDirectory` once during startup; mutating it while connections are open can corrupt databases.
 ///
 /// Related SQLite: `sqlite3_data_directory`, `data_store_directory pragma`
-@MainActor @inlinable public var dataDirectory: UnsafeMutablePointer<Int8>? {
+@inlinable public var dataDirectory: UnsafeMutablePointer<Int8>? {
     get {
         lsqlite_get_data_directory()
     }
