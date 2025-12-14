@@ -1,13 +1,15 @@
-import XCTest
+import Testing
 import LSQLite
 import MissedSwiftSQLite
 
-final class SendableTests: XCTestCase {
-    private func assertSendable<T: Sendable>(_ value: T, file: StaticString = #filePath, line: UInt = #line) {
+@Suite
+struct SendableTests {
+    private func assertSendable<T: Sendable>(_ value: T) {
         _ = value
     }
 
-    func testPointerWrappersConformToSendable() {
+    @Test
+    func pointerWrappersConformToSendable() {
         assertSendable(Database(rawValue: OpaquePointer(bitPattern: 0x1)!))
         assertSendable(Blob(rawValue: OpaquePointer(bitPattern: 0x2)!))
         assertSendable(Context(rawValue: OpaquePointer(bitPattern: 0x3)!))
@@ -17,7 +19,8 @@ final class SendableTests: XCTestCase {
         assertSendable(Database.FileName(rawValue: UnsafePointer<Int8>(bitPattern: 0x7)!))
     }
 
-    func testPointerWrappersMoveAcrossDetachedTasks() async {
+    @Test
+    func pointerWrappersMoveAcrossDetachedTasks() async {
         let database = Database(rawValue: OpaquePointer(bitPattern: 0x10)!)
         let blob = Blob(rawValue: OpaquePointer(bitPattern: 0x11)!)
         let context = Context(rawValue: OpaquePointer(bitPattern: 0x12)!)
@@ -34,12 +37,12 @@ final class SendableTests: XCTestCase {
         let detachedValue = await Task.detached { value }.value
         let detachedFileName = await Task.detached { fileName }.value
 
-        XCTAssertEqual(Int(bitPattern: detachedDatabase.rawValue), Int(bitPattern: database.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedBlob.rawValue), Int(bitPattern: blob.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedContext.rawValue), Int(bitPattern: context.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedMutex.rawValue), Int(bitPattern: mutex.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedStatement.rawValue), Int(bitPattern: statement.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedValue.rawValue), Int(bitPattern: value.rawValue))
-        XCTAssertEqual(Int(bitPattern: detachedFileName.rawValue), Int(bitPattern: fileName.rawValue))
+        #expect(Int(bitPattern: detachedDatabase.rawValue) == Int(bitPattern: database.rawValue))
+        #expect(Int(bitPattern: detachedBlob.rawValue) == Int(bitPattern: blob.rawValue))
+        #expect(Int(bitPattern: detachedContext.rawValue) == Int(bitPattern: context.rawValue))
+        #expect(Int(bitPattern: detachedMutex.rawValue) == Int(bitPattern: mutex.rawValue))
+        #expect(Int(bitPattern: detachedStatement.rawValue) == Int(bitPattern: statement.rawValue))
+        #expect(Int(bitPattern: detachedValue.rawValue) == Int(bitPattern: value.rawValue))
+        #expect(Int(bitPattern: detachedFileName.rawValue) == Int(bitPattern: fileName.rawValue))
     }
 }
