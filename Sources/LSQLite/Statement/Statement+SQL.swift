@@ -34,20 +34,4 @@ extension Statement {
         }
         return string
     }
-
-    /// SQL text with bound parameters expanded.
-    ///
-    /// Related SQLite: `sqlite3_normalized_sql`
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    @inlinable public var normalizedSql: String? {
-        let cString = sqlite3_normalized_sql(rawValue)
-        guard let cString else {
-            return nil
-        }
-        let string = String(cString: cString)
-        guard !string.isEmpty else {
-            return nil
-        }
-        return string
-    }
 }
