@@ -146,8 +146,16 @@ import MissedSwiftSQLite
     ///
     /// Related SQLite: `sqlite3_errstr`, `sqlite3_errcode`, `sqlite3_extended_errcode`
     @available(iOS 8.2, macOS 10.10, tvOS 8.2, watchOS 2.0, *)
-    @inlinable public var errorString: UnsafePointer<Int8> {
-        sqlite3_errstr(rawValue)
+    @inlinable public var errorString: String? {
+        let cString = sqlite3_errstr(rawValue)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Debug-friendly constant name for this result code.

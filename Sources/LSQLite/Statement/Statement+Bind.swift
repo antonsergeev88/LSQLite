@@ -70,7 +70,7 @@ extension Statement {
     /// Binds UTF-8 text by copying it immediately (transient) to the parameter index.
     ///
     /// Related SQLite: `sqlite3_bind_text`, `SQLITE_TRANSIENT`
-    @inlinable public func bindTransientText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32) -> ResultCode {
+    @inlinable public func bindTransientText(_ text: String, length: Int32 = -1, at index: Int32) -> ResultCode {
         sqlite3_bind_transient_text(rawValue, index, text, length).resultCode
     }
 
@@ -98,14 +98,22 @@ extension Statement {
     /// Returns the parameter name for a 1-based index, or nil if positional.
     ///
     /// Related SQLite: `sqlite3_bind_parameter_name`
-    @inlinable public func bindingName(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_bind_parameter_name(rawValue, index)
+    @inlinable public func bindingName(at index: Int32) -> String? {
+        let cString = sqlite3_bind_parameter_name(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Returns the 1-based index for a named parameter, or 0 if not found.
     ///
     /// Related SQLite: `sqlite3_bind_parameter_index`
-    @inlinable public func bindingIndex(with name: UnsafePointer<Int8>) -> Int32 {
+    @inlinable public func bindingIndex(with name: String) -> Int32 {
         sqlite3_bind_parameter_index(rawValue, name)
     }
 

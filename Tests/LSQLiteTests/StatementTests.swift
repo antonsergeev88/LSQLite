@@ -83,11 +83,11 @@ class StatementTests: XCTestCase {
 
         XCTAssertEqual(selectStatement.step(), .row)
         XCTAssertEqual(selectStatement.columnInt(at: 0), 1)
-        XCTAssertEqual(selectStatement.columnText(at: 1).map(String.init(cString:)), "text1")
+        XCTAssertEqual(selectStatement.columnText(at: 1), "text1")
 
         XCTAssertEqual(selectStatement.step(), .row)
         XCTAssertEqual(selectStatement.columnInt(at: 0), 2)
-        XCTAssertEqual(selectStatement.columnText(at: 1).map(String.init(cString:)), nil)
+        XCTAssertEqual(selectStatement.columnText(at: 1), nil)
 
         XCTAssertEqual(selectStatement.step(), .done)
 

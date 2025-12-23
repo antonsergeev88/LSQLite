@@ -33,7 +33,7 @@ extension Database {
     /// - Returns: A `ReadWriteAccessState` describing access mode.
     ///
     /// Related SQLite: `sqlite3_db_readonly`
-    @inlinable public func readWriteAccessState(forDatabaseNamed name: UnsafePointer<Int8>) -> ReadWriteAccessState {
+    @inlinable public func readWriteAccessState(forDatabaseNamed name: String) -> ReadWriteAccessState {
         ReadWriteAccessState(rawValue: sqlite3_db_readonly(rawValue, name))
     }
 }

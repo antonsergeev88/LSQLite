@@ -40,7 +40,7 @@ extension Database {
     /// - Returns: Result of `sqlite3_exec`.
     ///
     /// Related SQLite: `sqlite3_exec`, `sqlite3_prepare_v2`, `sqlite3_step`, `sqlite3_finalize`
-    @inlinable public func exec(_ sql: UnsafePointer<Int8>, errorMessage: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil, userData: UnsafeMutableRawPointer? = nil, callback: ExecCallback? = nil) -> ResultCode {
+    @inlinable public func exec(_ sql: String, errorMessage: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil, userData: UnsafeMutableRawPointer? = nil, callback: ExecCallback? = nil) -> ResultCode {
         sqlite3_exec(rawValue, sql, callback, userData, errorMessage).resultCode
     }
 }

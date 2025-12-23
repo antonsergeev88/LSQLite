@@ -37,7 +37,7 @@ extension Database {
     /// - Returns: Result of `sqlite3_blob_open`.
     ///
     /// Related SQLite: `sqlite3_blob_open`, `sqlite3_blob_read`, `sqlite3_blob_write`, `sqlite3_blob_reopen`, `sqlite3_blob_close`
-    @inlinable public func openBlob(_ blob: inout Blob?, databaseName: UnsafePointer<Int8>, tableName: UnsafePointer<Int8>, columnName: UnsafePointer<Int8>, rowID: RowID, flags: OpenBlobFlag) -> ResultCode {
+    @inlinable public func openBlob(_ blob: inout Blob?, databaseName: String, tableName: String, columnName: String, rowID: RowID, flags: OpenBlobFlag) -> ResultCode {
         var blobPointer: OpaquePointer? = nil
         let resultCode = sqlite3_blob_open(rawValue, databaseName, tableName, columnName, rowID.rawValue, flags.rawValue, &blobPointer).resultCode
         blob = blobPointer.map(Blob.init(rawValue:))

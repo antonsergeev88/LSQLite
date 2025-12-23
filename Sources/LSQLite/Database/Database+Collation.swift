@@ -59,7 +59,7 @@ extension Database {
     /// - Returns: Result of `sqlite3_create_collation_v2`.
     ///
     /// Related SQLite: `sqlite3_create_collation_v2`, `sqlite3_create_collation`, `sqlite3_create_collation16`, `sqlite3_close`, `sqlite3_strnicmp`
-    @inlinable public func createCollation(name: UnsafePointer<Int8>, flag: CollationFlag, userData: UnsafeMutableRawPointer? = nil, compareHandler: CollationCompareHandler? = nil, destroyHandler: CollationDestroyHandler? = nil) -> ResultCode {
+    @inlinable public func createCollation(name: String, flag: CollationFlag, userData: UnsafeMutableRawPointer? = nil, compareHandler: CollationCompareHandler? = nil, destroyHandler: CollationDestroyHandler? = nil) -> ResultCode {
         sqlite3_create_collation_v2(rawValue, name, flag.rawValue, userData, compareHandler, destroyHandler).resultCode
     }
 

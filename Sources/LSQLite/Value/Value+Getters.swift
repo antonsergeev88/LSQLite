@@ -29,10 +29,15 @@ extension Value {
         sqlite3_value_int64(rawValue)
     }
 
-    /// UTF-8 text pointer for this value, or nil if not text; content may be invalidated by later calls.
+    /// UTF-8 text for this value, or nil if not text.
     ///
     /// Related SQLite: `sqlite3_value_text`, `sqlite3_value_bytes`
-    @inlinable public var text: UnsafePointer<UInt8>? {
-        sqlite3_value_text(rawValue)
+    @inlinable public var text: String? {
+        let cString = sqlite3_value_text(rawValue)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        return string
     }
 }

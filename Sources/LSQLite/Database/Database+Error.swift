@@ -43,8 +43,8 @@ extension Database {
     /// UTF-8 message text for the most recent API call on this connection.
     ///
     /// Related SQLite: `sqlite3_errmsg`, `sqlite3_errmsg16`, `sqlite3_errstr`
-    @inlinable public var lastErrorMessage: UnsafePointer<Int8> {
-        sqlite3_errmsg(rawValue)
+    @inlinable public var lastErrorMessage: String {
+        String(cString: sqlite3_errmsg(rawValue))
     }
 
     /// Enables (`.on`) or disables (`.off`) extended result codes for this connection.

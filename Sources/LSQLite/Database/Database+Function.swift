@@ -79,7 +79,7 @@ extension Database {
     /// - Returns: Result of `sqlite3_create_function_v2`.
     ///
     /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_user_data`, `SQLITE_DETERMINISTIC`, `SQLITE_LIMIT_FUNCTION_ARG`
-    @inlinable public func createFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, funcHandler: FunctionFuncHandler? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
+    @inlinable public func createFunction(name: String, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, funcHandler: FunctionFuncHandler? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
         sqlite3_create_function_v2(rawValue, name, argumentCount, flag.rawValue, userData, funcHandler, stepHandler, finalHandler, destroyHandler).resultCode
     }
 
@@ -98,7 +98,7 @@ extension Database {
     ///
     /// Related SQLite: `sqlite3_create_window_function`, `sqlite3_create_function_v2`, `sqlite3_user_data`
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    @inlinable public func createWindowFunction(name: UnsafePointer<Int8>, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, valueHandler: FunctionValueHandler? = nil, inverseHandler: FunctionInverseHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
+    @inlinable public func createWindowFunction(name: String, argumentCount: Int32, flags flag: FunctionFlag, userData: UnsafeMutableRawPointer? = nil, stepHandler: FunctionStepHandler? = nil, finalHandler: FunctionFinalHandler? = nil, valueHandler: FunctionValueHandler? = nil, inverseHandler: FunctionInverseHandler? = nil, destroyHandler: FunctionDestroyHandler? = nil) -> ResultCode {
         sqlite3_create_window_function(rawValue, name, argumentCount, flag.rawValue, userData, stepHandler, finalHandler, valueHandler, inverseHandler, destroyHandler).resultCode
     }
 }

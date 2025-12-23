@@ -11,36 +11,76 @@ extension Statement {
     /// Column name for the given 0-based index.
     ///
     /// Related SQLite: `sqlite3_column_name`
-    @inlinable public func columnName(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_column_name(rawValue, index)
+    @inlinable public func columnName(at index: Int32) -> String? {
+        let cString = sqlite3_column_name(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Database name for the column (or nil).
     ///
     /// Related SQLite: `sqlite3_column_database_name`
-    @inlinable public func columnDatabaseName(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_column_database_name(rawValue, index)
+    @inlinable public func columnDatabaseName(at index: Int32) -> String? {
+        let cString = sqlite3_column_database_name(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Table name for the column (or nil).
     ///
     /// Related SQLite: `sqlite3_column_table_name`
-    @inlinable public func columnTableName(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_column_table_name(rawValue, index)
+    @inlinable public func columnTableName(at index: Int32) -> String? {
+        let cString = sqlite3_column_table_name(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Original column name before any AS alias (or nil).
     ///
     /// Related SQLite: `sqlite3_column_origin_name`
-    @inlinable public func columnOriginName(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_column_origin_name(rawValue, index)
+    @inlinable public func columnOriginName(at index: Int32) -> String? {
+        let cString = sqlite3_column_origin_name(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Declared type of the column (or nil).
     ///
     /// Related SQLite: `sqlite3_column_decltype`
-    @inlinable public func columnDeclaredType(at index: Int32) -> UnsafePointer<Int8>? {
-        sqlite3_column_decltype(rawValue, index)
+    @inlinable public func columnDeclaredType(at index: Int32) -> String? {
+        let cString = sqlite3_column_decltype(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Number of columns with data in the current row (after stepping).
@@ -78,11 +118,19 @@ extension Statement {
         sqlite3_column_int64(rawValue, index)
     }
 
-    /// UTF-8 text pointer for the column value.
+    /// UTF-8 text for the column value.
     ///
     /// Related SQLite: `sqlite3_column_text`, `sqlite3_column_bytes`
-    @inlinable public func columnText(at index: Int32) -> UnsafePointer<UInt8>? {
-        sqlite3_column_text(rawValue, index)
+    @inlinable public func columnText(at index: Int32) -> String? {
+        let cString = sqlite3_column_text(rawValue, index)
+        guard let cString else {
+            return nil
+        }
+        let string = String(cString: cString)
+        guard !string.isEmpty else {
+            return nil
+        }
+        return string
     }
 
     /// Byte length of the column value for text/blob in the current row.

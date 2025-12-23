@@ -42,7 +42,7 @@ extension Context {
     /// Sets an error result with the provided UTF-8 message.
     ///
     /// Related SQLite: `sqlite3_result_error`
-    @inlinable public func resultError(_ message: UnsafePointer<Int8>, length: Int32) {
+    @inlinable public func resultError(_ message: String, length: Int32) {
         sqlite3_result_error(rawValue, message, length)
     }
 
@@ -98,7 +98,7 @@ extension Context {
     /// Sets the result text by copying it immediately (transient).
     ///
     /// Related SQLite: `sqlite3_result_text`, `SQLITE_TRANSIENT`
-    @inlinable public func resultTransientText(_ text: UnsafePointer<Int8>, length: Int32) {
+    @inlinable public func resultTransientText(_ text: String, length: Int32) {
         lsqlite3_result_transient_text(rawValue, text, length)
     }
 

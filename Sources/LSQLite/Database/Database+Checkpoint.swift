@@ -41,14 +41,14 @@ extension Database {
 
     /// Runs a WAL checkpoint on the named database using the requested mode.
     /// - Parameters:
-    ///   - databaseName: Target database name (e.g. `"main"`); empty or `NULL` applies to all.
+    ///   - databaseName: Target database name (e.g. `"main"`); empty applies to all.
     ///   - mode: Checkpoint mode to use.
     ///   - frameCount: Receives total frames in the WAL, or `-1` on failure.
     ///   - totalFrameCount: Receives total checkpointed frames, or `-1` on failure.
     /// - Returns: Result of `sqlite3_wal_checkpoint_v2`.
     ///
     /// Related SQLite: `sqlite3_wal_checkpoint_v2`, `PRAGMA wal_checkpoint`, `SQLITE_CHECKPOINT_*`
-    @inlinable public func walCheckpoint(_ databaseName: UnsafePointer<Int8>, mode: CheckpointMode, frameCount: UnsafeMutablePointer<Int32>?, totalFrameCount: UnsafeMutablePointer<Int32>?) -> ResultCode {
+    @inlinable public func walCheckpoint(_ databaseName: String, mode: CheckpointMode, frameCount: UnsafeMutablePointer<Int32>?, totalFrameCount: UnsafeMutablePointer<Int32>?) -> ResultCode {
         sqlite3_wal_checkpoint_v2(rawValue, databaseName, mode.rawValue, frameCount, totalFrameCount).resultCode
     }
 }
