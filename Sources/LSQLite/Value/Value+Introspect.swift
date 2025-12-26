@@ -22,26 +22,26 @@ extension Value {
         Datatype(rawValue: sqlite3_value_numeric_type(rawValue))
     }
 
-    @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
     /// Whether the column value is marked as unchanged during an UPDATE.
     ///
     /// Related SQLite: `sqlite3_value_nochange`
+    @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
     @inlinable public var noChange: Bool {
         sqlite3_value_nochange(rawValue) != 0
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     /// Indicates that the value originated from a bound parameter rather than stored data.
     ///
     /// Related SQLite: `sqlite3_value_frombind`
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     @inlinable public var isFromBind: Bool {
         sqlite3_value_frombind(rawValue) != 0
     }
 
-    @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
     /// User-defined subtype associated with this value.
     ///
     /// Related SQLite: `sqlite3_value_subtype`, `sqlite3_result_subtype`
+    @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
     @inlinable public var subtype: Subtype {
         Subtype(rawValue: sqlite3_value_subtype(rawValue))
     }
