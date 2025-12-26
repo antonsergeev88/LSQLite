@@ -10,10 +10,39 @@ import SQLite3
         self.rawValue = rawValue
     }
 
+    /// SQLite INTEGER type.
+    ///
+    /// Represents signed integer values as defined by SQLite's dynamic type system.
+    ///
+    /// Related SQLite: `SQLITE_INTEGER`
     public static let integer = Self(rawValue: SQLITE_INTEGER)
+
+    /// SQLite FLOAT type.
+    ///
+    /// Represents floating-point numeric values (stored as IEEE 64‑bit floats).
+    ///
+    /// Related SQLite: `SQLITE_FLOAT`
     public static let float = Self(rawValue: SQLITE_FLOAT)
+
+    /// SQLite BLOB type.
+    ///
+    /// Represents raw binary data stored exactly as provided, without encoding.
+    ///
+    /// Related SQLite: `SQLITE_BLOB`
     public static let blob = Self(rawValue: SQLITE_BLOB)
+
+    /// SQLite NULL type.
+    ///
+    /// Represents the absence of a value.
+    ///
+    /// Related SQLite: `SQLITE_NULL`
     public static let null = Self(rawValue: SQLITE_NULL)
+
+    /// SQLite TEXT type.
+    ///
+    /// Represents text data stored using the database text encoding (UTF‑8, UTF‑16LE, or UTF‑16BE).
+    ///
+    /// Related SQLite: `SQLITE3_TEXT`
     public static let text = Self(rawValue: SQLITE_TEXT)
 
     public var description: String {
