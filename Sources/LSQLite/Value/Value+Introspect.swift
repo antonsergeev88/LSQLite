@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Value {
     /// Number of bytes in the value for BLOB or text; 0 for other types.

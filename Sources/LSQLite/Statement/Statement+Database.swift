@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     /// Database connection that owns this prepared statement.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Returns the next prepared statement on this connection after the given one, or the first when `statement` is `nil`.

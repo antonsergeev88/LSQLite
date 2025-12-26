@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     /// Flags for sqlite3_prepare_v3 prepFlags argument.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// C callback invoked to compute a scalar SQL function result.

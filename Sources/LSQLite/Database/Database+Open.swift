@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// SQLite filename wrapper used when opening a connection.

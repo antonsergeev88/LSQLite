@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     /// True if the prepared statement does not directly modify the database.

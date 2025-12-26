@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Callback invoked periodically during virtual machine execution; return a code indicating whether to continue.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Read/write state values returned by `readWriteAccessState(forDatabaseNamed:)`.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     /// Original SQL text used to create the statement.

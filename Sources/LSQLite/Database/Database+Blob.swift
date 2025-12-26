@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Access flags for incremental BLOB I/O opened via `openBlob(_:databaseName:tableName:columnName:rowID:flags:)`.

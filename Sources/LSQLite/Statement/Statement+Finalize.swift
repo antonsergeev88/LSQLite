@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Statement {
     /// Finalizes and destroys the prepared statement handle.

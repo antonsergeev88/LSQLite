@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Row callback invoked by `exec(_:)` when SQL produces result rows.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// WAL checkpoint modes used by `walCheckpoint(_:mode:frameCount:totalFrameCount:)` and auto-checkpointing.

@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Value {
     /// Pointer to the BLOB bytes for this value, or nil if not a BLOB.

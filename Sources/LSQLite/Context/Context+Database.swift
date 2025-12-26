@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Context {
     /// Returns the database connection associated with this function context.
