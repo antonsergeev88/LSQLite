@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Statement {
     /// True if the statement has been stepped and not yet finished or reset.

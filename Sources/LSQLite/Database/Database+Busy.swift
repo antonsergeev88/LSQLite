@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Callback invoked when SQLite reports a busy contention; return a retry decision.

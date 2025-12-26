@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Authorization callback invoked during statement compilation.

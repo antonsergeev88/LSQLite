@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Blob {
     /// Moves this BLOB handle to a different row of the same table.

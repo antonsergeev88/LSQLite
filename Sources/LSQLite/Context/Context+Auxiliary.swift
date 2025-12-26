@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Context {
     /// Destructor invoked when SQLite frees auxiliary data attached to a function argument.

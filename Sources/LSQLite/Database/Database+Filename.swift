@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Returns the absolute filename for the named database on this connection.

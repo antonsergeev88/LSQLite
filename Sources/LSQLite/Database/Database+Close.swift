@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Closes the connection immediately; fails with `.busy` if statements, blobs, or backups are still open.

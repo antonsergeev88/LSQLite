@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Statement {
     /// Steps the prepared statement once, returning the SQLite result code (row, done, or error).

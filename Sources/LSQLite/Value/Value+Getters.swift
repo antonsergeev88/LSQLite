@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Value {
     /// Pointer to the BLOB bytes for this value, or nil if not a BLOB.
@@ -25,7 +25,7 @@ extension Value {
     /// Value coerced to 64-bit Int.
     ///
     /// Related SQLite: `sqlite3_value_int64`
-    @inlinable public var int64: sqlite3_int64 {
+    @inlinable public var int64: Int64 {
         sqlite3_value_int64(rawValue)
     }
 

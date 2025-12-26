@@ -8,7 +8,7 @@ extension Database.FileName {
         /// Note: SQLite only interprets URIs that use the `"file"` scheme.
         ///
         /// Related SQLite: "URI filenames", `"file:"`
-        @frozen public struct Scheme: RawRepresentable, Sendable {
+        @frozen public struct Scheme: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -24,7 +24,7 @@ extension Database.FileName {
         /// URI authority component.
         ///
         /// Related SQLite: "URI filenames (authority)"
-        @frozen public struct Authority: RawRepresentable, Sendable {
+        @frozen public struct Authority: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -45,7 +45,7 @@ extension Database.FileName {
         /// URI path component.
         ///
         /// Related SQLite: "URI filenames (path)", `sqlite3_open_v2`
-        @frozen public struct Path: RawRepresentable, Sendable {
+        @frozen public struct Path: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -71,7 +71,7 @@ extension Database.FileName {
         /// URI query component (without the leading `?`).
         ///
         /// Related SQLite: "URI filenames (query string)"
-        @frozen public struct Query: RawRepresentable, Sendable {
+        @frozen public struct Query: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -101,7 +101,7 @@ extension Database.FileName {
         /// Note: SQLite ignores fragments in URI filenames.
         ///
         /// Related SQLite: "URI filenames (fragment)"
-        @frozen public struct Fragment: RawRepresentable, Sendable {
+        @frozen public struct Fragment: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -119,7 +119,7 @@ extension Database.FileName {
         /// URI query parameter key.
         ///
         /// Related SQLite: "URI filenames (query parameters)"
-        @frozen public struct QueryKey: RawRepresentable, Sendable {
+        @frozen public struct QueryKey: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -142,7 +142,7 @@ extension Database.FileName {
         /// URI query parameter value.
         ///
         /// Related SQLite: "URI filenames (query parameters)"
-        @frozen public struct QueryValue: RawRepresentable, Sendable {
+        @frozen public struct QueryValue: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -165,7 +165,7 @@ extension Database.FileName {
         /// URI query parameter key/value pair.
         ///
         /// Related SQLite: "URI filenames (query parameters)"
-        @frozen public struct QueryParameter: Sendable {
+        @frozen public struct QueryParameter {
             public let key: QueryKey
             public let value: QueryValue
 
@@ -227,7 +227,7 @@ extension Database.FileName {
         /// Value for the `mode=` query parameter.
         ///
         /// Related SQLite: `mode=ro`, `mode=rw`, `mode=rwc`, `mode=memory`
-        @frozen public struct Mode: RawRepresentable, Sendable {
+        @frozen public struct Mode: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -243,7 +243,7 @@ extension Database.FileName {
         /// Value for the `cache=` query parameter.
         ///
         /// Related SQLite: `cache=shared`, `cache=private`
-        @frozen public struct Cache: RawRepresentable, Sendable {
+        @frozen public struct Cache: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -257,7 +257,7 @@ extension Database.FileName {
         /// Boolean query parameter value wrapper.
         ///
         /// Related SQLite: boolean query parameters such as `immutable=1`, `nolock=1`, `psow=1`
-        @frozen public struct Boolean: RawRepresentable, Sendable {
+        @frozen public struct Boolean: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {
@@ -271,7 +271,7 @@ extension Database.FileName {
         /// Value for the `vfs=` query parameter.
         ///
         /// Related SQLite: `vfs=NAME`, `sqlite3_vfs_register`
-        @frozen public struct VFS: RawRepresentable, Sendable {
+        @frozen public struct VFS: RawRepresentable {
             public let rawValue: String
 
             @inlinable public init(rawValue: String) {

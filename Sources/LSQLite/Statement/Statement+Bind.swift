@@ -6,11 +6,6 @@ extension Statement {
     /// Related SQLite: `sqlite3_bind_blob`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
     public typealias BindBlobDestructor = @convention(c) (_ blob: UnsafeMutableRawPointer?) -> Void
 
-    /// Destructor invoked when SQLite frees a bound text buffer.
-    ///
-    /// Related SQLite: `sqlite3_bind_text`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
-    public typealias BindTextDestructor = @convention(c) (_ text: UnsafeMutableRawPointer?) -> Void
-
     /// Binds raw blob data to the 1-based parameter index with a destructor.
     ///
     /// Related SQLite: `sqlite3_bind_blob`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
@@ -49,7 +44,7 @@ extension Statement {
     /// Binds a 64-bit integer to the parameter index.
     ///
     /// Related SQLite: `sqlite3_bind_int64`
-    @inlinable public func bindInt64(_ int: sqlite3_int64, at index: Int32) -> ResultCode {
+    @inlinable public func bindInt64(_ int: Int64, at index: Int32) -> ResultCode {
         sqlite3_bind_int64(rawValue, index, int).resultCode
     }
 
@@ -60,25 +55,11 @@ extension Statement {
         sqlite3_bind_null(rawValue, index).resultCode
     }
 
-    /// Binds UTF-8 text to the parameter index with a destructor; length defaults to the full string.
-    ///
-    /// Related SQLite: `sqlite3_bind_text`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
-    @inlinable public func bindText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32, destructor: BindTextDestructor) -> ResultCode {
-        sqlite3_bind_text(rawValue, index, text, length, destructor).resultCode
-    }
-
     /// Binds UTF-8 text by copying it immediately (transient) to the parameter index.
     ///
     /// Related SQLite: `sqlite3_bind_text`, `SQLITE_TRANSIENT`
-    @inlinable public func bindTransientText(_ text: String, length: Int32 = -1, at index: Int32) -> ResultCode {
-        sqlite3_bind_transient_text(rawValue, index, text, length).resultCode
-    }
-
-    /// Binds UTF-8 text that remains valid for the statement lifetime (static) to the parameter index.
-    ///
-    /// Related SQLite: `sqlite3_bind_text`, `SQLITE_STATIC`
-    @inlinable public func bindStaticText(_ text: UnsafePointer<Int8>, length: Int32 = -1, at index: Int32) -> ResultCode {
-        sqlite3_bind_static_text(rawValue, index, text, length).resultCode
+    @inlinable public func bindText(_ text: String, at index: Int32) -> ResultCode {
+        sqlite3_bind_transient_text(rawValue, index, text, -1).resultCode
     }
 
     /// Binds a zero-filled BLOB of the given length to the parameter index.

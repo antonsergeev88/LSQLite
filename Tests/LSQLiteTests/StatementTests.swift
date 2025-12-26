@@ -5,16 +5,6 @@ class StatementTests: XCTestCase {
 
     var database: Database!
 
-    override class func setUp() {
-        super.setUp()
-        _ = LSQLite.initialize()
-    }
-
-    override class func tearDown() {
-        super.tearDown()
-        _ = LSQLite.shutdown()
-    }
-
     override func setUpWithError() throws {
         try super.setUpWithError()
         database = try {
@@ -59,7 +49,7 @@ class StatementTests: XCTestCase {
         }()
 
         XCTAssertEqual(insertStatement.bindInt(1, at: 1), .ok)
-        XCTAssertEqual(insertStatement.bindTransientText("text1", at: 2), .ok)
+        XCTAssertEqual(insertStatement.bindText("text1", at: 2), .ok)
         XCTAssertEqual(insertStatement.step(), .done)
         XCTAssertEqual(insertStatement.clearBindings(), .ok)
         XCTAssertEqual(insertStatement.reset(), .ok)

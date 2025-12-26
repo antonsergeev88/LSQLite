@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Statement {
     /// Resets the prepared statement to run again from the beginning.

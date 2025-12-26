@@ -8,16 +8,15 @@ let package = Package(
         .library(
             name: "LSQLite",
             targets: ["LSQLite"]
-        ),
-        .library(
-            name: "MissedSwiftSQLite",
-            targets: ["MissedSwiftSQLite"]
-        ),
+        )
     ],
     targets: [
         .target(
             name: "LSQLite",
-            dependencies: ["MissedSwiftSQLite"]
+            dependencies: ["MissedSwiftSQLite"],
+            linkerSettings: [
+                .linkedLibrary("sqlite3")
+            ]
         ),
         .target(
             name: "MissedSwiftSQLite",

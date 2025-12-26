@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Rowid of the most recent successful INSERT on this connection (rowid tables only).

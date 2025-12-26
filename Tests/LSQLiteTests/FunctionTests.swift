@@ -5,16 +5,6 @@ class FunctionTests: XCTestCase {
 
     var database: Database!
 
-    override class func setUp() {
-        super.setUp()
-        _ = LSQLite.initialize()
-    }
-
-    override class func tearDown() {
-        super.tearDown()
-        _ = LSQLite.shutdown()
-    }
-
     override func setUpWithError() throws {
         try super.setUpWithError()
         database = try {

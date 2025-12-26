@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Context {
     /// Retrieves the user data pointer supplied when the function was registered.

@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Context {
     /// Provides per-aggregate state storage of the given size for this context.

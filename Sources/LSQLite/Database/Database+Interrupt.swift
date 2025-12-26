@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Requests that all running statements on this connection abort with `SQLITE_INTERRUPT`.

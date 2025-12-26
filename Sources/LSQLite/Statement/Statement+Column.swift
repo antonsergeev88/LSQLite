@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Statement {
     /// Number of columns in the result set.
@@ -114,7 +114,7 @@ extension Statement {
     /// Column value coerced to 64-bit Int.
     ///
     /// Related SQLite: `sqlite3_column_int64`
-    @inlinable public func columnInt64(at index: Int32) -> sqlite3_int64 {
+    @inlinable public func columnInt64(at index: Int32) -> Int64 {
         sqlite3_column_int64(rawValue, index)
     }
 

@@ -1,4 +1,4 @@
-import MissedSwiftSQLite
+import SQLite3
 
 extension Database {
     /// Commit hook invoked before the transaction is finalized; return nonzero to roll back.
@@ -14,7 +14,7 @@ extension Database {
     /// Update hook invoked for row changes on rowid tables.
     ///
     /// Related SQLite: `sqlite3_update_hook`, `SQLITE_INSERT`, `SQLITE_DELETE`, `SQLITE_UPDATE`
-    public typealias UpdateHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ updateOperation: Int32, _ databaseName: UnsafePointer<Int8>?, _ tableName: UnsafePointer<Int8>?, _ rowID: sqlite3_int64) -> Void
+    public typealias UpdateHookHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ updateOperation: Int32, _ databaseName: UnsafePointer<Int8>?, _ tableName: UnsafePointer<Int8>?, _ rowID: Int64) -> Void
 
     /// WAL hook invoked after a write transaction commits when using WAL mode.
     ///

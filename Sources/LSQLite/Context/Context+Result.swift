@@ -77,7 +77,7 @@ extension Context {
     /// Sets the function result to a 64-bit integer.
     ///
     /// Related SQLite: `sqlite3_result_int64`
-    @inlinable public func resultInt64(_ int64: sqlite3_int64) {
+    @inlinable public func resultInt64(_ int64: Int64) {
         sqlite3_result_int64(rawValue, int64)
     }
 
