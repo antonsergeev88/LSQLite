@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Indicates whether this connection is currently in autocommit mode (no transaction open).

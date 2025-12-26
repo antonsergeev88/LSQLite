@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Runtime limit categories used with `Database.limit(for:)` and `Database.setLimit(_:for:)`.

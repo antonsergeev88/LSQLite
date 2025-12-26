@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Blob {
     /// Size of this open BLOB in bytes.

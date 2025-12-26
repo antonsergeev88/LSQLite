@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 /// Swift wrapper around SQLite's fundamental datatype codes used in value and column inspection.
 ///

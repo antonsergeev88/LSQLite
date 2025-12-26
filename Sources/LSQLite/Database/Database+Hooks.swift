@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Commit hook invoked before the transaction is finalized; return nonzero to roll back.

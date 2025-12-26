@@ -1,4 +1,4 @@
-import SQLite3
+import MissedSwiftSQLite
 
 extension Database {
     /// Number of rows changed by the most recent INSERT, UPDATE, or DELETE on this connection (excludes trigger side-effects).
