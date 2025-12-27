@@ -1,44 +1,76 @@
 import MissedSwiftSQLite
 
 extension Database {
-    /// Authorization callback invoked during statement compilation.
+    /// Authorization callback invoked while SQL statements are being prepared.
     ///
-    /// Related SQLite: `sqlite3_set_authorizer`
+    /// SQLite calls this during `sqlite3_prepare` and its variants as the compiler considers
+    /// actions like creating objects or reading tables. Return `.ok` to allow the action,
+    /// `.ignore` to disallow the specific action but continue compiling, or `.deny` to
+    /// reject the statement with an error.
+    ///
+    /// Parameters:
+    /// - userData: Opaque pointer passed to `setAuthorizerHandler`.
+    /// - actionCode: Integer action code describing the operation being authorized.
+    /// - 3rd-6th: Optional C strings with details about the action; any may be NULL.
+    ///   The 5th parameter is the database name ("main", "temp", or attached) when applicable.
+    ///   The 6th parameter is the inner-most trigger or view name when applicable.
+    ///
+    /// The callback must not modify the database connection that invoked it.
+    /// It is normally invoked only during prepare, but a statement can be reprepared
+    /// during `step()` after a schema change.
+    ///
+    /// Related SQLite: `sqlite3_set_authorizer`, `sqlite3_prepare`, `sqlite3_prepare_v2`,
+    /// `sqlite3_prepare_v3`, `sqlite3_prepare16`, `sqlite3_prepare16_v2`, `sqlite3_prepare16_v3`
     public typealias AuthorizerHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ actionCode: Int32, UnsafePointer<Int8>?, UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32
 
     /// Return codes for an authorizer callback to allow, deny, or ignore an action.
     ///
+    /// The callback must return `.ok`, `.deny`, or `.ignore`. Any other value
+    /// causes the prepare call that triggered the authorizer to fail.
+    ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_OK`, `SQLITE_DENY`, `SQLITE_IGNORE`, `sqlite3_vtab_on_conflict`
-    @frozen public struct AuthorizerHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct AuthorizerHandlerResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
             self.rawValue = rawValue
         }
 
+        /// Allow the action.
         public static let ok = Self(rawValue: SQLITE_OK)
         /// Abort the SQL statement with an error
         public static let deny = Self(rawValue: SQLITE_DENY)
         /// Don't allow access, but don't generate an error
         public static let ignore = Self(rawValue: SQLITE_IGNORE)
 
-        /// Debug label for an authorizer decision.
-        ///
-        /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_OK`, `SQLITE_DENY`, `SQLITE_IGNORE`
+        public var description: String {
+            switch self {
+            case .ok: "ok"
+            case .deny: "deny"
+            case .ignore: "ignore"
+            default: rawValue.description
+            }
+        }
+
         public var debugDescription: String {
             switch self {
-            case .ok: return "SQLITE_OK"
-            case .deny: return "SQLITE_DENY"
-            case .ignore: return "SQLITE_IGNORE"
-            default: return "AuthorizerHandlerResult(rawValue: \(rawValue))"
+            case .ok: "SQLITE_OK"
+            case .deny: "SQLITE_DENY"
+            case .ignore: "SQLITE_IGNORE"
+            default: rawValue.description
             }
         }
     }
 
     /// Action codes describing what operation is being authorized in `setAuthorizerHandler`.
     ///
+    /// The 3rd and 4th callback parameters depend on the action code; they are either NULL
+    /// or zero-terminated strings as noted below. The 5th parameter is the database name
+    /// ("main", "temp", or attached) when applicable, and the 6th parameter is the
+    /// inner-most trigger or view name when applicable. Any of these pointers may be NULL.
+    ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_CREATE_INDEX`, `SQLITE_DROP_TABLE`, `SQLITE_SELECT`
-    @frozen public struct AuthorizerHandlerActionCode: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct AuthorizerHandlerActionCode: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -114,51 +146,104 @@ extension Database {
         /// NULL            NULL
         public static let recursive = Self(rawValue: SQLITE_RECURSIVE)
 
-        /// Debug label for the authorizer action code.
-        ///
-        /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_*`
+        public var description: String {
+            switch self {
+            case .createIndex: "create index"
+            case .createTable: "create table"
+            case .createTempIndex: "create temp index"
+            case .createTempTable: "create temp table"
+            case .createTempTrigger: "create temp trigger"
+            case .createTempView: "create temp view"
+            case .createTrigger: "create trigger"
+            case .createView: "create view"
+            case .delete: "delete"
+            case .dropIndex: "drop index"
+            case .dropTable: "drop table"
+            case .dropTempIndex: "drop temp index"
+            case .dropTempTable: "drop temp table"
+            case .dropTempTrigger: "drop temp trigger"
+            case .dropTempView: "drop temp view"
+            case .dropTrigger: "drop trigger"
+            case .dropView: "drop view"
+            case .insert: "insert"
+            case .pragma: "pragma"
+            case .read: "read"
+            case .select: "select"
+            case .transaction: "transaction"
+            case .update: "update"
+            case .attach: "attach"
+            case .detach: "detach"
+            case .alterTable: "alter table"
+            case .reindex: "reindex"
+            case .analyze: "analyze"
+            case .createVTable: "create vtable"
+            case .dropVTable: "drop vtable"
+            case .function: "function"
+            case .savepoint: "savepoint"
+            case .copy: "copy"
+            case .recursive: "recursive"
+            default: rawValue.description
+            }
+        }
+
         public var debugDescription: String {
             switch self {
-            case .createIndex: return "SQLITE_CREATE_INDEX"
-            case .createTable: return "SQLITE_CREATE_TABLE"
-            case .createTempIndex: return "SQLITE_CREATE_TEMP_INDEX"
-            case .createTempTable: return "SQLITE_CREATE_TEMP_TABLE"
-            case .createTempTrigger: return "SQLITE_CREATE_TEMP_TRIGGER"
-            case .createTempView: return "SQLITE_CREATE_TEMP_VIEW"
-            case .createTrigger: return "SQLITE_CREATE_TRIGGER"
-            case .createView: return "SQLITE_CREATE_VIEW"
-            case .delete: return "SQLITE_DELETE"
-            case .dropIndex: return "SQLITE_DROP_INDEX"
-            case .dropTable: return "SQLITE_DROP_TABLE"
-            case .dropTempIndex: return "SQLITE_DROP_TEMP_INDEX"
-            case .dropTempTable: return "SQLITE_DROP_TEMP_TABLE"
-            case .dropTempTrigger: return "SQLITE_DROP_TEMP_TRIGGER"
-            case .dropTempView: return "SQLITE_DROP_TEMP_VIEW"
-            case .dropTrigger: return "SQLITE_DROP_TRIGGER"
-            case .dropView: return "SQLITE_DROP_VIEW"
-            case .insert: return "SQLITE_INSERT"
-            case .pragma: return "SQLITE_PRAGMA"
-            case .read: return "SQLITE_READ"
-            case .select: return "SQLITE_SELECT"
-            case .transaction: return "SQLITE_TRANSACTION"
-            case .update: return "SQLITE_UPDATE"
-            case .attach: return "SQLITE_ATTACH"
-            case .detach: return "SQLITE_DETACH"
-            case .alterTable: return "SQLITE_ALTER_TABLE"
-            case .reindex: return "SQLITE_REINDEX"
-            case .analyze: return "SQLITE_ANALYZE"
-            case .createVTable: return "SQLITE_CREATE_VTABLE"
-            case .dropVTable: return "SQLITE_DROP_VTABLE"
-            case .function: return "SQLITE_FUNCTION"
-            case .savepoint: return "SQLITE_SAVEPOINT"
-            case .copy: return "SQLITE_COPY"
-            case .recursive: return "SQLITE_RECURSIVE"
-            default: return "AuthorizerHandlerActionCode(rawValue: \(rawValue))"
+            case .createIndex: "SQLITE_CREATE_INDEX"
+            case .createTable: "SQLITE_CREATE_TABLE"
+            case .createTempIndex: "SQLITE_CREATE_TEMP_INDEX"
+            case .createTempTable: "SQLITE_CREATE_TEMP_TABLE"
+            case .createTempTrigger: "SQLITE_CREATE_TEMP_TRIGGER"
+            case .createTempView: "SQLITE_CREATE_TEMP_VIEW"
+            case .createTrigger: "SQLITE_CREATE_TRIGGER"
+            case .createView: "SQLITE_CREATE_VIEW"
+            case .delete: "SQLITE_DELETE"
+            case .dropIndex: "SQLITE_DROP_INDEX"
+            case .dropTable: "SQLITE_DROP_TABLE"
+            case .dropTempIndex: "SQLITE_DROP_TEMP_INDEX"
+            case .dropTempTable: "SQLITE_DROP_TEMP_TABLE"
+            case .dropTempTrigger: "SQLITE_DROP_TEMP_TRIGGER"
+            case .dropTempView: "SQLITE_DROP_TEMP_VIEW"
+            case .dropTrigger: "SQLITE_DROP_TRIGGER"
+            case .dropView: "SQLITE_DROP_VIEW"
+            case .insert: "SQLITE_INSERT"
+            case .pragma: "SQLITE_PRAGMA"
+            case .read: "SQLITE_READ"
+            case .select: "SQLITE_SELECT"
+            case .transaction: "SQLITE_TRANSACTION"
+            case .update: "SQLITE_UPDATE"
+            case .attach: "SQLITE_ATTACH"
+            case .detach: "SQLITE_DETACH"
+            case .alterTable: "SQLITE_ALTER_TABLE"
+            case .reindex: "SQLITE_REINDEX"
+            case .analyze: "SQLITE_ANALYZE"
+            case .createVTable: "SQLITE_CREATE_VTABLE"
+            case .dropVTable: "SQLITE_DROP_VTABLE"
+            case .function: "SQLITE_FUNCTION"
+            case .savepoint: "SQLITE_SAVEPOINT"
+            case .copy: "SQLITE_COPY"
+            case .recursive: "SQLITE_RECURSIVE"
+            default: rawValue.description
             }
         }
     }
 
     /// Registers or clears a compile-time authorizer invoked while statements are prepared.
+    ///
+    /// The handler is called during `sqlite3_prepare` and its variants as the compiler
+    /// considers actions. Return `.ok` to allow the action, `.ignore` to disallow the
+    /// specific action but continue compiling, or `.deny` to reject the statement.
+    ///
+    /// Notes:
+    /// - If the action is `.read` and the handler returns `.ignore`, the prepared statement
+    ///   substitutes NULL for the requested column. If a table is referenced but no columns
+    ///   are read (for example, `SELECT count(*) FROM tab`), the column name is an empty string.
+    /// - If the action is `.delete` and the handler returns `.ignore`, the delete proceeds but
+    ///   the truncate optimization is disabled and rows are deleted individually.
+    /// - Only one authorizer is active per connection; each call replaces the previous handler.
+    /// - Pass `nil` to disable authorization. The authorizer is disabled by default.
+    /// - The handler must not modify the database connection that invoked it. Keep the
+    ///   authorizer installed during `step()` because statements can be reprepared after
+    ///   schema changes.
     /// - Parameters:
     ///   - userData: Custom context passed to the authorizer.
     ///   - handler: Callback returning `.ok`, `.deny`, or `.ignore`; `nil` disables authorization.
