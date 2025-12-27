@@ -9,7 +9,7 @@ extension Database {
     /// Return codes for an authorizer callback to allow, deny, or ignore an action.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_OK`, `SQLITE_DENY`, `SQLITE_IGNORE`, `sqlite3_vtab_on_conflict`
-    @frozen public struct AuthorizerHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct AuthorizerHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -38,7 +38,7 @@ extension Database {
     /// Action codes describing what operation is being authorized in `setAuthorizerHandler`.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_CREATE_INDEX`, `SQLITE_DROP_TABLE`, `SQLITE_SELECT`
-    @frozen public struct AuthorizerHandlerActionCode: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct AuthorizerHandlerActionCode: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

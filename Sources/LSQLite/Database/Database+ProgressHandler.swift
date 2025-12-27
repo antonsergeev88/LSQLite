@@ -9,7 +9,7 @@ extension Database {
     /// Return codes from a progress handler to keep running or interrupt.
     ///
     /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
-    @frozen public struct ProgressHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ProgressHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

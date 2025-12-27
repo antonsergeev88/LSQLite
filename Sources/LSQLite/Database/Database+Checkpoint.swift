@@ -4,7 +4,7 @@ extension Database {
     /// WAL checkpoint modes used by `walCheckpoint(_:mode:frameCount:totalFrameCount:)` and auto-checkpointing.
     ///
     /// Related SQLite: `SQLITE_CHECKPOINT_PASSIVE`, `SQLITE_CHECKPOINT_FULL`, `SQLITE_CHECKPOINT_RESTART`, `SQLITE_CHECKPOINT_TRUNCATE`
-    @frozen public struct CheckpointMode: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CheckpointMode: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

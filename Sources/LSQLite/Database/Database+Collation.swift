@@ -19,7 +19,7 @@ extension Database {
     /// Text encoding and behavior flags for user-defined collations.
     ///
     /// Related SQLite: `sqlite3_create_collation_v2`, `SQLITE_UTF8`, `SQLITE_UTF16LE`, `SQLITE_UTF16BE`, `SQLITE_UTF16`, `SQLITE_UTF16_ALIGNED`, `SQLITE_DETERMINISTIC`
-    @frozen public struct CollationFlag: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CollationFlag: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

@@ -9,7 +9,7 @@ extension Database {
     /// Return codes for `ExecCallback` indicating whether to continue or abort execution.
     ///
     /// Related SQLite: `sqlite3_exec`
-    @frozen public struct ExecCallbackResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ExecCallbackResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
