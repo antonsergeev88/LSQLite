@@ -1,28 +1,28 @@
 import MissedSwiftSQLite
 
 extension Context {
-    /// Destructor invoked when SQLite finishes with a result blob buffer.
+    /// Destructor invoked when SQLite finishes with a result BLOB.
     ///
-    /// Prefer `resultStaticBlob(_:length:)` or `resultTransientBlob(_:length:)` for the
-    /// common static and transient behaviors. Those helpers are just
-    /// `resultBlob(_:length:destructor:)` with the corresponding default destructor.
+    /// Prefer `resultStaticBlob(_:length:)` or `resultTransientBlob(_:length:)`
+    /// to select common static and transient behaviors explicitly.
     ///
     /// Related SQLite: `sqlite3_result_blob`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
     public typealias ResultBlobDestructor = @convention(c) (_ blob: UnsafeMutableRawPointer?) -> Void
 
     /// Sets the function result to a BLOB of `length` bytes from `blob`.
     ///
-    /// If `destructor` is non-nil, SQLite calls it when it is done with the result.
-    /// Use the static or transient helper to control whether SQLite copies the bytes.
+    /// SQLite calls `destructor` when it is done with the bytes.
+    /// Use the static or transient helpers to control whether SQLite copies the bytes.
+    /// This method requires an explicit destructor to avoid ambiguous lifetimes.
     ///
     /// Related SQLite: `sqlite3_result_blob`, `SQLITE_STATIC`, `SQLITE_TRANSIENT`
-    @inlinable public func resultBlob(_ blob: UnsafeRawPointer, length: Int32, destructor: ResultBlobDestructor? = nil) {
+    @inlinable public func resultBlob(_ blob: UnsafeRawPointer, length: Int32, destructor: ResultBlobDestructor) {
         sqlite3_result_blob(rawValue, blob, length, destructor)
     }
 
     /// Sets the result BLOB by copying the bytes immediately (transient).
     ///
-    /// SQLite makes a private copy of the bytes, so the input may be modified or freed after the call.
+    /// SQLite makes a private copy before returning.
     ///
     /// Related SQLite: `sqlite3_result_blob`, `SQLITE_TRANSIENT`
     @inlinable public func resultTransientBlob(_ blob: UnsafeRawPointer, length: Int32) {
@@ -38,14 +38,14 @@ extension Context {
         lsqlite3_result_static_blob(rawValue, blob, length)
     }
 
-    /// Sets the function result to a Double.
+    /// Sets the function result to a floating-point value.
     ///
     /// Related SQLite: `sqlite3_result_double`
     @inlinable public func resultDouble(_ double: Double) {
         sqlite3_result_double(rawValue, double)
     }
 
-    /// Sets an error result with the provided UTF-8 message.
+    /// Causes the SQL function to return an error with the provided UTF-8 message.
     ///
     /// If `length` is negative, SQLite reads through the first NUL byte.
     /// If non-negative, SQLite reads exactly `length` bytes (not characters).
@@ -70,24 +70,24 @@ extension Context {
         sqlite3_result_error_nomem(rawValue)
     }
 
-    /// Sets an error result using the provided result code.
+    /// Changes the error code returned for a function error.
     ///
-    /// The default error code for functions is `SQLITE_ERROR`.
-    /// A subsequent call to `resultError(_:length:)` resets the code to `SQLITE_ERROR`.
+    /// The default error code for functions is `.error`.
+    /// A subsequent call to `resultError(_:length:)` resets the code to that default.
     ///
     /// Related SQLite: `sqlite3_result_error_code`
     @inlinable public func resultErrorCode(_ code: ResultCode) {
         sqlite3_result_error_code(rawValue, code.rawValue)
     }
 
-    /// Sets the function result to a 32-bit integer.
+    /// Sets the function result to a 32-bit signed integer.
     ///
     /// Related SQLite: `sqlite3_result_int`
     @inlinable public func resultInt(_ int: Int32) {
         sqlite3_result_int(rawValue, int)
     }
 
-    /// Sets the function result to a 64-bit integer.
+    /// Sets the function result to a 64-bit signed integer.
     ///
     /// Related SQLite: `sqlite3_result_int64`
     @inlinable public func resultInt64(_ int64: Int64) {
@@ -103,8 +103,8 @@ extension Context {
 
     /// Sets the function result to UTF-8 text by copying it immediately (transient).
     ///
-    /// SQLite computes the byte length up to the first NUL and makes a private copy
-    /// before returning.
+    /// If the string contains a `\0` character, only the prefix before it is used.
+    /// SQLite makes a private copy before returning.
     ///
     /// Related SQLite: `sqlite3_result_text`, `SQLITE_TRANSIENT`
     @inlinable public func resultText(_ text: String) {
@@ -131,9 +131,10 @@ extension Context {
     /// Assigns an application-defined subtype to the current result value.
     ///
     /// Only the low 8 bits are preserved by SQLite.
-    /// Register the function with `SQLITE_RESULT_SUBTYPE` or this may have no effect.
+    /// Register the function with the result subtype flag or this may have no effect.
+    /// SQLite builds with strict subtype enforcement can raise an error without the flag.
     ///
-    /// Related SQLite: `sqlite3_result_subtype`
+    /// Related SQLite: `sqlite3_result_subtype`, `SQLITE_RESULT_SUBTYPE`
     @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
     @inlinable public func resultSubtype(_ subtype: Subtype) {
         sqlite3_result_subtype(rawValue, subtype.rawValue)
