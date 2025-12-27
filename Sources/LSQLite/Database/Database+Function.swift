@@ -66,11 +66,6 @@ extension Database {
         /// Related SQLite: `SQLITE_ANY`
         public static let any = Self(rawValue: SQLITE_ANY)
 
-        /// UTF-16 encoding that requires 2-byte alignment.
-        ///
-        /// Related SQLite: `SQLITE_UTF16_ALIGNED`
-        public static let utf16Aligned = Self(rawValue: SQLITE_UTF16_ALIGNED)
-
         public var description: String {
             switch self {
             case .utf8: "utf8"
@@ -78,7 +73,6 @@ extension Database {
             case .utf16be: "utf16be"
             case .utf16: "utf16"
             case .any: "any"
-            case .utf16Aligned: "utf16 aligned"
             default: "unknown"
             }
         }
@@ -90,7 +84,6 @@ extension Database {
             case .utf16be: "SQLITE_UTF16BE"
             case .utf16: "SQLITE_UTF16"
             case .any: "SQLITE_ANY"
-            case .utf16Aligned: "SQLITE_UTF16_ALIGNED"
             default: rawValue.description
             }
         }

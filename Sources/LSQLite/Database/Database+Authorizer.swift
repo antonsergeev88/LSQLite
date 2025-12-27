@@ -48,7 +48,7 @@ extension Database {
             case .ok: "ok"
             case .deny: "deny"
             case .ignore: "ignore"
-            default: rawValue.description
+            default: "unknown"
             }
         }
 
@@ -182,7 +182,7 @@ extension Database {
             case .savepoint: "savepoint"
             case .copy: "copy"
             case .recursive: "recursive"
-            default: rawValue.description
+            default: "unknown"
             }
         }
 

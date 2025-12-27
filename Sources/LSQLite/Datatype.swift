@@ -52,7 +52,7 @@ import MissedSwiftSQLite
         case .blob: "blob"
         case .null: "null"
         case .text: "text"
-        default: rawValue.description
+        default: "unknown"
         }
     }
 

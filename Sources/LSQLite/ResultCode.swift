@@ -272,7 +272,7 @@ import MissedSwiftSQLite
 
         case .okLoadPermanently: "ok: load permanently"
 
-        default: rawValue.description
+        default: "unknown"
         }
     }
 

@@ -27,10 +27,7 @@ extension Database {
         }
 
         public var debugDescription: String {
-            switch self {
-            case .ok: "SQLITE_OK"
-            default: rawValue.description
-            }
+            "\(description) (\(rawValue.description))"
         }
     }
 
@@ -48,22 +45,22 @@ extension Database {
         ///
         /// Related SQLite: `SQLITE_TRACE_STMT`, `sqlite3_trace_v2`, `sqlite3_expanded_sql`
         public static let statement = Self(rawValue: UInt32(SQLITE_TRACE_STMT))
+
         /// Trace profiling information when a statement finishes; X points to elapsed nanoseconds.
         ///
         /// Related SQLite: `SQLITE_TRACE_PROFILE`, `sqlite3_profile`, `sqlite3_trace_v2`
         public static let profile = Self(rawValue: UInt32(SQLITE_TRACE_PROFILE))
+
         /// Trace each row produced by a prepared statement.
         ///
         /// Related SQLite: `SQLITE_TRACE_ROW`, `sqlite3_trace_v2`
         public static let row = Self(rawValue: UInt32(SQLITE_TRACE_ROW))
+
         /// Trace when the database connection closes.
         ///
         /// Related SQLite: `SQLITE_TRACE_CLOSE`, `sqlite3_trace_v2`
         public static let close = Self(rawValue: UInt32(SQLITE_TRACE_CLOSE))
 
-        /// Debug label for the trace event code.
-        ///
-        /// Related SQLite: `sqlite3_trace_v2`, `SQLITE_TRACE_STMT`, `SQLITE_TRACE_PROFILE`, `SQLITE_TRACE_ROW`, `SQLITE_TRACE_CLOSE`
         public var debugDescription: String {
             switch self {
             case .statement: return "SQLITE_TRACE_STMT"

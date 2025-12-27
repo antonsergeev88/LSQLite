@@ -6,7 +6,7 @@ extension Database {
     /// To construct a `file:` URI filename, use `Database.FileName.uri(...)` and open with `.uri` in the flags.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`, `SQLITE_OPEN_URI`
-    @frozen public struct FileName: RawRepresentable {
+    @frozen public struct FileName: RawRepresentable, CustomStringConvertible {
         public let rawValue: String
 
         /// Creates a filename wrapper from a Swift string.
@@ -25,6 +25,10 @@ extension Database {
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
         public static let temporary = Self(rawValue: "")
+
+        public var description: String {
+            rawValue.description
+        }
     }
 
     /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
