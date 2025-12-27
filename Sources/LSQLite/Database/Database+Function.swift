@@ -124,17 +124,14 @@ extension Database {
         /// Related SQLite: `SQLITE_RESULT_SUBTYPE`
         public static let resultSubtype = Self(rawValue: SQLITE_RESULT_SUBTYPE)
 
-        /// Declares an ordered-set aggregate that sorts its first argument.
-        ///
-        /// Related SQLite: `SQLITE_SELFORDER1`
-        public static let selfOrder1 = Self(rawValue: SQLITE_SELFORDER1)
-
-        private static let knownMask: UInt32 = UInt32(bitPattern: Self.deterministic.rawValue)
-            | UInt32(bitPattern: Self.directOnly.rawValue)
-            | UInt32(bitPattern: Self.subtype.rawValue)
-            | UInt32(bitPattern: Self.innocuous.rawValue)
-            | UInt32(bitPattern: Self.resultSubtype.rawValue)
-            | UInt32(bitPattern: Self.selfOrder1.rawValue)
+        private static let knownMask: UInt32 = {
+            var mask = UInt32(bitPattern: Self.deterministic.rawValue)
+            mask |= UInt32(bitPattern: Self.directOnly.rawValue)
+            mask |= UInt32(bitPattern: Self.subtype.rawValue)
+            mask |= UInt32(bitPattern: Self.innocuous.rawValue)
+            mask |= UInt32(bitPattern: Self.resultSubtype.rawValue)
+            return mask
+        }()
 
         private static func hexString(_ rawValue: UInt32) -> String {
             "0x" + String(rawValue, radix: 16, uppercase: true)
@@ -147,7 +144,6 @@ extension Database {
             if contains(.subtype) { parts.append(".subtype") }
             if contains(.innocuous) { parts.append(".innocuous") }
             if contains(.resultSubtype) { parts.append(".resultSubtype") }
-            if contains(.selfOrder1) { parts.append(".selfOrder1") }
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask
@@ -166,7 +162,6 @@ extension Database {
             if contains(.subtype) { parts.append("SQLITE_SUBTYPE") }
             if contains(.innocuous) { parts.append("SQLITE_INNOCUOUS") }
             if contains(.resultSubtype) { parts.append("SQLITE_RESULT_SUBTYPE") }
-            if contains(.selfOrder1) { parts.append("SQLITE_SELFORDER1") }
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask
