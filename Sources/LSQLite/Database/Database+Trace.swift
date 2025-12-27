@@ -10,7 +10,7 @@ extension Database {
     /// Return code expected from a trace callback.
     ///
     /// Related SQLite: `sqlite3_trace_v2`
-    @frozen public struct TraceEventCallbackResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCallbackResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -33,7 +33,7 @@ extension Database {
     /// Event mask values used when registering `setTraceCallback(for:userData:callback:)`.
     ///
     /// Related SQLite: `sqlite3_trace_v2`, `SQLITE_TRACE_STMT`, `SQLITE_TRACE_PROFILE`, `SQLITE_TRACE_ROW`, `SQLITE_TRACE_CLOSE`
-    @frozen public struct TraceEventCode: Equatable, OptionSet, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCode: Hashable, OptionSet, CustomDebugStringConvertible {
         public let rawValue: UInt32
 
         @inlinable public init(rawValue: UInt32) {

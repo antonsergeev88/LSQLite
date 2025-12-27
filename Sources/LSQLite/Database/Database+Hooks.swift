@@ -24,7 +24,7 @@ extension Database {
     /// Return codes for commit hooks to continue or force a rollback.
     ///
     /// Related SQLite: `sqlite3_commit_hook`
-    @frozen public struct CommitHookHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CommitHookHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -49,7 +49,7 @@ extension Database {
     /// Operation types reported to `updateHook`.
     ///
     /// Related SQLite: `sqlite3_update_hook`, `SQLITE_INSERT`, `SQLITE_DELETE`, `SQLITE_UPDATE`
-    @frozen public struct UpdateOperation: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct UpdateOperation: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

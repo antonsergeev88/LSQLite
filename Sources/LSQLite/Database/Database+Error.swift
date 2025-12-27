@@ -4,7 +4,7 @@ extension Database {
     /// Switch controlling whether extended result codes are reported for this connection.
     ///
     /// Related SQLite: `sqlite3_extended_result_codes`
-    @frozen public struct ExtendedResultCodeStatus: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ExtendedResultCodeStatus: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

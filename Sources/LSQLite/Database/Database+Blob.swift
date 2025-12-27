@@ -4,7 +4,7 @@ extension Database {
     /// Access flags for incremental BLOB I/O opened via `openBlob(_:databaseName:tableName:columnName:rowID:flags:)`.
     ///
     /// Related SQLite: `sqlite3_blob_open`
-    @frozen public struct OpenBlobFlag: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct OpenBlobFlag: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

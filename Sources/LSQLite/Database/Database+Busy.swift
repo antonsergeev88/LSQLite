@@ -9,7 +9,7 @@ extension Database {
     /// Result codes a busy handler can return to retry or abort.
     ///
     /// Related SQLite: `sqlite3_busy_handler`, `sqlite3_busy_timeout`, `SQLITE_BUSY`
-    @frozen public struct BusyHandlerResult: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct BusyHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

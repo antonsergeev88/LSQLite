@@ -4,7 +4,7 @@ extension Database {
     /// Read/write state values returned by `readWriteAccessState(forDatabaseNamed:)`.
     ///
     /// Related SQLite: `sqlite3_db_readonly`
-    @frozen public struct ReadWriteAccessState: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ReadWriteAccessState: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

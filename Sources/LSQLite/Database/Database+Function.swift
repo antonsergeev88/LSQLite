@@ -34,7 +34,7 @@ extension Database {
     /// Options describing text encoding and determinism for user-defined SQL functions.
     ///
     /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_create_window_function`, `SQLITE_UTF8`, `SQLITE_UTF16LE`, `SQLITE_UTF16BE`, `SQLITE_UTF16`, `SQLITE_UTF16_ALIGNED`, `SQLITE_DETERMINISTIC`
-    @frozen public struct FunctionFlag: Equatable, OptionSet, CustomDebugStringConvertible {
+    @frozen public struct FunctionFlag: Hashable, OptionSet, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {

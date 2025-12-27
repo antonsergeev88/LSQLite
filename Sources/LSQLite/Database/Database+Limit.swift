@@ -4,7 +4,7 @@ extension Database {
     /// Runtime limit categories used with `Database.limit(for:)` and `Database.setLimit(_:for:)`.
     ///
     /// Related SQLite: `sqlite3_limit`, `SQLITE_LIMIT_*`
-    @frozen public struct LimitCategory: Equatable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct LimitCategory: Hashable, RawRepresentable, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
