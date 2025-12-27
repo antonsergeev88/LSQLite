@@ -10,7 +10,7 @@ extension Database {
     /// Return code expected from a trace callback.
     ///
     /// Related SQLite: `sqlite3_trace_v2`
-    @frozen public struct TraceEventCallbackResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCallbackResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -19,13 +19,17 @@ extension Database {
 
         public static let ok = Self(rawValue: 0)
 
-        /// Debug label for the trace callback result.
-        ///
-        /// Related SQLite: `sqlite3_trace_v2`
+        public var description: String {
+            switch self {
+            case .ok: "ok"
+            default: "unknown"
+            }
+        }
+
         public var debugDescription: String {
             switch self {
-            case .ok: return "LSQLITE_OK"
-            default: return "TraceEventCallbackResult(rawValue: \(rawValue))"
+            case .ok: "SQLITE_OK"
+            default: rawValue.description
             }
         }
     }

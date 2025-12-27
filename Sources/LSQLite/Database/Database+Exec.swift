@@ -9,7 +9,7 @@ extension Database {
     /// Return codes for `ExecCallback` indicating whether to continue or abort execution.
     ///
     /// Related SQLite: `sqlite3_exec`
-    @frozen public struct ExecCallbackResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ExecCallbackResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -19,15 +19,16 @@ extension Database {
         public static let `continue` = Self(rawValue: 0)
         public static let abort = Self(rawValue: 1)
 
-        /// Debug label for the exec callback result.
-        ///
-        /// Related SQLite: `sqlite3_exec`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .continue: return "LSQLITE_CONTINUE"
-            case .abort: return "LSQLITE_ABORT"
-            default: return "ExecCallbackResult(rawValue: \(rawValue))"
+            case .continue: "continue"
+            case .abort: "abort"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 

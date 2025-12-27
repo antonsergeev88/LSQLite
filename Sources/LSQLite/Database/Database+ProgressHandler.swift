@@ -9,7 +9,7 @@ extension Database {
     /// Return codes from a progress handler to keep running or interrupt.
     ///
     /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
-    @frozen public struct ProgressHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ProgressHandlerResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -19,15 +19,16 @@ extension Database {
         public static let `continue` = Self(rawValue: 0)
         public static let interrupt = Self(rawValue: 1)
 
-        /// Debug label for the progress handler result.
-        ///
-        /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .continue: return "LSQLITE_CONTINUE"
-            case .interrupt: return "LSQLITE_INTERRUPT"
-            default: return "ProgressHandlerResult(rawValue: \(rawValue))"
+            case .continue: "continue"
+            case .interrupt: "interrupt"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 

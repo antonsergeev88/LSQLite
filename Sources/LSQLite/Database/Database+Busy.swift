@@ -9,7 +9,7 @@ extension Database {
     /// Result codes a busy handler can return to retry or abort.
     ///
     /// Related SQLite: `sqlite3_busy_handler`, `sqlite3_busy_timeout`, `SQLITE_BUSY`
-    @frozen public struct BusyHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct BusyHandlerResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -19,15 +19,16 @@ extension Database {
         public static let `break` = Self(rawValue: 0)
         public static let `continue` = Self(rawValue: 1)
 
-        /// Debug label for the busy handler response.
-        ///
-        /// Related SQLite: `sqlite3_busy_handler`, `SQLITE_BUSY`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .break: return "LSQLITE_BREAK"
-            case .continue: return "LSQLITE_CONTINUE"
-            default: return "BusyHandlerResult(rawValue: \(rawValue))"
+            case .break: "break"
+            case .continue: "continue"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 
