@@ -19,7 +19,7 @@ extension Database {
     /// Text encoding and behavior flags for user-defined collations.
     ///
     /// Related SQLite: `sqlite3_create_collation_v2`, `SQLITE_UTF8`, `SQLITE_UTF16LE`, `SQLITE_UTF16BE`, `SQLITE_UTF16`, `SQLITE_UTF16_ALIGNED`, `SQLITE_DETERMINISTIC`
-    @frozen public struct CollationFlag: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CollationFlag: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -32,19 +32,25 @@ extension Database {
         public static let utf16 = Self(rawValue: SQLITE_UTF16)
         public static let utf16Aligned = Self(rawValue: SQLITE_UTF16_ALIGNED)
 
-        public static let deterministic = Self(rawValue: SQLITE_DETERMINISTIC)
+        public var description: String {
+            switch self {
+            case .utf8: "utf8"
+            case .utf16le: "utf16le"
+            case .utf16be: "utf16be"
+            case .utf16: "utf16"
+            case .utf16Aligned: "utf16Aligned"
+            default: "unknown"
+            }
+        }
 
-        /// Debug label for the collation flag.
-        ///
-        /// Related SQLite: `sqlite3_create_collation_v2`, `SQLITE_UTF8`, `SQLITE_UTF16LE`, `SQLITE_UTF16BE`, `SQLITE_UTF16`, `SQLITE_UTF16_ALIGNED`, `SQLITE_DETERMINISTIC`
         public var debugDescription: String {
             switch self {
-            case .utf8: return "SQLITE_UTF8"
-            case .utf16le: return "SQLITE_UTF16LE"
-            case .utf16be: return "SQLITE_UTF16BE"
-            case .utf16: return "SQLITE_UTF16"
-            case .utf16Aligned: return "SQLITE_UTF16_ALIGNED"
-            default: return "FunctionFlag(rawValue: \(rawValue))"
+            case .utf8: "SQLITE_UTF8"
+            case .utf16le: "SQLITE_UTF16LE"
+            case .utf16be: "SQLITE_UTF16BE"
+            case .utf16: "SQLITE_UTF16"
+            case .utf16Aligned: "SQLITE_UTF16_ALIGNED"
+            default: rawValue.description
             }
         }
     }

@@ -18,12 +18,12 @@ class FunctionTests: XCTestCase {
             }
             return database
         }()
-        let myFiveResultCode = database.createFunction(name: "my_five", argumentCount: 0, flags: .utf8, userData: nil, funcHandler: { context, _, _ in
+        let myFiveResultCode = database.createFunction(name: "my_five", argumentCount: 0, textEncoding: .utf8, userData: nil, funcHandler: { context, _, _ in
             let context = Context(rawValue: context!)
             context.resultInt(5)
         })
         XCTAssertEqual(myFiveResultCode, .ok)
-        let myCountResultCode = database.createFunction(name: "my_count", argumentCount: 0, flags: .utf8, userData: nil, stepHandler: { context, _, _ in
+        let myCountResultCode = database.createFunction(name: "my_count", argumentCount: 0, textEncoding: .utf8, userData: nil, stepHandler: { context, _, _ in
             let context = Context(rawValue: context!)
             let aggregatePointer = context.aggregateContext(size: Int32(MemoryLayout<Int32>.stride))
             guard let valuePointer = aggregatePointer?.assumingMemoryBound(to: Int32.self) else {

@@ -4,7 +4,7 @@ extension Database {
     /// Read/write state values returned by `readWriteAccessState(forDatabaseNamed:)`.
     ///
     /// Related SQLite: `sqlite3_db_readonly`
-    @frozen public struct ReadWriteAccessState: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ReadWriteAccessState: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -15,16 +15,17 @@ extension Database {
         public static let readwrite = Self(rawValue: 0)
         public static let readonly = Self(rawValue: 1)
 
-        /// Debug label for the access state.
-        ///
-        /// Related SQLite: `sqlite3_db_readonly`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .noDatabase: return "LSQLITE_NO_DATABASE"
-            case .readwrite: return "LSQLITE_READWRITE)"
-            case .readonly: return "LSQLITE_READONLY)"
-            default: return "ReadWriteAccessState(rawValue: \(rawValue))"
+            case .noDatabase: "no database"
+            case .readwrite: "readwrite"
+            case .readonly: "readonly"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 

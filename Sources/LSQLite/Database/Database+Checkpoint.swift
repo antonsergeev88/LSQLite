@@ -4,7 +4,7 @@ extension Database {
     /// WAL checkpoint modes used by `walCheckpoint(_:mode:frameCount:totalFrameCount:)` and auto-checkpointing.
     ///
     /// Related SQLite: `SQLITE_CHECKPOINT_PASSIVE`, `SQLITE_CHECKPOINT_FULL`, `SQLITE_CHECKPOINT_RESTART`, `SQLITE_CHECKPOINT_TRUNCATE`
-    @frozen public struct CheckpointMode: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CheckpointMode: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -16,16 +16,23 @@ extension Database {
         public static let restart = Self(rawValue: SQLITE_CHECKPOINT_RESTART)
         public static let truncate = Self(rawValue: SQLITE_CHECKPOINT_TRUNCATE)
 
-        /// Debug label for the checkpoint mode.
-        ///
-        /// Related SQLite: `SQLITE_CHECKPOINT_PASSIVE`, `SQLITE_CHECKPOINT_FULL`, `SQLITE_CHECKPOINT_RESTART`, `SQLITE_CHECKPOINT_TRUNCATE`
+        public var description: String {
+            switch self {
+            case .passive: "passive"
+            case .full: "full"
+            case .restart: "restart"
+            case .truncate: "truncate"
+            default: "unknown"
+            }
+        }
+
         public var debugDescription: String {
             switch self {
-            case .passive: return "SQLITE_CHECKPOINT_PASSIVE"
-            case .full: return "SQLITE_CHECKPOINT_FULL"
-            case .restart: return "SQLITE_CHECKPOINT_RESTART"
-            case .truncate: return "SQLITE_CHECKPOINT_TRUNCATE"
-            default: return "CheckpointMode(rawValue: \(rawValue))"
+            case .passive: "SQLITE_CHECKPOINT_PASSIVE"
+            case .full: "SQLITE_CHECKPOINT_FULL"
+            case .restart: "SQLITE_CHECKPOINT_RESTART"
+            case .truncate: "SQLITE_CHECKPOINT_TRUNCATE"
+            default: rawValue.description
             }
         }
     }

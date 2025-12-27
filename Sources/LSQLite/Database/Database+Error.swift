@@ -4,7 +4,7 @@ extension Database {
     /// Switch controlling whether extended result codes are reported for this connection.
     ///
     /// Related SQLite: `sqlite3_extended_result_codes`
-    @frozen public struct ExtendedResultCodeStatus: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct ExtendedResultCodeStatus: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -14,15 +14,16 @@ extension Database {
         public static let off = Self(rawValue: 0)
         public static let on = Self(rawValue: 1)
 
-        /// Debug label for the extended result code toggle.
-        ///
-        /// Related SQLite: `sqlite3_extended_result_codes`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .off: return "LSQLITE_OFF"
-            case .on: return "LSQLITE_ON"
-            default: return "ExtendedResultCodeStatus(rawValue: \(rawValue))"
+            case .off: "off"
+            case .on: "on"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 

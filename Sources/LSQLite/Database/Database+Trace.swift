@@ -10,7 +10,7 @@ extension Database {
     /// Return code expected from a trace callback.
     ///
     /// Related SQLite: `sqlite3_trace_v2`
-    @frozen public struct TraceEventCallbackResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCallbackResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -19,21 +19,22 @@ extension Database {
 
         public static let ok = Self(rawValue: 0)
 
-        /// Debug label for the trace callback result.
-        ///
-        /// Related SQLite: `sqlite3_trace_v2`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .ok: return "LSQLITE_OK"
-            default: return "TraceEventCallbackResult(rawValue: \(rawValue))"
+            case .ok: "ok"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 
     /// Event mask values used when registering `setTraceCallback(for:userData:callback:)`.
     ///
     /// Related SQLite: `sqlite3_trace_v2`, `SQLITE_TRACE_STMT`, `SQLITE_TRACE_PROFILE`, `SQLITE_TRACE_ROW`, `SQLITE_TRACE_CLOSE`
-    @frozen public struct TraceEventCode: Hashable, OptionSet, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCode: Hashable, OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: UInt32
 
         @inlinable public init(rawValue: UInt32) {
@@ -44,30 +45,62 @@ extension Database {
         ///
         /// Related SQLite: `SQLITE_TRACE_STMT`, `sqlite3_trace_v2`, `sqlite3_expanded_sql`
         public static let statement = Self(rawValue: UInt32(SQLITE_TRACE_STMT))
+
         /// Trace profiling information when a statement finishes; X points to elapsed nanoseconds.
         ///
         /// Related SQLite: `SQLITE_TRACE_PROFILE`, `sqlite3_profile`, `sqlite3_trace_v2`
         public static let profile = Self(rawValue: UInt32(SQLITE_TRACE_PROFILE))
+
         /// Trace each row produced by a prepared statement.
         ///
         /// Related SQLite: `SQLITE_TRACE_ROW`, `sqlite3_trace_v2`
         public static let row = Self(rawValue: UInt32(SQLITE_TRACE_ROW))
+
         /// Trace when the database connection closes.
         ///
         /// Related SQLite: `SQLITE_TRACE_CLOSE`, `sqlite3_trace_v2`
         public static let close = Self(rawValue: UInt32(SQLITE_TRACE_CLOSE))
 
-        /// Debug label for the trace event code.
-        ///
-        /// Related SQLite: `sqlite3_trace_v2`, `SQLITE_TRACE_STMT`, `SQLITE_TRACE_PROFILE`, `SQLITE_TRACE_ROW`, `SQLITE_TRACE_CLOSE`
-        public var debugDescription: String {
-            switch self {
-            case .statement: return "SQLITE_TRACE_STMT"
-            case .profile: return "SQLITE_TRACE_PROFILE"
-            case .row: return "SQLITE_TRACE_ROW"
-            case .close: return "SQLITE_TRACE_CLOSE"
-            default: return "TraceEventCode(rawValue: \(rawValue))"
+        private static let knownMask: UInt32 = Self.statement.rawValue
+            | Self.profile.rawValue
+            | Self.row.rawValue
+            | Self.close.rawValue
+
+        private static func hexString(_ rawValue: UInt32) -> String {
+            "0x" + String(rawValue, radix: 16, uppercase: true)
+        }
+
+        public var description: String {
+            var parts: [String] = []
+            if contains(.statement) { parts.append(".statement") }
+            if contains(.profile) { parts.append(".profile") }
+            if contains(.row) { parts.append(".row") }
+            if contains(.close) { parts.append(".close") }
+
+            let unknownBits = rawValue & ~Self.knownMask
+            if unknownBits != 0 {
+                if parts.isEmpty { return "unknown" }
+                parts.append("unknown")
             }
+            if parts.isEmpty { return "[]" }
+            return "[\(parts.joined(separator: ", "))]"
+        }
+
+        public var debugDescription: String {
+            var parts: [String] = []
+            if contains(.statement) { parts.append("SQLITE_TRACE_STMT") }
+            if contains(.profile) { parts.append("SQLITE_TRACE_PROFILE") }
+            if contains(.row) { parts.append("SQLITE_TRACE_ROW") }
+            if contains(.close) { parts.append("SQLITE_TRACE_CLOSE") }
+
+            let unknownBits = rawValue & ~Self.knownMask
+            if unknownBits != 0 {
+                let hexValue = Self.hexString(rawValue)
+                if parts.isEmpty { return hexValue }
+                parts.append(hexValue)
+            }
+            if parts.isEmpty { return "[]" }
+            return parts.joined(separator: "|")
         }
     }
 

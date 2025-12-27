@@ -24,7 +24,7 @@ extension Database {
     /// Return codes for commit hooks to continue or force a rollback.
     ///
     /// Related SQLite: `sqlite3_commit_hook`
-    @frozen public struct CommitHookHandlerResult: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct CommitHookHandlerResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -34,22 +34,23 @@ extension Database {
         public static let `continue` = Self(rawValue: 0)
         public static let `break` = Self(rawValue: 1)
 
-        /// Debug label for the commit hook decision.
-        ///
-        /// Related SQLite: `sqlite3_commit_hook`
-        public var debugDescription: String {
+        public var description: String {
             switch self {
-            case .continue: return "LSQLITE_CONTINUE"
-            case .break: return "LSQLITE_BREAK"
-            default: return "CommitHookHandlerResult(rawValue: \(rawValue))"
+            case .continue: "continue"
+            case .break: "break"
+            default: "unknown"
             }
+        }
+
+        public var debugDescription: String {
+            "\(description) (\(rawValue.description))"
         }
     }
 
     /// Operation types reported to `updateHook`.
     ///
     /// Related SQLite: `sqlite3_update_hook`, `SQLITE_INSERT`, `SQLITE_DELETE`, `SQLITE_UPDATE`
-    @frozen public struct UpdateOperation: Hashable, RawRepresentable, CustomDebugStringConvertible {
+    @frozen public struct UpdateOperation: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -60,15 +61,21 @@ extension Database {
         public static let insert = Self(rawValue: SQLITE_INSERT)
         public static let update = Self(rawValue: SQLITE_UPDATE)
 
-        /// Debug label for the update operation.
-        ///
-        /// Related SQLite: `sqlite3_update_hook`, `SQLITE_INSERT`, `SQLITE_DELETE`, `SQLITE_UPDATE`
+        public var description: String {
+            switch self {
+            case .delete: "delete"
+            case .insert: "insert"
+            case .update: "update"
+            default: "unknown"
+            }
+        }
+
         public var debugDescription: String {
             switch self {
-            case .delete: return "SQLITE_DELETE"
-            case .insert: return "SQLITE_INSERT"
-            case .update: return "SQLITE_UPDATE"
-            default: return "UpdateOperation(rawValue: \(rawValue))"
+            case .delete: "SQLITE_DELETE"
+            case .insert: "SQLITE_INSERT"
+            case .update: "SQLITE_UPDATE"
+            default: rawValue.description
             }
         }
     }
