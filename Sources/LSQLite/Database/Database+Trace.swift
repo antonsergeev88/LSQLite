@@ -34,7 +34,7 @@ extension Database {
     /// Event mask values used when registering `setTraceCallback(for:userData:callback:)`.
     ///
     /// Related SQLite: `sqlite3_trace_v2`, `SQLITE_TRACE_STMT`, `SQLITE_TRACE_PROFILE`, `SQLITE_TRACE_ROW`, `SQLITE_TRACE_CLOSE`
-    @frozen public struct TraceEventCode: Hashable, OptionSet, CustomDebugStringConvertible {
+    @frozen public struct TraceEventCode: Hashable, OptionSet {
         public let rawValue: UInt32
 
         @inlinable public init(rawValue: UInt32) {
@@ -60,16 +60,6 @@ extension Database {
         ///
         /// Related SQLite: `SQLITE_TRACE_CLOSE`, `sqlite3_trace_v2`
         public static let close = Self(rawValue: UInt32(SQLITE_TRACE_CLOSE))
-
-        public var debugDescription: String {
-            switch self {
-            case .statement: return "SQLITE_TRACE_STMT"
-            case .profile: return "SQLITE_TRACE_PROFILE"
-            case .row: return "SQLITE_TRACE_ROW"
-            case .close: return "SQLITE_TRACE_CLOSE"
-            default: return "TraceEventCode(rawValue: \(rawValue))"
-            }
-        }
     }
 
     /// Registers or clears a trace callback for the specified events on this connection.

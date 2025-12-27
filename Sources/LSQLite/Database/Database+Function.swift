@@ -92,7 +92,7 @@ extension Database {
     /// Function flags describing determinism and security properties for user-defined SQL functions.
     ///
     /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_create_window_function`, `SQLITE_DETERMINISTIC`, `SQLITE_DIRECTONLY`, `SQLITE_SUBTYPE`, `SQLITE_INNOCUOUS`, `SQLITE_RESULT_SUBTYPE`, `SQLITE_SELFORDER1`
-    @frozen public struct FunctionFlag: Hashable, OptionSet, CustomDebugStringConvertible {
+    @frozen public struct FunctionFlag: Hashable, OptionSet {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -123,21 +123,6 @@ extension Database {
         ///
         /// Related SQLite: `SQLITE_SELFORDER1`
         public static let selfOrder1 = Self(rawValue: SQLITE_SELFORDER1)
-
-        /// Debug label for the function flag value.
-        ///
-        /// Related SQLite: `sqlite3_create_function_v2`, `SQLITE_DETERMINISTIC`, `SQLITE_DIRECTONLY`, `SQLITE_SUBTYPE`, `SQLITE_INNOCUOUS`, `SQLITE_RESULT_SUBTYPE`, `SQLITE_SELFORDER1`
-        public var debugDescription: String {
-            switch self {
-            case .deterministic: return "SQLITE_DETERMINISTIC"
-            case .directOnly: return "SQLITE_DIRECTONLY"
-            case .subtype: return "SQLITE_SUBTYPE"
-            case .innocuous: return "SQLITE_INNOCUOUS"
-            case .resultSubtype: return "SQLITE_RESULT_SUBTYPE"
-            case .selfOrder1: return "SQLITE_SELFORDER1"
-            default: return "FunctionFlag(rawValue: \(rawValue))"
-            }
-        }
     }
 
     /// Registers or redefines a scalar or aggregate SQL function on this connection.
