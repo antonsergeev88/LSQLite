@@ -92,7 +92,7 @@ extension Database {
     /// Function flags describing determinism and security properties for user-defined SQL functions.
     ///
     /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_create_window_function`, `SQLITE_DETERMINISTIC`, `SQLITE_DIRECTONLY`, `SQLITE_SUBTYPE`, `SQLITE_INNOCUOUS`, `SQLITE_RESULT_SUBTYPE`, `SQLITE_SELFORDER1`
-    @frozen public struct FunctionFlag: Hashable, OptionSet {
+    @frozen public struct FunctionFlag: Hashable, OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -103,26 +103,81 @@ extension Database {
         ///
         /// Related SQLite: `SQLITE_DETERMINISTIC`
         public static let deterministic = Self(rawValue: SQLITE_DETERMINISTIC)
+
         /// Restricts the function to top-level SQL only.
         ///
         /// Related SQLite: `SQLITE_DIRECTONLY`
         public static let directOnly = Self(rawValue: SQLITE_DIRECTONLY)
+
         /// Indicates the function inspects argument subtypes via `sqlite3_value_subtype`.
         ///
         /// Related SQLite: `SQLITE_SUBTYPE`
         public static let subtype = Self(rawValue: SQLITE_SUBTYPE)
+
         /// Marks the function as innocuous for trusted schema checks.
         ///
         /// Related SQLite: `SQLITE_INNOCUOUS`
         public static let innocuous = Self(rawValue: SQLITE_INNOCUOUS)
+
         /// Indicates the function may call `sqlite3_result_subtype`.
         ///
         /// Related SQLite: `SQLITE_RESULT_SUBTYPE`
         public static let resultSubtype = Self(rawValue: SQLITE_RESULT_SUBTYPE)
+
         /// Declares an ordered-set aggregate that sorts its first argument.
         ///
         /// Related SQLite: `SQLITE_SELFORDER1`
         public static let selfOrder1 = Self(rawValue: SQLITE_SELFORDER1)
+
+        private static let knownMask: UInt32 = UInt32(bitPattern: Self.deterministic.rawValue)
+            | UInt32(bitPattern: Self.directOnly.rawValue)
+            | UInt32(bitPattern: Self.subtype.rawValue)
+            | UInt32(bitPattern: Self.innocuous.rawValue)
+            | UInt32(bitPattern: Self.resultSubtype.rawValue)
+            | UInt32(bitPattern: Self.selfOrder1.rawValue)
+
+        private static func hexString(_ rawValue: UInt32) -> String {
+            "0x" + String(rawValue, radix: 16, uppercase: true)
+        }
+
+        public var description: String {
+            var parts: [String] = []
+            if contains(.deterministic) { parts.append(".deterministic") }
+            if contains(.directOnly) { parts.append(".directOnly") }
+            if contains(.subtype) { parts.append(".subtype") }
+            if contains(.innocuous) { parts.append(".innocuous") }
+            if contains(.resultSubtype) { parts.append(".resultSubtype") }
+            if contains(.selfOrder1) { parts.append(".selfOrder1") }
+
+            let rawBits = UInt32(bitPattern: rawValue)
+            let unknownBits = rawBits & ~Self.knownMask
+            if unknownBits != 0 {
+                if parts.isEmpty { return "unknown" }
+                parts.append("unknown")
+            }
+            if parts.isEmpty { return "[]" }
+            return "[\(parts.joined(separator: ", "))]"
+        }
+
+        public var debugDescription: String {
+            var parts: [String] = []
+            if contains(.deterministic) { parts.append("SQLITE_DETERMINISTIC") }
+            if contains(.directOnly) { parts.append("SQLITE_DIRECTONLY") }
+            if contains(.subtype) { parts.append("SQLITE_SUBTYPE") }
+            if contains(.innocuous) { parts.append("SQLITE_INNOCUOUS") }
+            if contains(.resultSubtype) { parts.append("SQLITE_RESULT_SUBTYPE") }
+            if contains(.selfOrder1) { parts.append("SQLITE_SELFORDER1") }
+
+            let rawBits = UInt32(bitPattern: rawValue)
+            let unknownBits = rawBits & ~Self.knownMask
+            if unknownBits != 0 {
+                let hexValue = Self.hexString(rawBits)
+                if parts.isEmpty { return hexValue }
+                parts.append(hexValue)
+            }
+            if parts.isEmpty { return "[]" }
+            return parts.joined(separator: "|")
+        }
     }
 
     /// Registers or redefines a scalar or aggregate SQL function on this connection.

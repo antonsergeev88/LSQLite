@@ -34,7 +34,7 @@ extension Database {
     /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
     ///
     /// Related SQLite: `sqlite3_open_v2`, `sqlite3_vfs.xOpen`, `SQLITE_OPEN_*`
-    @frozen public struct OpenFlag: OptionSet {
+    @frozen public struct OpenFlag: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
         @inlinable public init(rawValue: Int32) {
@@ -68,6 +68,122 @@ extension Database {
         public static let fileProtectionNone = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_NONE)
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
 #endif
+
+        private static let knownMask: UInt32 = {
+            var mask = UInt32(bitPattern: Self.readonly.rawValue)
+            mask |= UInt32(bitPattern: Self.readwrite.rawValue)
+            mask |= UInt32(bitPattern: Self.create.rawValue)
+            mask |= UInt32(bitPattern: Self.deleteOnClose.rawValue)
+            mask |= UInt32(bitPattern: Self.exclusive.rawValue)
+            mask |= UInt32(bitPattern: Self.autoproxy.rawValue)
+            mask |= UInt32(bitPattern: Self.uri.rawValue)
+            mask |= UInt32(bitPattern: Self.memory.rawValue)
+            mask |= UInt32(bitPattern: Self.mainDB.rawValue)
+            mask |= UInt32(bitPattern: Self.tempDB.rawValue)
+            mask |= UInt32(bitPattern: Self.transientDB.rawValue)
+            mask |= UInt32(bitPattern: Self.mainJournal.rawValue)
+            mask |= UInt32(bitPattern: Self.tempJournal.rawValue)
+            mask |= UInt32(bitPattern: Self.subjournal.rawValue)
+            mask |= UInt32(bitPattern: Self.masterJournal.rawValue)
+            mask |= UInt32(bitPattern: Self.noMutex.rawValue)
+            mask |= UInt32(bitPattern: Self.fullMutex.rawValue)
+            mask |= UInt32(bitPattern: Self.sharedCache.rawValue)
+            mask |= UInt32(bitPattern: Self.privateCache.rawValue)
+            mask |= UInt32(bitPattern: Self.wal.rawValue)
+#if canImport(Darwin)
+            mask |= UInt32(bitPattern: Self.fileProtectionComplete.rawValue)
+            mask |= UInt32(bitPattern: Self.fileProtectionCompleteUnlessOpen.rawValue)
+            mask |= UInt32(bitPattern: Self.fileProtectionCompleteUntilFirstUserAuthentication.rawValue)
+            mask |= UInt32(bitPattern: Self.fileProtectionNone.rawValue)
+            mask |= UInt32(bitPattern: Self.fileProtectionMask.rawValue)
+#endif
+            return mask
+        }()
+
+        private static func hexString(_ rawValue: UInt32) -> String {
+            "0x" + String(rawValue, radix: 16, uppercase: true)
+        }
+
+        public var description: String {
+            var parts: [String] = []
+            if contains(.readonly) { parts.append(".readonly") }
+            if contains(.readwrite) { parts.append(".readwrite") }
+            if contains(.create) { parts.append(".create") }
+            if contains(.deleteOnClose) { parts.append(".deleteOnClose") }
+            if contains(.exclusive) { parts.append(".exclusive") }
+            if contains(.autoproxy) { parts.append(".autoproxy") }
+            if contains(.uri) { parts.append(".uri") }
+            if contains(.memory) { parts.append(".memory") }
+            if contains(.mainDB) { parts.append(".mainDB") }
+            if contains(.tempDB) { parts.append(".tempDB") }
+            if contains(.transientDB) { parts.append(".transientDB") }
+            if contains(.mainJournal) { parts.append(".mainJournal") }
+            if contains(.tempJournal) { parts.append(".tempJournal") }
+            if contains(.subjournal) { parts.append(".subjournal") }
+            if contains(.masterJournal) { parts.append(".masterJournal") }
+            if contains(.noMutex) { parts.append(".noMutex") }
+            if contains(.fullMutex) { parts.append(".fullMutex") }
+            if contains(.sharedCache) { parts.append(".sharedCache") }
+            if contains(.privateCache) { parts.append(".privateCache") }
+            if contains(.wal) { parts.append(".wal") }
+#if canImport(Darwin)
+            if contains(.fileProtectionComplete) { parts.append(".fileProtectionComplete") }
+            if contains(.fileProtectionCompleteUnlessOpen) { parts.append(".fileProtectionCompleteUnlessOpen") }
+            if contains(.fileProtectionCompleteUntilFirstUserAuthentication) { parts.append(".fileProtectionCompleteUntilFirstUserAuthentication") }
+            if contains(.fileProtectionNone) { parts.append(".fileProtectionNone") }
+            if contains(.fileProtectionMask) { parts.append(".fileProtectionMask") }
+#endif
+
+            let rawBits = UInt32(bitPattern: rawValue)
+            let unknownBits = rawBits & ~Self.knownMask
+            if unknownBits != 0 {
+                if parts.isEmpty { return "unknown" }
+                parts.append("unknown")
+            }
+            if parts.isEmpty { return "[]" }
+            return "[\(parts.joined(separator: ", "))]"
+        }
+
+        public var debugDescription: String {
+            var parts: [String] = []
+            if contains(.readonly) { parts.append("SQLITE_OPEN_READONLY") }
+            if contains(.readwrite) { parts.append("SQLITE_OPEN_READWRITE") }
+            if contains(.create) { parts.append("SQLITE_OPEN_CREATE") }
+            if contains(.deleteOnClose) { parts.append("SQLITE_OPEN_DELETEONCLOSE") }
+            if contains(.exclusive) { parts.append("SQLITE_OPEN_EXCLUSIVE") }
+            if contains(.autoproxy) { parts.append("SQLITE_OPEN_AUTOPROXY") }
+            if contains(.uri) { parts.append("SQLITE_OPEN_URI") }
+            if contains(.memory) { parts.append("SQLITE_OPEN_MEMORY") }
+            if contains(.mainDB) { parts.append("SQLITE_OPEN_MAIN_DB") }
+            if contains(.tempDB) { parts.append("SQLITE_OPEN_TEMP_DB") }
+            if contains(.transientDB) { parts.append("SQLITE_OPEN_TRANSIENT_DB") }
+            if contains(.mainJournal) { parts.append("SQLITE_OPEN_MAIN_JOURNAL") }
+            if contains(.tempJournal) { parts.append("SQLITE_OPEN_TEMP_JOURNAL") }
+            if contains(.subjournal) { parts.append("SQLITE_OPEN_SUBJOURNAL") }
+            if contains(.masterJournal) { parts.append("SQLITE_OPEN_MASTER_JOURNAL") }
+            if contains(.noMutex) { parts.append("SQLITE_OPEN_NOMUTEX") }
+            if contains(.fullMutex) { parts.append("SQLITE_OPEN_FULLMUTEX") }
+            if contains(.sharedCache) { parts.append("SQLITE_OPEN_SHAREDCACHE") }
+            if contains(.privateCache) { parts.append("SQLITE_OPEN_PRIVATECACHE") }
+            if contains(.wal) { parts.append("SQLITE_OPEN_WAL") }
+#if canImport(Darwin)
+            if contains(.fileProtectionComplete) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETE") }
+            if contains(.fileProtectionCompleteUnlessOpen) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN") }
+            if contains(.fileProtectionCompleteUntilFirstUserAuthentication) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION") }
+            if contains(.fileProtectionNone) { parts.append("SQLITE_OPEN_FILEPROTECTION_NONE") }
+            if contains(.fileProtectionMask) { parts.append("SQLITE_OPEN_FILEPROTECTION_MASK") }
+#endif
+
+            let rawBits = UInt32(bitPattern: rawValue)
+            let unknownBits = rawBits & ~Self.knownMask
+            if unknownBits != 0 {
+                let hexValue = Self.hexString(rawBits)
+                if parts.isEmpty { return hexValue }
+                parts.append(hexValue)
+            }
+            if parts.isEmpty { return "[]" }
+            return parts.joined(separator: "|")
+        }
     }
 
     /// Opens a database connection at the given filename using the supplied flags.
