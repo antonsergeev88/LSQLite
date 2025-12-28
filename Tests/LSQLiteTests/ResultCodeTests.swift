@@ -116,4 +116,127 @@ struct ResultCodeRawValueTests {
         #expect(ResultCode.authUser.rawValue == LSQLITE_AUTH_USER)
         #expect(ResultCode.okLoadPermanently.rawValue == LSQLITE_OK_LOAD_PERMANENTLY)
     }
+
+    @Test("description and debugDescription cover known result codes")
+    func descriptionsCoverKnownResultCodes() {
+        for code in allResultCodes {
+            #expect(!code.description.isEmpty)
+            #expect(!code.debugDescription.isEmpty)
+        }
+    }
+
+    @Test("unknown result codes use fallback strings")
+    func unknownResultCodesUseFallbackStrings() {
+        let unknown = ResultCode(rawValue: -12345)
+        #expect(unknown.description == "unknown")
+        #expect(unknown.debugDescription == "-12345")
+    }
+
+    @Test("errorString returns a message when available")
+    func errorStringProvidesMessage() {
+        let message = ResultCode.ok.errorString
+        #expect(message != nil)
+        #expect(message != "")
+    }
 }
+
+private let allResultCodes: [ResultCode] = [
+    .ok,
+    .error,
+    .internal,
+    .permission,
+    .abort,
+    .busy,
+    .locked,
+    .noMemory,
+    .readonly,
+    .interrupt,
+    .ioError,
+    .corrupt,
+    .notFound,
+    .full,
+    .cantOpen,
+    .protocol,
+    .empty,
+    .schema,
+    .tooBig,
+    .constraint,
+    .mismatch,
+    .misuse,
+    .noLFS,
+    .auth,
+    .format,
+    .range,
+    .notADB,
+    .notice,
+    .warning,
+    .row,
+    .done,
+    .errorMissingCollSeq,
+    .errorRetry,
+    .errorSnapshot,
+    .ioErrorRead,
+    .ioErrorShortRead,
+    .ioErrorWrite,
+    .ioErrorFSync,
+    .ioErrorDirFSync,
+    .ioErrorTruncate,
+    .ioErrorFStat,
+    .ioErrorUnlock,
+    .ioErrorRDLock,
+    .ioErrorDelete,
+    .ioErrorBlocked,
+    .ioErrorNoMem,
+    .ioErrorAccess,
+    .ioErrorCheckReservedLock,
+    .ioErrorLock,
+    .ioErrorClose,
+    .ioErrorDirClose,
+    .ioErrorShMOpen,
+    .ioErrorShMSize,
+    .ioErrorShMLock,
+    .ioErrorShMMap,
+    .ioErrorSeek,
+    .ioErrorDeleteNoEnt,
+    .ioErrorMMap,
+    .ioErrorGetTempPath,
+    .ioErrorConvPath,
+    .ioErrorVNode,
+    .ioErrorAuth,
+    .ioErrorBeginAtomic,
+    .ioErrorCommitAtomic,
+    .ioErrorRollbackAtomic,
+    .lockedSharedCache,
+    .lockedVTab,
+    .busyRecovery,
+    .busySnapshot,
+    .cantOpenNoTempDir,
+    .cantOpenIsDir,
+    .cantOpenFullPath,
+    .cantOpenConvPath,
+    .cantOpenDirtyWAL,
+    .corruptVTab,
+    .corruptSequence,
+    .readonlyRecovery,
+    .readonlyCantLock,
+    .readonlyRollback,
+    .readonlyDBMoved,
+    .readonlyCantInit,
+    .readonlyDirectory,
+    .abortRollback,
+    .constraintCheck,
+    .constraintCommitHook,
+    .constraintForeignKey,
+    .constraintFunction,
+    .constraintNotNull,
+    .constraintPrimaryKey,
+    .constraintTrigger,
+    .constraintUnique,
+    .constraintVTab,
+    .constraintRowID,
+    .noticeRecoverWAL,
+    .noticeRecoverRollback,
+    .warningAutoIndex,
+    .authUser,
+    .okLoadPermanently,
+]

@@ -19,4 +19,29 @@ struct DatatypeRawValueTests {
         #expect(Datatype.null.rawValue == SQLITE_NULL)
         #expect(Datatype.text.rawValue == SQLITE_TEXT)
     }
+
+    @Test("description maps known values")
+    func descriptionMapsKnownValues() {
+        #expect(Datatype.integer.description == "integer")
+        #expect(Datatype.float.description == "float")
+        #expect(Datatype.blob.description == "blob")
+        #expect(Datatype.null.description == "null")
+        #expect(Datatype.text.description == "text")
+    }
+
+    @Test("debugDescription maps known values")
+    func debugDescriptionMapsKnownValues() {
+        #expect(Datatype.integer.debugDescription == "SQLITE_INTEGER")
+        #expect(Datatype.float.debugDescription == "SQLITE_FLOAT")
+        #expect(Datatype.blob.debugDescription == "SQLITE_BLOB")
+        #expect(Datatype.null.debugDescription == "SQLITE_NULL")
+        #expect(Datatype.text.debugDescription == "SQLITE_TEXT")
+    }
+
+    @Test("unknown values use fallback strings")
+    func unknownValuesUseFallbackStrings() {
+        let unknown = Datatype(rawValue: 1234)
+        #expect(unknown.description == "unknown")
+        #expect(unknown.debugDescription == "1234")
+    }
 }

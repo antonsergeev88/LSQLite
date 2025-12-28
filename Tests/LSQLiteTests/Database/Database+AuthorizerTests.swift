@@ -62,4 +62,57 @@ struct DatabaseAuthorizerTests {
         #expect(Database.AuthorizerHandlerActionCode.copy.rawValue == SQLITE_COPY)
         #expect(Database.AuthorizerHandlerActionCode.recursive.rawValue == SQLITE_RECURSIVE)
     }
+
+    @Test("AuthorizerHandlerResult descriptions map values")
+    func authorizerHandlerResultDescriptions() {
+        #expect(Database.AuthorizerHandlerResult.ok.description == "ok")
+        #expect(Database.AuthorizerHandlerResult.deny.description == "deny")
+        #expect(Database.AuthorizerHandlerResult.ignore.description == "ignore")
+        #expect(Database.AuthorizerHandlerResult(rawValue: 77).description == "unknown")
+        #expect(Database.AuthorizerHandlerResult.ok.debugDescription == "SQLITE_OK")
+        #expect(Database.AuthorizerHandlerResult(rawValue: 77).debugDescription == "77")
+    }
+
+    @Test("AuthorizerHandlerActionCode descriptions map values")
+    func authorizerHandlerActionCodeDescriptions() {
+        #expect(Database.AuthorizerHandlerActionCode.createIndex.description == "create index")
+        #expect(Database.AuthorizerHandlerActionCode.dropTable.description == "drop table")
+        #expect(Database.AuthorizerHandlerActionCode.select.description == "select")
+        #expect(Database.AuthorizerHandlerActionCode(rawValue: -1).description == "unknown")
+        #expect(Database.AuthorizerHandlerActionCode.createIndex.debugDescription == "SQLITE_CREATE_INDEX")
+        #expect(Database.AuthorizerHandlerActionCode(rawValue: -1).debugDescription == "-1")
+    }
+
+    @Test("setAuthorizerHandler registers callback")
+    func setAuthorizerHandlerRegistersCallback() throws {
+        var database: Database?
+        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+        let openDatabase = try #require(database)
+        try #require(openDatabase.exec("CREATE TABLE auth(id INTEGER)") == .ok)
+
+        var probe = AuthorizerProbe()
+        #expect(openDatabase.setAuthorizerHandler(userData: &probe, authorizerHandler) == .ok)
+
+        var statement: Statement?
+        try #require(Statement.prepare(&statement, sql: "SELECT id FROM auth", for: openDatabase) == .ok)
+        let prepared = try #require(statement)
+        #expect(prepared.finalize() == .ok)
+
+        #expect(probe.called)
+        #expect(openDatabase.setAuthorizerHandler(userData: nil, nil) == .ok)
+        _ = openDatabase.close()
+    }
+}
+
+private struct AuthorizerProbe {
+    var called = false
+}
+
+private func authorizerHandler(_ userData: UnsafeMutableRawPointer?, _ actionCode: Int32, _ detail1: UnsafePointer<Int8>?, _ detail2: UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32 {
+    guard let userData else {
+        return Database.AuthorizerHandlerResult.ok.rawValue
+    }
+    let probe = userData.assumingMemoryBound(to: AuthorizerProbe.self)
+    probe.pointee.called = true
+    return Database.AuthorizerHandlerResult.ok.rawValue
 }

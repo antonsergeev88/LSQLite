@@ -9,4 +9,11 @@ struct RowIDRawValueTests {
         let rowID = RowID(rawValue: rawValue)
         #expect(rowID.rawValue == rawValue)
     }
+
+    @Test("description reflects rawValue")
+    func descriptionReflectsRawValue() {
+        let rawValue = Int64(42)
+        let rowID = RowID(rawValue: rawValue)
+        #expect(rowID.description == "42")
+    }
 }
