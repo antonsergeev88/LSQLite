@@ -137,9 +137,6 @@ extension Statement {
             return nil
         }
         let string = String(cString: cString)
-        guard !string.isEmpty else {
-            return nil
-        }
         return string
     }
 

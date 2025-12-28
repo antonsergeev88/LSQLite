@@ -12,9 +12,6 @@ extension Database {
             return nil
         }
         let string = String(cString: cString)
-        guard !string.isEmpty else {
-            return nil
-        }
         return string
     }
 }
