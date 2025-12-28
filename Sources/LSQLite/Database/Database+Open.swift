@@ -1,27 +1,32 @@
 import MissedSwiftSQLite
 
 extension Database {
-    /// SQLite filename wrapper used when opening a connection.
+    /// Filename wrapper used when opening a connection.
     ///
-    /// To construct a `file:` URI filename, use `Database.FileName.uri(...)` and open with `.uri` in the flags.
+    /// For `file:` URIs, pass the full URI string as `rawValue` and include `.uri` in the open flags.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`, `SQLITE_OPEN_URI`
     @frozen public struct FileName: RawRepresentable, CustomStringConvertible {
         public let rawValue: String
 
         /// Creates a filename wrapper from a Swift string.
+        /// - Parameter rawValue: Database path or URI string to open.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`
         @inlinable public init(rawValue: String) {
             self.rawValue = rawValue
         }
 
-        /// Filename for an in-memory database.
+        /// Filename for a private in-memory database.
+        ///
+        /// The database exists only for the lifetime of the connection.
         ///
         /// Related SQLite: `":memory:"`, `sqlite3_open`, `sqlite3_open_v2`
         public static let memory = Self(rawValue: ":memory:")
 
-        /// Filename for a temporary on-disk database.
+        /// Filename for a private temporary on-disk database.
+        ///
+        /// The file is deleted automatically when the connection closes.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
         public static let temporary = Self(rawValue: "")
@@ -31,7 +36,7 @@ extension Database {
         }
     }
 
-    /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
+    /// Flags passed to `open(_:at:withOpenFlags:)` and to custom VFS open calls.
     ///
     /// Related SQLite: `sqlite3_open_v2`, `sqlite3_vfs.xOpen`, `SQLITE_OPEN_*`
     @frozen public struct OpenFlag: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
@@ -262,11 +267,28 @@ extension Database {
     }
 
     /// Opens a database connection at the given filename using the supplied flags.
+    ///
+    /// The `openFlag` value must include one of: `.readonly`, `.readwrite`, or `.readwrite` + `.create`.
+    /// Additional flags control URI handling, caching, mutex mode, and other options.
+    /// When using `.readonly`, the database must already exist. When using `.readwrite` without
+    /// `.create`, the database must already exist and the connection may still open read-only if
+    /// the file is write-protected. Use `readWriteAccessState(forDatabaseNamed:)` to check the
+    /// actual access mode.
+    ///
+    /// On success, `database` is set to a new handle and the result is `.ok`.
+    /// On failure, `database` may still be set to a handle unless the open fails due to
+    /// an out-of-memory condition. When a handle is returned, the caller is responsible
+    /// for closing it to release resources.
+    ///
+    /// `FileName.memory` opens a private in-memory database that disappears when the
+    /// connection closes. The `.memory` flag also forces an in-memory database, in which
+    /// case the filename is used only for cache sharing. `FileName.temporary` creates a
+    /// private on-disk database that is deleted on close.
     /// - Parameters:
-    ///   - database: Output connection handle when opening succeeds.
-    ///   - filename: Target database path or helper filename like `.memory`.
-    ///   - openFlag: Flags controlling open mode and options.
-    /// - Returns: Result code from `sqlite3_open_v2`.
+    ///   - database: Receives the connection handle; may be set even when the result is an error.
+    ///   - filename: Target database path or special filename like `.memory`.
+    ///   - openFlag: Flags controlling the open mode and options.
+    /// - Returns: Result code from the open attempt.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `SQLITE_OPEN_*`, `sqlite3_temp_directory`
     @inlinable public static func open(_ database: inout Database?, at filename: FileName, withOpenFlags openFlag: OpenFlag) -> ResultCode {
