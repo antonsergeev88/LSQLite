@@ -31,7 +31,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Allow the commit to proceed.
+        ///
+        /// Related SQLite: `sqlite3_commit_hook`
         public static let `continue` = Self(rawValue: 0)
+        /// Convert the commit into a rollback.
+        ///
+        /// Related SQLite: `sqlite3_commit_hook`
         public static let `break` = Self(rawValue: 1)
 
         public var description: String {
@@ -57,8 +63,17 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Row delete operation.
+        ///
+        /// Related SQLite: `SQLITE_DELETE`
         public static let delete = Self(rawValue: SQLITE_DELETE)
+        /// Row insert operation.
+        ///
+        /// Related SQLite: `SQLITE_INSERT`
         public static let insert = Self(rawValue: SQLITE_INSERT)
+        /// Row update operation.
+        ///
+        /// Related SQLite: `SQLITE_UPDATE`
         public static let update = Self(rawValue: SQLITE_UPDATE)
 
         public var description: String {

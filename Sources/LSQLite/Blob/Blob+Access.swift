@@ -12,7 +12,9 @@ extension Blob {
 
     /// Reads `length` bytes from the BLOB starting at `offset` into `buffer`.
     ///
-    /// Use `byteCount` to validate bounds before reading.
+    /// Use `byteCount` to validate bounds before reading. If `length` or `offset` is negative, or
+    /// if the read would extend past the end of the BLOB, the call returns `.error` and reads no
+    /// data. Reads from an expired handle return `.abort`.
     /// - Parameters:
     ///   - buffer: Destination buffer.
     ///   - length: Number of bytes to copy.
@@ -27,7 +29,10 @@ extension Blob {
     /// Writes `length` bytes from `buffer` into the BLOB starting at `offset`.
     ///
     /// The handle must be opened for writing and the write does not change the BLOB size.
-    /// Use `byteCount` to validate bounds before writing.
+    /// Use `byteCount` to validate bounds before writing. If the handle is read-only, the call
+    /// returns `.readonly`. If `length` or `offset` is negative, or if the write would extend past
+    /// the end of the BLOB, the call returns `.error` and writes no data. Writes to an expired
+    /// handle return `.abort`.
     /// - Parameters:
     ///   - buffer: Source bytes to write.
     ///   - length: Number of bytes to write.

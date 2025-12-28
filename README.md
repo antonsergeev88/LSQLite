@@ -45,7 +45,7 @@ All LSQLite symbols correspond directly to the SQLite C API and come with new in
 Add LSQLite to your `Package.swift`:
 
 ```swift
-// swift-tools-version:5.2
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
@@ -92,7 +92,7 @@ guard Statement.prepare(&insert, sql: "INSERT INTO users(id, name) VALUES(?, ?);
     fatalError("Failed to prepare insert statement")
 }
 insert.bindInt(1, at: 1)
-insert.bindTransientText("Natalie", at: 2)
+insert.bindText("Natalie", at: 2)
 guard insert.step() == .done else {
     fatalError("Insert failed")
 }
@@ -146,7 +146,7 @@ sqlite3_step(stmt)
 var stmt: Statement?
 Statement.prepare(&stmt, sql: "INSERT INTO t(id, name) VALUES(?, ?);", for: db)
 stmt!.bindInt(42, at: 1)
-stmt!.bindTransientText("Alice", at: 2)
+stmt!.bindText("Alice", at: 2)
 stmt!.step()
 ```
 

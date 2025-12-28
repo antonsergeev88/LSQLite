@@ -1,32 +1,36 @@
 import MissedSwiftSQLite
 
 extension Database {
-    /// Authorization callback invoked while SQL statements are being prepared.
+    /// Authorization callback invoked while SQL statements are being compiled.
     ///
-    /// SQLite calls this during `sqlite3_prepare` and its variants as the compiler considers
-    /// actions like creating objects or reading tables. Return `.ok` to allow the action,
-    /// `.ignore` to disallow the specific action but continue compiling, or `.deny` to
-    /// reject the statement with an error.
+    /// The callback runs as the compiler considers each operation. Return `.ok` to allow
+    /// the action, `.ignore` to block just that action while continuing compilation, or
+    /// `.deny` to reject the statement with an access error. Returning any other value
+    /// causes statement preparation to fail.
     ///
-    /// Parameters:
-    /// - userData: Opaque pointer passed to `setAuthorizerHandler`.
-    /// - actionCode: Integer action code describing the operation being authorized.
-    /// - 3rd-6th: Optional C strings with details about the action; any may be NULL.
-    ///   The 5th parameter is the database name ("main", "temp", or attached) when applicable.
-    ///   The 6th parameter is the inner-most trigger or view name when applicable.
+    /// - Parameters:
+    ///   - userData: Context pointer provided to `setAuthorizerHandler`.
+    ///   - actionCode: Operation being authorized.
+    ///   - detail1: Optional C string with the first action detail; meaning depends on `actionCode`.
+    ///   - detail2: Optional C string with the second action detail; meaning depends on `actionCode`.
+    ///   - databaseName: Optional schema name when applicable (for example, "main", "temp", or an attached name).
+    ///   - triggerOrViewName: Optional name of the innermost trigger or view responsible for the access.
+    /// - Returns: An authorization decision as an `Int32` matching `AuthorizerHandlerResult`.
     ///
-    /// The callback must not modify the database connection that invoked it.
-    /// It is normally invoked only during prepare, but a statement can be reprepared
-    /// during `step()` after a schema change.
+    /// The callback must not mutate the database connection that invoked it. It is normally
+    /// called only during statement preparation, but statements can be recompiled during
+    /// execution after schema changes.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `sqlite3_prepare`, `sqlite3_prepare_v2`,
     /// `sqlite3_prepare_v3`, `sqlite3_prepare16`, `sqlite3_prepare16_v2`, `sqlite3_prepare16_v3`
-    public typealias AuthorizerHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ actionCode: Int32, UnsafePointer<Int8>?, UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32
+    public typealias AuthorizerHandler = @convention(c) (_ userData: UnsafeMutableRawPointer?, _ actionCode: Int32, _ detail1: UnsafePointer<Int8>?, _ detail2: UnsafePointer<Int8>?, _ databaseName: UnsafePointer<Int8>?, _ triggerOrViewName: UnsafePointer<Int8>?) -> Int32
 
-    /// Return codes for an authorizer callback to allow, deny, or ignore an action.
+    /// Return codes for an authorizer callback.
     ///
-    /// The callback must return `.ok`, `.deny`, or `.ignore`. Any other value
-    /// causes the prepare call that triggered the authorizer to fail.
+    /// Return `.ok` to allow the operation, `.ignore` to block only that action while still
+    /// compiling the statement, or `.deny` to reject the statement with an access error.
+    /// Any other value causes statement preparation to fail. `.ignore` is also used as
+    /// a conflict resolution code for virtual table conflict handling.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_OK`, `SQLITE_DENY`, `SQLITE_IGNORE`, `sqlite3_vtab_on_conflict`
     @frozen public struct AuthorizerHandlerResult: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
@@ -36,11 +40,17 @@ extension Database {
             self.rawValue = rawValue
         }
 
-        /// Allow the action.
+        /// Allow the action to proceed.
+        ///
+        /// Related SQLite: `SQLITE_OK`
         public static let ok = Self(rawValue: SQLITE_OK)
-        /// Abort the SQL statement with an error
+        /// Reject the statement with an access error.
+        ///
+        /// Related SQLite: `SQLITE_DENY`
         public static let deny = Self(rawValue: SQLITE_DENY)
-        /// Don't allow access, but don't generate an error
+        /// Block the specific action but continue compiling.
+        ///
+        /// Related SQLite: `SQLITE_IGNORE`
         public static let ignore = Self(rawValue: SQLITE_IGNORE)
 
         public var description: String {
@@ -62,12 +72,13 @@ extension Database {
         }
     }
 
-    /// Action codes describing what operation is being authorized in `setAuthorizerHandler`.
+    /// Action codes that describe the operation being authorized.
     ///
-    /// The 3rd and 4th callback parameters depend on the action code; they are either NULL
-    /// or zero-terminated strings as noted below. The 5th parameter is the database name
-    /// ("main", "temp", or attached) when applicable, and the 6th parameter is the
-    /// inner-most trigger or view name when applicable. Any of these pointers may be NULL.
+    /// These values appear in the `actionCode` parameter of the authorizer callback. The
+    /// `detail1` and `detail2` parameters provide per-action context as described below, or
+    /// `nil` when not applicable. `databaseName` is the schema name when applicable, and
+    /// `triggerOrViewName` is the innermost trigger or view responsible for the access.
+    /// Any of these parameters may be `nil`.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `SQLITE_CREATE_INDEX`, `SQLITE_DROP_TABLE`, `SQLITE_SELECT`
     @frozen public struct AuthorizerHandlerActionCode: Hashable, RawRepresentable, CustomStringConvertible, CustomDebugStringConvertible {
@@ -77,73 +88,142 @@ extension Database {
             self.rawValue = rawValue
         }
 
-        /// Index Name      Table Name
+        /// Provides the index name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_INDEX`
         public static let createIndex = Self(rawValue: SQLITE_CREATE_INDEX)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TABLE`
         public static let createTable = Self(rawValue: SQLITE_CREATE_TABLE)
-        /// Index Name      Table Name
+        /// Provides the index name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_INDEX`
         public static let createTempIndex = Self(rawValue: SQLITE_CREATE_TEMP_INDEX)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_TABLE`
         public static let createTempTable = Self(rawValue: SQLITE_CREATE_TEMP_TABLE)
-        /// Trigger Name    Table Name
+        /// Provides the trigger name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_TRIGGER`
         public static let createTempTrigger = Self(rawValue: SQLITE_CREATE_TEMP_TRIGGER)
-        /// View Name       NULL
+        /// Provides the view name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_VIEW`
         public static let createTempView = Self(rawValue: SQLITE_CREATE_TEMP_VIEW)
-        /// Trigger Name    Table Name
+        /// Provides the trigger name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TRIGGER`
         public static let createTrigger = Self(rawValue: SQLITE_CREATE_TRIGGER)
-        /// View Name       NULL
+        /// Provides the view name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_VIEW`
         public static let createView = Self(rawValue: SQLITE_CREATE_VIEW)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DELETE`
         public static let delete = Self(rawValue: SQLITE_DELETE)
-        /// Index Name      Table Name
+        /// Provides the index name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_INDEX`
         public static let dropIndex = Self(rawValue: SQLITE_DROP_INDEX)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TABLE`
         public static let dropTable = Self(rawValue: SQLITE_DROP_TABLE)
-        /// Index Name      Table Name
+        /// Provides the index name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_INDEX`
         public static let dropTempIndex = Self(rawValue: SQLITE_DROP_TEMP_INDEX)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_TABLE`
         public static let dropTempTable = Self(rawValue: SQLITE_DROP_TEMP_TABLE)
-        /// Trigger Name    Table Name
+        /// Provides the trigger name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_TRIGGER`
         public static let dropTempTrigger = Self(rawValue: SQLITE_DROP_TEMP_TRIGGER)
-        /// View Name       NULL
+        /// Provides the view name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_VIEW`
         public static let dropTempView = Self(rawValue: SQLITE_DROP_TEMP_VIEW)
-        /// Trigger Name    Table Name
+        /// Provides the trigger name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_TRIGGER`
         public static let dropTrigger = Self(rawValue: SQLITE_DROP_TRIGGER)
-        /// View Name       NULL
+        /// Provides the view name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_VIEW`
         public static let dropView = Self(rawValue: SQLITE_DROP_VIEW)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_INSERT`
         public static let insert = Self(rawValue: SQLITE_INSERT)
-        /// Pragma Name     1st arg or NULL
+        /// Provides the pragma name in `detail1` and the first argument in `detail2` when present.
+        ///
+        /// Related SQLite: `SQLITE_PRAGMA`
         public static let pragma = Self(rawValue: SQLITE_PRAGMA)
-        /// Table Name      Column Name
+        /// Provides the table name in `detail1` and the column name in `detail2`.
+        /// The column name can be an empty string when no columns are read.
+        ///
+        /// Related SQLite: `SQLITE_READ`
         public static let read = Self(rawValue: SQLITE_READ)
-        /// NULL            NULL
+        /// No detail strings are provided.
+        ///
+        /// Related SQLite: `SQLITE_SELECT`
         public static let select = Self(rawValue: SQLITE_SELECT)
-        /// Operation       NULL
+        /// Provides the transaction operation in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_TRANSACTION`
         public static let transaction = Self(rawValue: SQLITE_TRANSACTION)
-        /// Table Name      Column Name
+        /// Provides the table name in `detail1` and the column name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_UPDATE`
         public static let update = Self(rawValue: SQLITE_UPDATE)
-        /// Filename        NULL
+        /// Provides the filename in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_ATTACH`
         public static let attach = Self(rawValue: SQLITE_ATTACH)
-        /// Database Name   NULL
+        /// Provides the database name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_DETACH`
         public static let detach = Self(rawValue: SQLITE_DETACH)
-        /// Database Name   Table Name
+        /// Provides the database name in `detail1` and the table name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_ALTER_TABLE`
         public static let alterTable = Self(rawValue: SQLITE_ALTER_TABLE)
-        /// Index Name      NULL
+        /// Provides the index name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_REINDEX`
         public static let reindex = Self(rawValue: SQLITE_REINDEX)
-        /// Table Name      NULL
+        /// Provides the table name in `detail1`; `detail2` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_ANALYZE`
         public static let analyze = Self(rawValue: SQLITE_ANALYZE)
-        /// Table Name      Module Name
+        /// Provides the table name in `detail1` and the module name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_CREATE_VTABLE`
         public static let createVTable = Self(rawValue: SQLITE_CREATE_VTABLE)
-        /// Table Name      Module Name
+        /// Provides the table name in `detail1` and the module name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_DROP_VTABLE`
         public static let dropVTable = Self(rawValue: SQLITE_DROP_VTABLE)
-        /// NULL            Function Name
+        /// Provides the function name in `detail2`; `detail1` is `nil`.
+        ///
+        /// Related SQLite: `SQLITE_FUNCTION`
         public static let function = Self(rawValue: SQLITE_FUNCTION)
-        /// Operation       Savepoint Name
+        /// Provides the savepoint operation in `detail1` and the savepoint name in `detail2`.
+        ///
+        /// Related SQLite: `SQLITE_SAVEPOINT`
         public static let savepoint = Self(rawValue: SQLITE_SAVEPOINT)
-        /// No longer used
+        /// No longer used; no detail strings are provided.
+        ///
+        /// Related SQLite: `SQLITE_COPY`
         public static let copy = Self(rawValue: SQLITE_COPY)
-        /// NULL            NULL
+        /// No detail strings are provided.
+        ///
+        /// Related SQLite: `SQLITE_RECURSIVE`
         public static let recursive = Self(rawValue: SQLITE_RECURSIVE)
 
         public var description: String {
@@ -227,27 +307,30 @@ extension Database {
         }
     }
 
-    /// Registers or clears a compile-time authorizer invoked while statements are prepared.
+    /// Registers or clears a compile-time authorizer for this connection.
     ///
-    /// The handler is called during `sqlite3_prepare` and its variants as the compiler
-    /// considers actions. Return `.ok` to allow the action, `.ignore` to disallow the
-    /// specific action but continue compiling, or `.deny` to reject the statement.
+    /// The handler is consulted while statements are compiled. Return `.ok` to allow the
+    /// action, `.ignore` to block only that action while continuing compilation, or
+    /// `.deny` to reject the statement with an access error. Any other return value
+    /// causes statement preparation to fail.
     ///
     /// Notes:
     /// - If the action is `.read` and the handler returns `.ignore`, the prepared statement
-    ///   substitutes NULL for the requested column. If a table is referenced but no columns
-    ///   are read (for example, `SELECT count(*) FROM tab`), the column name is an empty string.
+    ///   substitutes SQL NULL for the requested column. If a table is referenced but no
+    ///   columns are read (for example, `SELECT count(*) FROM tab`), `detail2` is an empty string.
     /// - If the action is `.delete` and the handler returns `.ignore`, the delete proceeds but
     ///   the truncate optimization is disabled and rows are deleted individually.
     /// - Only one authorizer is active per connection; each call replaces the previous handler.
     /// - Pass `nil` to disable authorization. The authorizer is disabled by default.
-    /// - The handler must not modify the database connection that invoked it. Keep the
-    ///   authorizer installed during `step()` because statements can be reprepared after
-    ///   schema changes.
+    /// - The handler must not mutate the database connection that invoked it. Keep it installed
+    ///   while executing statements because they can be recompiled after schema changes.
+    /// - Use an authorizer when compiling SQL from untrusted sources to prevent unauthorized
+    ///   access or modification, and consider pairing it with resource limits and size caps.
+    ///
     /// - Parameters:
     ///   - userData: Custom context passed to the authorizer.
     ///   - handler: Callback returning `.ok`, `.deny`, or `.ignore`; `nil` disables authorization.
-    /// - Returns: Result of `sqlite3_set_authorizer`.
+    /// - Returns: Result of registering the authorizer.
     ///
     /// Related SQLite: `sqlite3_set_authorizer`, `sqlite3_prepare_v2`, `SQLITE_DENY`, `SQLITE_IGNORE`
     @inlinable public func setAuthorizerHandler(userData: UnsafeMutableRawPointer? = nil, _ handler: AuthorizerHandler? = nil) -> ResultCode {

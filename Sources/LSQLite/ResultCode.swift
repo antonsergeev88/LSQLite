@@ -10,136 +10,398 @@ import MissedSwiftSQLite
         self.rawValue = rawValue
     }
 
-    /// Successful result
+    /// Successful result.
+    ///
+    /// Related SQLite: `SQLITE_OK`
     public static let ok = Self(rawValue: SQLITE_OK)
-    /// Generic error
+    /// Generic error.
+    ///
+    /// Related SQLite: `SQLITE_ERROR`
     public static let error = Self(rawValue: SQLITE_ERROR)
-    /// Internal logic error in SQLite
+    /// Internal logic error.
+    ///
+    /// Related SQLite: `SQLITE_INTERNAL`
     public static let `internal` = Self(rawValue: SQLITE_INTERNAL)
-    /// Access permission denied
+    /// Access permission denied.
+    ///
+    /// Related SQLite: `SQLITE_PERM`
     public static let permission = Self(rawValue: SQLITE_PERM)
-    /// Callback routine requested an abort
+    /// Callback requested an abort.
+    ///
+    /// Related SQLite: `SQLITE_ABORT`
     public static let abort = Self(rawValue: SQLITE_ABORT)
-    /// The database file is locked
+    /// The database file is locked.
+    ///
+    /// Related SQLite: `SQLITE_BUSY`
     public static let busy = Self(rawValue: SQLITE_BUSY)
-    /// A table in the database is locked
+    /// A table in the database is locked.
+    ///
+    /// Related SQLite: `SQLITE_LOCKED`
     public static let locked = Self(rawValue: SQLITE_LOCKED)
-    /// A malloc() failed
+    /// Memory allocation failed.
+    ///
+    /// Related SQLite: `SQLITE_NOMEM`
     public static let noMemory = Self(rawValue: SQLITE_NOMEM)
-    /// Attempt to write a readonly database
+    /// Attempt to write a read-only database.
+    ///
+    /// Related SQLite: `SQLITE_READONLY`
     public static let readonly = Self(rawValue: SQLITE_READONLY)
-    /// Operation terminated by sqlite3_interrupt()
+    /// Operation interrupted.
+    ///
+    /// Related SQLite: `SQLITE_INTERRUPT`
     public static let interrupt = Self(rawValue: SQLITE_INTERRUPT)
-    /// Some kind of disk I/O error occurred
+    /// Disk I/O error.
+    ///
+    /// Related SQLite: `SQLITE_IOERR`
     public static let ioError = Self(rawValue: SQLITE_IOERR)
-    /// The database disk image is malformed
+    /// The database disk image is malformed.
+    ///
+    /// Related SQLite: `SQLITE_CORRUPT`
     public static let corrupt = Self(rawValue: SQLITE_CORRUPT)
-    /// Unknown opcode in sqlite3_file_control()
+    /// Unknown file-control opcode.
+    ///
+    /// Related SQLite: `SQLITE_NOTFOUND`
     public static let notFound = Self(rawValue: SQLITE_NOTFOUND)
-    /// Insertion failed because database is full
+    /// Insertion failed because the database is full.
+    ///
+    /// Related SQLite: `SQLITE_FULL`
     public static let full = Self(rawValue: SQLITE_FULL)
-    /// Unable to open the database file
+    /// Unable to open the database file.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN`
     public static let cantOpen = Self(rawValue: SQLITE_CANTOPEN)
-    /// Database lock protocol error
+    /// Database lock protocol error.
+    ///
+    /// Related SQLite: `SQLITE_PROTOCOL`
     public static let `protocol` = Self(rawValue: SQLITE_PROTOCOL)
-    /// Internal use only
+    /// Internal use only.
+    ///
+    /// Related SQLite: `SQLITE_EMPTY`
     public static let empty = Self(rawValue: SQLITE_EMPTY)
-    /// The database schema changed
+    /// The database schema changed.
+    ///
+    /// Related SQLite: `SQLITE_SCHEMA`
     public static let schema = Self(rawValue: SQLITE_SCHEMA)
-    /// String or BLOB exceeds size limit
+    /// String or BLOB exceeds size limit.
+    ///
+    /// Related SQLite: `SQLITE_TOOBIG`
     public static let tooBig = Self(rawValue: SQLITE_TOOBIG)
-    /// Abort due to constraint violation
+    /// Abort due to constraint violation.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT`
     public static let constraint = Self(rawValue: SQLITE_CONSTRAINT)
-    /// Data type mismatch
+    /// Data type mismatch.
+    ///
+    /// Related SQLite: `SQLITE_MISMATCH`
     public static let mismatch = Self(rawValue: SQLITE_MISMATCH)
-    /// Library used incorrectly
+    /// Library used incorrectly.
+    ///
+    /// Related SQLite: `SQLITE_MISUSE`
     public static let misuse = Self(rawValue: SQLITE_MISUSE)
-    /// Uses OS features not supported on host
+    /// Uses OS features not supported on host.
+    ///
+    /// Related SQLite: `SQLITE_NOLFS`
     public static let noLFS = Self(rawValue: SQLITE_NOLFS)
-    /// Authorization denied
+    /// Authorization denied.
+    ///
+    /// Related SQLite: `SQLITE_AUTH`
     public static let auth = Self(rawValue: SQLITE_AUTH)
-    /// Not used
+    /// Not used.
+    ///
+    /// Related SQLite: `SQLITE_FORMAT`
     public static let format = Self(rawValue: SQLITE_FORMAT)
-    /// 2nd parameter to sqlite3_bind out of range
+    /// Bind parameter index is out of range.
+    ///
+    /// Related SQLite: `SQLITE_RANGE`
     public static let range = Self(rawValue: SQLITE_RANGE)
-    /// File opened that is not a database file
+    /// File opened is not a database file.
+    ///
+    /// Related SQLite: `SQLITE_NOTADB`
     public static let notADB = Self(rawValue: SQLITE_NOTADB)
-    /// Notifications from sqlite3_log()
+    /// Notification from the logging interface.
+    ///
+    /// Related SQLite: `SQLITE_NOTICE`
     public static let notice = Self(rawValue: SQLITE_NOTICE)
-    /// Warnings from sqlite3_log()
+    /// Warning from the logging interface.
+    ///
+    /// Related SQLite: `SQLITE_WARNING`
     public static let warning = Self(rawValue: SQLITE_WARNING)
-    /// sqlite3_step() has another row ready
+    /// A row is ready for processing.
+    ///
+    /// Related SQLite: `SQLITE_ROW`
     public static let row = Self(rawValue: SQLITE_ROW)
-    /// sqlite3_step() has finished executing
+    /// Execution has finished successfully.
+    ///
+    /// Related SQLite: `SQLITE_DONE`
     public static let done = Self(rawValue: SQLITE_DONE)
 
+    /// Missing collation sequence.
+    ///
+    /// Related SQLite: `SQLITE_ERROR_MISSING_COLLSEQ`
     public static let errorMissingCollSeq = Self(rawValue: LSQLITE_ERROR_MISSING_COLLSEQ)
+    /// Retry the operation.
+    ///
+    /// Related SQLite: `SQLITE_ERROR_RETRY`
     public static let errorRetry = Self(rawValue: LSQLITE_ERROR_RETRY)
+    /// Snapshot error.
+    ///
+    /// Related SQLite: `SQLITE_ERROR_SNAPSHOT`
     public static let errorSnapshot = Self(rawValue: LSQLITE_ERROR_SNAPSHOT)
+    /// I/O error while reading.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_READ`
     public static let ioErrorRead = Self(rawValue: LSQLITE_IOERR_READ)
+    /// I/O error with a short read.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SHORT_READ`
     public static let ioErrorShortRead = Self(rawValue: LSQLITE_IOERR_SHORT_READ)
+    /// I/O error while writing.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_WRITE`
     public static let ioErrorWrite = Self(rawValue: LSQLITE_IOERR_WRITE)
+    /// I/O error during fsync.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_FSYNC`
     public static let ioErrorFSync = Self(rawValue: LSQLITE_IOERR_FSYNC)
+    /// I/O error syncing a directory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_DIR_FSYNC`
     public static let ioErrorDirFSync = Self(rawValue: LSQLITE_IOERR_DIR_FSYNC)
+    /// I/O error truncating the file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_TRUNCATE`
     public static let ioErrorTruncate = Self(rawValue: LSQLITE_IOERR_TRUNCATE)
+    /// I/O error reading file metadata.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_FSTAT`
     public static let ioErrorFStat = Self(rawValue: LSQLITE_IOERR_FSTAT)
+    /// I/O error unlocking the file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_UNLOCK`
     public static let ioErrorUnlock = Self(rawValue: LSQLITE_IOERR_UNLOCK)
+    /// I/O error obtaining a read lock.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_RDLOCK`
     public static let ioErrorRDLock = Self(rawValue: LSQLITE_IOERR_RDLOCK)
+    /// I/O error deleting a file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_DELETE`
     public static let ioErrorDelete = Self(rawValue: LSQLITE_IOERR_DELETE)
+    /// I/O error due to a blocked operation.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_BLOCKED`
     public static let ioErrorBlocked = Self(rawValue: LSQLITE_IOERR_BLOCKED)
+    /// I/O error due to out-of-memory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_NOMEM`
     public static let ioErrorNoMem = Self(rawValue: LSQLITE_IOERR_NOMEM)
+    /// I/O error accessing a file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_ACCESS`
     public static let ioErrorAccess = Self(rawValue: LSQLITE_IOERR_ACCESS)
+    /// I/O error checking a reserved lock.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_CHECKRESERVEDLOCK`
     public static let ioErrorCheckReservedLock = Self(rawValue: LSQLITE_IOERR_CHECKRESERVEDLOCK)
+    /// I/O error locking a file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_LOCK`
     public static let ioErrorLock = Self(rawValue: LSQLITE_IOERR_LOCK)
+    /// I/O error closing a file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_CLOSE`
     public static let ioErrorClose = Self(rawValue: LSQLITE_IOERR_CLOSE)
+    /// I/O error closing a directory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_DIR_CLOSE`
     public static let ioErrorDirClose = Self(rawValue: LSQLITE_IOERR_DIR_CLOSE)
+    /// I/O error opening shared memory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SHMOPEN`
     public static let ioErrorShMOpen = Self(rawValue: LSQLITE_IOERR_SHMOPEN)
+    /// I/O error sizing shared memory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SHMSIZE`
     public static let ioErrorShMSize = Self(rawValue: LSQLITE_IOERR_SHMSIZE)
+    /// I/O error locking shared memory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SHMLOCK`
     public static let ioErrorShMLock = Self(rawValue: LSQLITE_IOERR_SHMLOCK)
+    /// I/O error mapping shared memory.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SHMMAP`
     public static let ioErrorShMMap = Self(rawValue: LSQLITE_IOERR_SHMMAP)
+    /// I/O error seeking within a file.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_SEEK`
     public static let ioErrorSeek = Self(rawValue: LSQLITE_IOERR_SEEK)
+    /// I/O error deleting a file that does not exist.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_DELETE_NOENT`
     public static let ioErrorDeleteNoEnt = Self(rawValue: LSQLITE_IOERR_DELETE_NOENT)
+    /// I/O error with memory-mapped I/O.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_MMAP`
     public static let ioErrorMMap = Self(rawValue: LSQLITE_IOERR_MMAP)
+    /// I/O error getting a temporary path.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_GETTEMPPATH`
     public static let ioErrorGetTempPath = Self(rawValue: LSQLITE_IOERR_GETTEMPPATH)
+    /// I/O error converting a path.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_CONVPATH`
     public static let ioErrorConvPath = Self(rawValue: LSQLITE_IOERR_CONVPATH)
+    /// I/O error with a vnode.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_VNODE`
     public static let ioErrorVNode = Self(rawValue: LSQLITE_IOERR_VNODE)
+    /// I/O error due to authorization.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_AUTH`
     public static let ioErrorAuth = Self(rawValue: LSQLITE_IOERR_AUTH)
+    /// I/O error beginning an atomic write.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_BEGIN_ATOMIC`
     public static let ioErrorBeginAtomic = Self(rawValue: LSQLITE_IOERR_BEGIN_ATOMIC)
+    /// I/O error committing an atomic write.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_COMMIT_ATOMIC`
     public static let ioErrorCommitAtomic = Self(rawValue: LSQLITE_IOERR_COMMIT_ATOMIC)
+    /// I/O error rolling back an atomic write.
+    ///
+    /// Related SQLite: `SQLITE_IOERR_ROLLBACK_ATOMIC`
     public static let ioErrorRollbackAtomic = Self(rawValue: LSQLITE_IOERR_ROLLBACK_ATOMIC)
+    /// Locked due to shared cache contention.
+    ///
+    /// Related SQLite: `SQLITE_LOCKED_SHAREDCACHE`
     public static let lockedSharedCache = Self(rawValue: LSQLITE_LOCKED_SHAREDCACHE)
+    /// Virtual table is locked.
+    ///
+    /// Related SQLite: `SQLITE_LOCKED_VTAB`
     public static let lockedVTab = Self(rawValue: LSQLITE_LOCKED_VTAB)
+    /// Database busy during recovery.
+    ///
+    /// Related SQLite: `SQLITE_BUSY_RECOVERY`
     public static let busyRecovery = Self(rawValue: LSQLITE_BUSY_RECOVERY)
+    /// Database busy due to a snapshot.
+    ///
+    /// Related SQLite: `SQLITE_BUSY_SNAPSHOT`
     public static let busySnapshot = Self(rawValue: LSQLITE_BUSY_SNAPSHOT)
+    /// Cannot open because no temporary directory is available.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN_NOTEMPDIR`
     public static let cantOpenNoTempDir = Self(rawValue: LSQLITE_CANTOPEN_NOTEMPDIR)
+    /// Cannot open because the path is a directory.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN_ISDIR`
     public static let cantOpenIsDir = Self(rawValue: LSQLITE_CANTOPEN_ISDIR)
+    /// Cannot open because full path resolution failed.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN_FULLPATH`
     public static let cantOpenFullPath = Self(rawValue: LSQLITE_CANTOPEN_FULLPATH)
+    /// Cannot open because path conversion failed.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN_CONVPATH`
     public static let cantOpenConvPath = Self(rawValue: LSQLITE_CANTOPEN_CONVPATH)
-    /// Not Used
+    /// Reserved but not used.
+    ///
+    /// Related SQLite: `SQLITE_CANTOPEN_DIRTYWAL`
     public static let cantOpenDirtyWAL = Self(rawValue: LSQLITE_CANTOPEN_DIRTYWAL)
+    /// Corruption in a virtual table.
+    ///
+    /// Related SQLite: `SQLITE_CORRUPT_VTAB`
     public static let corruptVTab = Self(rawValue: LSQLITE_CORRUPT_VTAB)
+    /// Corruption in a sequence.
+    ///
+    /// Related SQLite: `SQLITE_CORRUPT_SEQUENCE`
     public static let corruptSequence = Self(rawValue: LSQLITE_CORRUPT_SEQUENCE)
+    /// Read-only database during recovery.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_RECOVERY`
     public static let readonlyRecovery = Self(rawValue: LSQLITE_READONLY_RECOVERY)
+    /// Read-only database because locking failed.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_CANTLOCK`
     public static let readonlyCantLock = Self(rawValue: LSQLITE_READONLY_CANTLOCK)
+    /// Read-only database due to rollback.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_ROLLBACK`
     public static let readonlyRollback = Self(rawValue: LSQLITE_READONLY_ROLLBACK)
+    /// Read-only database because it was moved.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_DBMOVED`
     public static let readonlyDBMoved = Self(rawValue: LSQLITE_READONLY_DBMOVED)
+    /// Read-only database because initialization failed.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_CANTINIT`
     public static let readonlyCantInit = Self(rawValue: LSQLITE_READONLY_CANTINIT)
+    /// Read-only database because the path is a directory.
+    ///
+    /// Related SQLite: `SQLITE_READONLY_DIRECTORY`
     public static let readonlyDirectory = Self(rawValue: LSQLITE_READONLY_DIRECTORY)
+    /// Statement aborted due to rollback.
+    ///
+    /// Related SQLite: `SQLITE_ABORT_ROLLBACK`
     public static let abortRollback = Self(rawValue: LSQLITE_ABORT_ROLLBACK)
+    /// CHECK constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_CHECK`
     public static let constraintCheck = Self(rawValue: LSQLITE_CONSTRAINT_CHECK)
+    /// Commit hook constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_COMMITHOOK`
     public static let constraintCommitHook = Self(rawValue: LSQLITE_CONSTRAINT_COMMITHOOK)
+    /// FOREIGN KEY constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_FOREIGNKEY`
     public static let constraintForeignKey = Self(rawValue: LSQLITE_CONSTRAINT_FOREIGNKEY)
+    /// Constraint failed in a function.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_FUNCTION`
     public static let constraintFunction = Self(rawValue: LSQLITE_CONSTRAINT_FUNCTION)
+    /// NOT NULL constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_NOTNULL`
     public static let constraintNotNull = Self(rawValue: LSQLITE_CONSTRAINT_NOTNULL)
+    /// PRIMARY KEY constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_PRIMARYKEY`
     public static let constraintPrimaryKey = Self(rawValue: LSQLITE_CONSTRAINT_PRIMARYKEY)
+    /// Trigger constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_TRIGGER`
     public static let constraintTrigger = Self(rawValue: LSQLITE_CONSTRAINT_TRIGGER)
+    /// UNIQUE constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_UNIQUE`
     public static let constraintUnique = Self(rawValue: LSQLITE_CONSTRAINT_UNIQUE)
+    /// Virtual table constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_VTAB`
     public static let constraintVTab = Self(rawValue: LSQLITE_CONSTRAINT_VTAB)
+    /// Rowid constraint failed.
+    ///
+    /// Related SQLite: `SQLITE_CONSTRAINT_ROWID`
     public static let constraintRowID = Self(rawValue: LSQLITE_CONSTRAINT_ROWID)
+    /// WAL recovery notice.
+    ///
+    /// Related SQLite: `SQLITE_NOTICE_RECOVER_WAL`
     public static let noticeRecoverWAL = Self(rawValue: LSQLITE_NOTICE_RECOVER_WAL)
+    /// Rollback recovery notice.
+    ///
+    /// Related SQLite: `SQLITE_NOTICE_RECOVER_ROLLBACK`
     public static let noticeRecoverRollback = Self(rawValue: LSQLITE_NOTICE_RECOVER_ROLLBACK)
+    /// Automatic index warning.
+    ///
+    /// Related SQLite: `SQLITE_WARNING_AUTOINDEX`
     public static let warningAutoIndex = Self(rawValue: LSQLITE_WARNING_AUTOINDEX)
+    /// Authorization denied by user-defined authorizer.
+    ///
+    /// Related SQLite: `SQLITE_AUTH_USER`
     public static let authUser = Self(rawValue: LSQLITE_AUTH_USER)
+    /// Extension loaded permanently.
+    ///
+    /// Related SQLite: `SQLITE_OK_LOAD_PERMANENTLY`
     public static let okLoadPermanently = Self(rawValue: LSQLITE_OK_LOAD_PERMANENTLY)
 
     /// Human-readable description for this result code.

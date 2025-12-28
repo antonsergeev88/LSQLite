@@ -11,8 +11,17 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// The named database is not attached on this connection.
+        ///
+        /// Related SQLite: `sqlite3_db_readonly`
         public static let noDatabase = Self(rawValue: -1)
+        /// The named database is read/write.
+        ///
+        /// Related SQLite: `sqlite3_db_readonly`
         public static let readwrite = Self(rawValue: 0)
+        /// The named database is read-only.
+        ///
+        /// Related SQLite: `sqlite3_db_readonly`
         public static let readonly = Self(rawValue: 1)
 
         public var description: String {

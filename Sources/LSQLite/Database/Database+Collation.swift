@@ -26,10 +26,25 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// UTF-8 text encoding for comparison inputs.
+        ///
+        /// Related SQLite: `SQLITE_UTF8`
         public static let utf8 = Self(rawValue: SQLITE_UTF8)
+        /// UTF-16 little-endian text encoding for comparison inputs.
+        ///
+        /// Related SQLite: `SQLITE_UTF16LE`
         public static let utf16le = Self(rawValue: SQLITE_UTF16LE)
+        /// UTF-16 big-endian text encoding for comparison inputs.
+        ///
+        /// Related SQLite: `SQLITE_UTF16BE`
         public static let utf16be = Self(rawValue: SQLITE_UTF16BE)
+        /// UTF-16 text encoding using native byte order.
+        ///
+        /// Related SQLite: `SQLITE_UTF16`
         public static let utf16 = Self(rawValue: SQLITE_UTF16)
+        /// UTF-16 text encoding with 2-byte alignment.
+        ///
+        /// Related SQLite: `SQLITE_UTF16_ALIGNED`
         public static let utf16Aligned = Self(rawValue: SQLITE_UTF16_ALIGNED)
 
         public var description: String {

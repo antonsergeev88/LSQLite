@@ -1,9 +1,13 @@
 import MissedSwiftSQLite
 
 extension Statement {
-    /// Steps the prepared statement once, returning the SQLite result code (row, done, or error).
+    /// Evaluates the prepared statement once.
+    /// - Returns: Result code indicating a row is available, the statement
+    ///   finished, or an error occurred.
     ///
-    /// Related SQLite: `sqlite3_step`, `sqlite3_reset`
+    /// After `.done` or an error, call `reset()` before stepping again.
+    ///
+    /// Related SQLite: `sqlite3_step`
     @inlinable public func step() -> ResultCode {
         sqlite3_step(rawValue).resultCode
     }

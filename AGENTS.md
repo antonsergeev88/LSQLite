@@ -5,6 +5,10 @@
 - Public APIs are thin `@inlinable` forwarders to the underlying `sqlite3_*` calls. Avoid adding higher-level abstractions, throwing error flows, or behavior changes beyond the existing SQLite semantics.
 - The wrapper types must always allow escape hatches: every wrapper should expose a `rawValue` that maps directly to the C handle or constant.
 - Inline documentation is first-class. New public symbols should include concise Swift doc comments plus a "Related SQLite:" section listing the original SQLite functions or constants they wrap.
+- SQLite symbols (function or constant names) appear only in the "Related SQLite:" section, not in the narrative doc text.
+- Documentation should be as complete as the original C API docs, but omit C-only details and reflect the actual Swift interface.
+- When documenting a function, method, or typealias for a function, include parameter and return descriptions.
+- Do not add documentation for protocol-derived requirements (such as `description`, `debugDescription`, or similar) or for the extension declarations themselves.
 
 ## Testing direction
 - Prefer Swift Testing over XCTest for new or updated tests. Existing XCTest cases are legacy and should be migrated opportunistically. Keep tests runnable across Apple and non-Apple platforms.

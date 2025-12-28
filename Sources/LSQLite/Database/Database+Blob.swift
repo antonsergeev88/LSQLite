@@ -14,7 +14,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Opens the BLOB for read-only access.
+        ///
+        /// Related SQLite: `sqlite3_blob_open`
         public static let readonly = Self(rawValue: 0)
+        /// Opens the BLOB for read/write access.
+        ///
+        /// Related SQLite: `sqlite3_blob_open`
         public static let readwrite = Self(rawValue: 1)
 
         public var description: String {
@@ -69,9 +75,8 @@ extension Database {
     /// expiration are not rolled back; they will commit if the transaction completes.
     ///
     /// Use `Blob.byteCount` to get the size of the opened BLOB. The size cannot be changed by this
-    /// interface; use UPDATE to change the size. Use `Statement.bindZeroBlob(length:at:)`,
-    /// `Context.resultZeroBlob(length:)`, or the `zeroblob` SQL function to create a zero-filled
-    /// BLOB suitable for incremental I/O.
+    /// interface; use UPDATE to change the size. Use `Statement.bindZeroBlob(length:at:)` or
+    /// `Context.resultZeroBlob(length:)` to create zero-filled BLOBs suitable for incremental I/O.
     ///
     /// To avoid resource leaks, close every open BLOB handle with `Blob.close()`.
     /// - Parameters:
@@ -81,7 +86,7 @@ extension Database {
     ///   - columnName: Column holding the BLOB/TEXT value.
     ///   - rowID: Rowid to target.
     ///   - flags: Access mode for the handle.
-    /// - Returns: Result of `sqlite3_blob_open`.
+    /// - Returns: Result code for the open operation.
     ///
     /// Related SQLite: `sqlite3_blob_open`, `sqlite3_blob_read`, `sqlite3_blob_write`, `sqlite3_blob_reopen`, `sqlite3_blob_close`, `sqlite3_blob_bytes`
     @inlinable public func openBlob(_ blob: inout Blob?, databaseName: String, tableName: String, columnName: String, rowID: RowID, flags: OpenBlobFlag) -> ResultCode {

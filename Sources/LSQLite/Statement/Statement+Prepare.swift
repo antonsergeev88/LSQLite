@@ -1,7 +1,8 @@
 import MissedSwiftSQLite
 
 extension Statement {
-    /// Flags for sqlite3_prepare_v3 prepFlags argument.
+    /// Options that control statement compilation.
+    /// Use these flags with `prepare(..., prepareFlag:)`.
     ///
     /// Related SQLite: `sqlite3_prepare_v3`, `SQLITE_PREPARE_PERSISTENT`, `SQLITE_PREPARE_NORMALIZE`, `SQLITE_PREPARE_NO_VTAB`
     @frozen public struct PrepareFlag: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
@@ -66,18 +67,30 @@ extension Statement {
         }
     }
 
-    /// Compiles UTF-8 SQL into a prepared statement using sqlite3_prepare_v2.
+    /// Compiles the first statement in a UTF-8 SQL string.
+    /// - Parameters:
+    ///   - statement: Receives the prepared statement, or nil if the input
+    ///     contains no SQL.
+    ///   - sql: SQL text to compile.
+    ///   - database: Connection used to compile the statement.
+    /// - Returns: Result code from compilation.
     ///
-    /// Related SQLite: `sqlite3_prepare_v2`, `sqlite3_finalize`, `sqlite3_step`
+    /// Related SQLite: `sqlite3_prepare_v2`
     @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for database: Database) -> ResultCode {
         var tail: String?
         return prepare(&statement, sql: sql, tail: &tail, for: database)
     }
 
-    /// Compiles UTF-8 SQL into a prepared statement using sqlite3_prepare_v2.
-    /// - Parameter tail: Receives the remaining SQL text, if any.
+    /// Compiles the first statement in a UTF-8 SQL string.
+    /// - Parameters:
+    ///   - statement: Receives the prepared statement, or nil if the input
+    ///     contains no SQL.
+    ///   - sql: SQL text to compile.
+    ///   - tail: Receives any remaining SQL text after the first statement.
+    ///   - database: Connection used to compile the statement.
+    /// - Returns: Result code from compilation.
     ///
-    /// Related SQLite: `sqlite3_prepare_v2`, `sqlite3_finalize`, `sqlite3_step`
+    /// Related SQLite: `sqlite3_prepare_v2`
     @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for database: Database) -> ResultCode {
         var statementPointer: OpaquePointer?
         var tailString: String?
@@ -92,19 +105,33 @@ extension Statement {
         return resultCode
     }
 
-    /// Compiles UTF-8 SQL with sqlite3_prepare_v3 using the provided flags.
+    /// Compiles the first statement in a UTF-8 SQL string with compilation options.
+    /// - Parameters:
+    ///   - statement: Receives the prepared statement, or nil if the input
+    ///     contains no SQL.
+    ///   - sql: SQL text to compile.
+    ///   - database: Connection used to compile the statement.
+    ///   - prepareFlag: Options that influence compilation.
+    /// - Returns: Result code from compilation.
     ///
-    /// Related SQLite: `sqlite3_prepare_v3`, `sqlite3_finalize`, `sqlite3_step`
+    /// Related SQLite: `sqlite3_prepare_v3`
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
     @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
         var tail: String?
         return prepare(&statement, sql: sql, tail: &tail, for: database, prepareFlag: prepareFlag)
     }
 
-    /// Compiles UTF-8 SQL with sqlite3_prepare_v3 using the provided flags.
-    /// - Parameter tail: Receives the remaining SQL text, if any.
+    /// Compiles the first statement in a UTF-8 SQL string with compilation options.
+    /// - Parameters:
+    ///   - statement: Receives the prepared statement, or nil if the input
+    ///     contains no SQL.
+    ///   - sql: SQL text to compile.
+    ///   - tail: Receives any remaining SQL text after the first statement.
+    ///   - database: Connection used to compile the statement.
+    ///   - prepareFlag: Options that influence compilation.
+    /// - Returns: Result code from compilation.
     ///
-    /// Related SQLite: `sqlite3_prepare_v3`, `sqlite3_finalize`, `sqlite3_step`
+    /// Related SQLite: `sqlite3_prepare_v3`
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
     @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
         var statementPointer: OpaquePointer? = nil

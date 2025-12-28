@@ -1,27 +1,32 @@
 import MissedSwiftSQLite
 
 extension Database {
-    /// SQLite filename wrapper used when opening a connection.
+    /// Filename wrapper used when opening a connection.
     ///
-    /// To construct a `file:` URI filename, use `Database.FileName.uri(...)` and open with `.uri` in the flags.
+    /// For `file:` URIs, pass the full URI string as `rawValue` and include `.uri` in the open flags.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`, `SQLITE_OPEN_URI`
     @frozen public struct FileName: RawRepresentable, CustomStringConvertible {
         public let rawValue: String
 
         /// Creates a filename wrapper from a Swift string.
+        /// - Parameter rawValue: Database path or URI string to open.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`
         @inlinable public init(rawValue: String) {
             self.rawValue = rawValue
         }
 
-        /// Filename for an in-memory database.
+        /// Filename for a private in-memory database.
+        ///
+        /// The database exists only for the lifetime of the connection.
         ///
         /// Related SQLite: `":memory:"`, `sqlite3_open`, `sqlite3_open_v2`
         public static let memory = Self(rawValue: ":memory:")
 
-        /// Filename for a temporary on-disk database.
+        /// Filename for a private temporary on-disk database.
+        ///
+        /// The file is deleted automatically when the connection closes.
         ///
         /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `sqlite3_temp_directory`
         public static let temporary = Self(rawValue: "")
@@ -31,7 +36,7 @@ extension Database {
         }
     }
 
-    /// Flags passed to `open(_:at:withOpenFlags:)` and custom VFS xOpen calls.
+    /// Flags passed to `open(_:at:withOpenFlags:)` and to custom VFS open calls.
     ///
     /// Related SQLite: `sqlite3_open_v2`, `sqlite3_vfs.xOpen`, `SQLITE_OPEN_*`
     @frozen public struct OpenFlag: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
@@ -41,31 +46,106 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Opens the database in read-only mode.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_READONLY`
         public static let readonly = Self(rawValue: SQLITE_OPEN_READONLY)
+        /// Opens the database for read/write access when possible.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_READWRITE`
         public static let readwrite = Self(rawValue: SQLITE_OPEN_READWRITE)
+        /// Creates the database file if it does not exist.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_CREATE`
         public static let create = Self(rawValue: SQLITE_OPEN_CREATE)
+        /// VFS-only flag that deletes the file when it is closed.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_DELETEONCLOSE`
         public static let deleteOnClose = Self(rawValue: SQLITE_OPEN_DELETEONCLOSE)
+        /// VFS-only flag indicating the file should be created exclusively.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_EXCLUSIVE`
         public static let exclusive = Self(rawValue: SQLITE_OPEN_EXCLUSIVE)
+        /// Enables auto-proxy for shared cache mode.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_AUTOPROXY`
         public static let autoproxy = Self(rawValue: SQLITE_OPEN_AUTOPROXY)
+        /// Interprets the filename as a URI.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_URI`
         public static let uri = Self(rawValue: SQLITE_OPEN_URI)
+        /// Opens a pure in-memory database.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MEMORY`
         public static let memory = Self(rawValue: SQLITE_OPEN_MEMORY)
+        /// VFS-only flag for the main database file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MAIN_DB`
         public static let mainDB = Self(rawValue: SQLITE_OPEN_MAIN_DB)
+        /// VFS-only flag for the temp database file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TEMP_DB`
         public static let tempDB = Self(rawValue: SQLITE_OPEN_TEMP_DB)
+        /// VFS-only flag for transient database files.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TRANSIENT_DB`
         public static let transientDB = Self(rawValue: SQLITE_OPEN_TRANSIENT_DB)
+        /// VFS-only flag for the main journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MAIN_JOURNAL`
         public static let mainJournal = Self(rawValue: SQLITE_OPEN_MAIN_JOURNAL)
+        /// VFS-only flag for the temp journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TEMP_JOURNAL`
         public static let tempJournal = Self(rawValue: SQLITE_OPEN_TEMP_JOURNAL)
+        /// VFS-only flag for subjournal files.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_SUBJOURNAL`
         public static let subjournal = Self(rawValue: SQLITE_OPEN_SUBJOURNAL)
+        /// VFS-only flag for the super/master journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MASTER_JOURNAL`
         public static let masterJournal = Self(rawValue: SQLITE_OPEN_MASTER_JOURNAL)
+        /// Opens the connection in multi-thread mode without per-connection mutexes.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_NOMUTEX`
         public static let noMutex = Self(rawValue: SQLITE_OPEN_NOMUTEX)
+        /// Opens the connection in serialized mode with full mutexes.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FULLMUTEX`
         public static let fullMutex = Self(rawValue: SQLITE_OPEN_FULLMUTEX)
+        /// Enables shared cache for this connection.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_SHAREDCACHE`
         public static let sharedCache = Self(rawValue: SQLITE_OPEN_SHAREDCACHE)
+        /// Disables shared cache for this connection.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_PRIVATECACHE`
         public static let privateCache = Self(rawValue: SQLITE_OPEN_PRIVATECACHE)
+        /// VFS-only flag for the WAL file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_WAL`
         public static let wal = Self(rawValue: SQLITE_OPEN_WAL)
 #if canImport(Darwin)
+        /// Applies complete file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETE`
         public static let fileProtectionComplete = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETE)
+        /// Applies complete-unless-open file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN`
         public static let fileProtectionCompleteUnlessOpen = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN)
+        /// Applies complete-until-first-user-authentication file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION`
         public static let fileProtectionCompleteUntilFirstUserAuthentication = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION)
+        /// Disables file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_NONE`
         public static let fileProtectionNone = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_NONE)
+        /// Mask for file protection flags on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_MASK`
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
 #endif
 
@@ -187,11 +267,28 @@ extension Database {
     }
 
     /// Opens a database connection at the given filename using the supplied flags.
+    ///
+    /// The `openFlag` value must include one of: `.readonly`, `.readwrite`, or `.readwrite` + `.create`.
+    /// Additional flags control URI handling, caching, mutex mode, and other options.
+    /// When using `.readonly`, the database must already exist. When using `.readwrite` without
+    /// `.create`, the database must already exist and the connection may still open read-only if
+    /// the file is write-protected. Use `readWriteAccessState(forDatabaseNamed:)` to check the
+    /// actual access mode.
+    ///
+    /// On success, `database` is set to a new handle and the result is `.ok`.
+    /// On failure, `database` may still be set to a handle unless the open fails due to
+    /// an out-of-memory condition. When a handle is returned, the caller is responsible
+    /// for closing it to release resources.
+    ///
+    /// `FileName.memory` opens a private in-memory database that disappears when the
+    /// connection closes. The `.memory` flag also forces an in-memory database, in which
+    /// case the filename is used only for cache sharing. `FileName.temporary` creates a
+    /// private on-disk database that is deleted on close.
     /// - Parameters:
-    ///   - database: Output connection handle when opening succeeds.
-    ///   - filename: Target database path or helper filename like `.memory`.
-    ///   - openFlag: Flags controlling open mode and options.
-    /// - Returns: Result code from `sqlite3_open_v2`.
+    ///   - database: Receives the connection handle; may be set even when the result is an error.
+    ///   - filename: Target database path or special filename like `.memory`.
+    ///   - openFlag: Flags controlling the open mode and options.
+    /// - Returns: Result code from the open attempt.
     ///
     /// Related SQLite: `sqlite3_open`, `sqlite3_open_v2`, `SQLITE_OPEN_*`, `sqlite3_temp_directory`
     @inlinable public static func open(_ database: inout Database?, at filename: FileName, withOpenFlags openFlag: OpenFlag) -> ResultCode {
