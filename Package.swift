@@ -26,7 +26,7 @@ let package = Package(
         ),
         .testTarget(
             name: "LSQLiteTests",
-            dependencies: ["LSQLite"]
+            dependencies: ["LSQLite", "MissedSwiftSQLite"]
         ),
     ]
 )
