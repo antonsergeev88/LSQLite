@@ -4,12 +4,12 @@ import Testing
 
 @Suite("Database+Filename")
 struct DatabaseFilenameTests {
-    @Test("filename returns nil for in-memory database")
-    func filenameReturnsNilForInMemoryDatabase() throws {
+    @Test("filename returns empty string for in-memory database")
+    func filenameReturnsEmptyStringForInMemoryDatabase() throws {
         var database: Database?
         try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
         let openDatabase = try #require(database)
-        #expect(openDatabase.filename(forDatabaseNamed: "main") == nil)
+        #expect(openDatabase.filename(forDatabaseNamed: "main") == "")
         #expect(openDatabase.filename(forDatabaseNamed: "missing") == nil)
         _ = openDatabase.close()
     }

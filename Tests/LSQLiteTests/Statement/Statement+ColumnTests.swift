@@ -55,7 +55,7 @@ final class StatementColumnTests {
         #expect(prepared.columnDouble(at: 3) == 3.5)
         #expect(prepared.columnInt(at: 2) == 42)
         #expect(prepared.columnInt64(at: 2) == 42)
-        #expect(prepared.columnText(at: 0) == nil)
+        #expect(prepared.columnText(at: 0) == "")
         #expect(prepared.columnText(at: 4) == "x")
         #expect(prepared.columnText(at: 5) == nil)
         #expect(prepared.columnBytes(at: 1) == 2)
@@ -66,8 +66,8 @@ final class StatementColumnTests {
         #expect(prepared.finalize() == .ok)
     }
 
-    @Test("column metadata treats empty identifiers as nil")
-    func columnMetadataTreatsEmptyIdentifiersAsNil() throws {
+    @Test("column metadata returns empty identifiers")
+    func columnMetadataReturnsEmptyIdentifiers() throws {
         try #require(database.exec("ATTACH DATABASE ':memory:' AS \"\"") == .ok)
         try #require(database.exec("CREATE TABLE \"\".\"\" (\"\" \"\")") == .ok)
         try #require(database.exec("INSERT INTO \"\".\"\" VALUES ('x')") == .ok)
@@ -77,11 +77,11 @@ final class StatementColumnTests {
         let prepared = try #require(statement)
 
         #expect(prepared.step() == .row)
-        #expect(prepared.columnName(at: 0) == nil)
-        #expect(prepared.columnDatabaseName(at: 0) == nil)
-        #expect(prepared.columnTableName(at: 0) == nil)
-        #expect(prepared.columnOriginName(at: 0) == nil)
-        #expect(prepared.columnDeclaredType(at: 0) == nil)
+        #expect(prepared.columnName(at: 0) == "")
+        #expect(prepared.columnDatabaseName(at: 0) == "")
+        #expect(prepared.columnTableName(at: 0) == "")
+        #expect(prepared.columnOriginName(at: 0) == "")
+        #expect(prepared.columnDeclaredType(at: 0) == "")
         #expect(prepared.step() == .done)
         #expect(prepared.finalize() == .ok)
     }
