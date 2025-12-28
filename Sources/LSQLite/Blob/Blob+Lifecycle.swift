@@ -1,19 +1,24 @@
 import MissedSwiftSQLite
 
 extension Blob {
-    /// Moves this BLOB handle to a different row of the same table.
-    /// - Parameter rowID: Target rowid.
-    /// - Returns: Result of `sqlite3_blob_reopen`.
+    /// Moves this handle to a different row of the same table.
     ///
-    /// Related SQLite: `sqlite3_blob_reopen`, `sqlite3_blob_read`, `sqlite3_blob_write`, `sqlite3_blob_bytes`
+    /// The database, table, and column stay the same. On failure, the handle becomes
+    /// aborted and `read` or `write` return `.abort`.
+    /// - Parameter rowID: Target rowid.
+    /// - Returns: Result code for the operation.
+    ///
+    /// Related SQLite: `sqlite3_blob_reopen`
     @inlinable public func reopen(at rowID: RowID) -> ResultCode {
         sqlite3_blob_reopen(rawValue, rowID.rawValue).resultCode
     }
 
-    /// Closes this BLOB handle; auto-commit transactions may finalize if no other writers remain.
-    /// - Returns: Result of `sqlite3_blob_close`.
+    /// Closes this handle.
     ///
-    /// Related SQLite: `sqlite3_blob_close`, `sqlite3_errcode`, `sqlite3_errmsg`
+    /// Closing always releases the handle, even if an error is returned.
+    /// - Returns: Result code for the close.
+    ///
+    /// Related SQLite: `sqlite3_blob_close`
     @inlinable public func close() -> ResultCode {
         sqlite3_blob_close(rawValue).resultCode
     }
