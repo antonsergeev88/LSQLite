@@ -41,31 +41,106 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Opens the database in read-only mode.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_READONLY`
         public static let readonly = Self(rawValue: SQLITE_OPEN_READONLY)
+        /// Opens the database for read/write access when possible.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_READWRITE`
         public static let readwrite = Self(rawValue: SQLITE_OPEN_READWRITE)
+        /// Creates the database file if it does not exist.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_CREATE`
         public static let create = Self(rawValue: SQLITE_OPEN_CREATE)
+        /// VFS-only flag that deletes the file when it is closed.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_DELETEONCLOSE`
         public static let deleteOnClose = Self(rawValue: SQLITE_OPEN_DELETEONCLOSE)
+        /// VFS-only flag indicating the file should be created exclusively.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_EXCLUSIVE`
         public static let exclusive = Self(rawValue: SQLITE_OPEN_EXCLUSIVE)
+        /// Enables auto-proxy for shared cache mode.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_AUTOPROXY`
         public static let autoproxy = Self(rawValue: SQLITE_OPEN_AUTOPROXY)
+        /// Interprets the filename as a URI.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_URI`
         public static let uri = Self(rawValue: SQLITE_OPEN_URI)
+        /// Opens a pure in-memory database.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MEMORY`
         public static let memory = Self(rawValue: SQLITE_OPEN_MEMORY)
+        /// VFS-only flag for the main database file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MAIN_DB`
         public static let mainDB = Self(rawValue: SQLITE_OPEN_MAIN_DB)
+        /// VFS-only flag for the temp database file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TEMP_DB`
         public static let tempDB = Self(rawValue: SQLITE_OPEN_TEMP_DB)
+        /// VFS-only flag for transient database files.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TRANSIENT_DB`
         public static let transientDB = Self(rawValue: SQLITE_OPEN_TRANSIENT_DB)
+        /// VFS-only flag for the main journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MAIN_JOURNAL`
         public static let mainJournal = Self(rawValue: SQLITE_OPEN_MAIN_JOURNAL)
+        /// VFS-only flag for the temp journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_TEMP_JOURNAL`
         public static let tempJournal = Self(rawValue: SQLITE_OPEN_TEMP_JOURNAL)
+        /// VFS-only flag for subjournal files.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_SUBJOURNAL`
         public static let subjournal = Self(rawValue: SQLITE_OPEN_SUBJOURNAL)
+        /// VFS-only flag for the super/master journal file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_MASTER_JOURNAL`
         public static let masterJournal = Self(rawValue: SQLITE_OPEN_MASTER_JOURNAL)
+        /// Opens the connection in multi-thread mode without per-connection mutexes.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_NOMUTEX`
         public static let noMutex = Self(rawValue: SQLITE_OPEN_NOMUTEX)
+        /// Opens the connection in serialized mode with full mutexes.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FULLMUTEX`
         public static let fullMutex = Self(rawValue: SQLITE_OPEN_FULLMUTEX)
+        /// Enables shared cache for this connection.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_SHAREDCACHE`
         public static let sharedCache = Self(rawValue: SQLITE_OPEN_SHAREDCACHE)
+        /// Disables shared cache for this connection.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_PRIVATECACHE`
         public static let privateCache = Self(rawValue: SQLITE_OPEN_PRIVATECACHE)
+        /// VFS-only flag for the WAL file.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_WAL`
         public static let wal = Self(rawValue: SQLITE_OPEN_WAL)
 #if canImport(Darwin)
+        /// Applies complete file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETE`
         public static let fileProtectionComplete = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETE)
+        /// Applies complete-unless-open file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN`
         public static let fileProtectionCompleteUnlessOpen = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN)
+        /// Applies complete-until-first-user-authentication file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION`
         public static let fileProtectionCompleteUntilFirstUserAuthentication = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION)
+        /// Disables file protection on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_NONE`
         public static let fileProtectionNone = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_NONE)
+        /// Mask for file protection flags on Apple platforms.
+        ///
+        /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_MASK`
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
 #endif
 

@@ -16,7 +16,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Continue executing statements and callbacks.
+        ///
+        /// Related SQLite: `sqlite3_exec`
         public static let `continue` = Self(rawValue: 0)
+        /// Abort execution and return an error to the caller.
+        ///
+        /// Related SQLite: `sqlite3_exec`
         public static let abort = Self(rawValue: 1)
 
         public var description: String {

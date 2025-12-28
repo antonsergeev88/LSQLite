@@ -11,7 +11,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Disable extended result codes for this connection.
+        ///
+        /// Related SQLite: `sqlite3_extended_result_codes`
         public static let off = Self(rawValue: 0)
+        /// Enable extended result codes for this connection.
+        ///
+        /// Related SQLite: `sqlite3_extended_result_codes`
         public static let on = Self(rawValue: 1)
 
         public var description: String {

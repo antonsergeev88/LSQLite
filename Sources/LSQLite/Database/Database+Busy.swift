@@ -16,7 +16,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Stop retrying and return busy to the caller.
+        ///
+        /// Related SQLite: `sqlite3_busy_handler`
         public static let `break` = Self(rawValue: 0)
+        /// Retry the operation that encountered the lock.
+        ///
+        /// Related SQLite: `sqlite3_busy_handler`
         public static let `continue` = Self(rawValue: 1)
 
         public var description: String {

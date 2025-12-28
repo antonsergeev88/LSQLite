@@ -14,7 +14,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Opens the BLOB for read-only access.
+        ///
+        /// Related SQLite: `sqlite3_blob_open`
         public static let readonly = Self(rawValue: 0)
+        /// Opens the BLOB for read/write access.
+        ///
+        /// Related SQLite: `sqlite3_blob_open`
         public static let readwrite = Self(rawValue: 1)
 
         public var description: String {

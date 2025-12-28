@@ -17,6 +17,9 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Successful return value for trace callbacks.
+        ///
+        /// Related SQLite: `sqlite3_trace_v2`
         public static let ok = Self(rawValue: 0)
 
         public var description: String {

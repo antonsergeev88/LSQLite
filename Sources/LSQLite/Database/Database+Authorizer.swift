@@ -37,10 +37,16 @@ extension Database {
         }
 
         /// Allow the action.
+        ///
+        /// Related SQLite: `SQLITE_OK`
         public static let ok = Self(rawValue: SQLITE_OK)
-        /// Abort the SQL statement with an error
+        /// Abort the SQL statement with an error.
+        ///
+        /// Related SQLite: `SQLITE_DENY`
         public static let deny = Self(rawValue: SQLITE_DENY)
-        /// Don't allow access, but don't generate an error
+        /// Disallow access but continue compiling.
+        ///
+        /// Related SQLite: `SQLITE_IGNORE`
         public static let ignore = Self(rawValue: SQLITE_IGNORE)
 
         public var description: String {
@@ -78,72 +84,140 @@ extension Database {
         }
 
         /// Index Name      Table Name
+        ///
+        /// Related SQLite: `SQLITE_CREATE_INDEX`
         public static let createIndex = Self(rawValue: SQLITE_CREATE_INDEX)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TABLE`
         public static let createTable = Self(rawValue: SQLITE_CREATE_TABLE)
         /// Index Name      Table Name
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_INDEX`
         public static let createTempIndex = Self(rawValue: SQLITE_CREATE_TEMP_INDEX)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_TABLE`
         public static let createTempTable = Self(rawValue: SQLITE_CREATE_TEMP_TABLE)
         /// Trigger Name    Table Name
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_TRIGGER`
         public static let createTempTrigger = Self(rawValue: SQLITE_CREATE_TEMP_TRIGGER)
         /// View Name       NULL
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TEMP_VIEW`
         public static let createTempView = Self(rawValue: SQLITE_CREATE_TEMP_VIEW)
         /// Trigger Name    Table Name
+        ///
+        /// Related SQLite: `SQLITE_CREATE_TRIGGER`
         public static let createTrigger = Self(rawValue: SQLITE_CREATE_TRIGGER)
         /// View Name       NULL
+        ///
+        /// Related SQLite: `SQLITE_CREATE_VIEW`
         public static let createView = Self(rawValue: SQLITE_CREATE_VIEW)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_DELETE`
         public static let delete = Self(rawValue: SQLITE_DELETE)
         /// Index Name      Table Name
+        ///
+        /// Related SQLite: `SQLITE_DROP_INDEX`
         public static let dropIndex = Self(rawValue: SQLITE_DROP_INDEX)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_DROP_TABLE`
         public static let dropTable = Self(rawValue: SQLITE_DROP_TABLE)
         /// Index Name      Table Name
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_INDEX`
         public static let dropTempIndex = Self(rawValue: SQLITE_DROP_TEMP_INDEX)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_TABLE`
         public static let dropTempTable = Self(rawValue: SQLITE_DROP_TEMP_TABLE)
         /// Trigger Name    Table Name
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_TRIGGER`
         public static let dropTempTrigger = Self(rawValue: SQLITE_DROP_TEMP_TRIGGER)
         /// View Name       NULL
+        ///
+        /// Related SQLite: `SQLITE_DROP_TEMP_VIEW`
         public static let dropTempView = Self(rawValue: SQLITE_DROP_TEMP_VIEW)
         /// Trigger Name    Table Name
+        ///
+        /// Related SQLite: `SQLITE_DROP_TRIGGER`
         public static let dropTrigger = Self(rawValue: SQLITE_DROP_TRIGGER)
         /// View Name       NULL
+        ///
+        /// Related SQLite: `SQLITE_DROP_VIEW`
         public static let dropView = Self(rawValue: SQLITE_DROP_VIEW)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_INSERT`
         public static let insert = Self(rawValue: SQLITE_INSERT)
         /// Pragma Name     1st arg or NULL
+        ///
+        /// Related SQLite: `SQLITE_PRAGMA`
         public static let pragma = Self(rawValue: SQLITE_PRAGMA)
         /// Table Name      Column Name
+        ///
+        /// Related SQLite: `SQLITE_READ`
         public static let read = Self(rawValue: SQLITE_READ)
         /// NULL            NULL
+        ///
+        /// Related SQLite: `SQLITE_SELECT`
         public static let select = Self(rawValue: SQLITE_SELECT)
         /// Operation       NULL
+        ///
+        /// Related SQLite: `SQLITE_TRANSACTION`
         public static let transaction = Self(rawValue: SQLITE_TRANSACTION)
         /// Table Name      Column Name
+        ///
+        /// Related SQLite: `SQLITE_UPDATE`
         public static let update = Self(rawValue: SQLITE_UPDATE)
         /// Filename        NULL
+        ///
+        /// Related SQLite: `SQLITE_ATTACH`
         public static let attach = Self(rawValue: SQLITE_ATTACH)
         /// Database Name   NULL
+        ///
+        /// Related SQLite: `SQLITE_DETACH`
         public static let detach = Self(rawValue: SQLITE_DETACH)
         /// Database Name   Table Name
+        ///
+        /// Related SQLite: `SQLITE_ALTER_TABLE`
         public static let alterTable = Self(rawValue: SQLITE_ALTER_TABLE)
         /// Index Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_REINDEX`
         public static let reindex = Self(rawValue: SQLITE_REINDEX)
         /// Table Name      NULL
+        ///
+        /// Related SQLite: `SQLITE_ANALYZE`
         public static let analyze = Self(rawValue: SQLITE_ANALYZE)
         /// Table Name      Module Name
+        ///
+        /// Related SQLite: `SQLITE_CREATE_VTABLE`
         public static let createVTable = Self(rawValue: SQLITE_CREATE_VTABLE)
         /// Table Name      Module Name
+        ///
+        /// Related SQLite: `SQLITE_DROP_VTABLE`
         public static let dropVTable = Self(rawValue: SQLITE_DROP_VTABLE)
         /// NULL            Function Name
+        ///
+        /// Related SQLite: `SQLITE_FUNCTION`
         public static let function = Self(rawValue: SQLITE_FUNCTION)
         /// Operation       Savepoint Name
+        ///
+        /// Related SQLite: `SQLITE_SAVEPOINT`
         public static let savepoint = Self(rawValue: SQLITE_SAVEPOINT)
         /// No longer used
+        ///
+        /// Related SQLite: `SQLITE_COPY`
         public static let copy = Self(rawValue: SQLITE_COPY)
         /// NULL            NULL
+        ///
+        /// Related SQLite: `SQLITE_RECURSIVE`
         public static let recursive = Self(rawValue: SQLITE_RECURSIVE)
 
         public var description: String {

@@ -16,7 +16,13 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Continue executing the operation.
+        ///
+        /// Related SQLite: `sqlite3_progress_handler`
         public static let `continue` = Self(rawValue: 0)
+        /// Request that the operation be interrupted.
+        ///
+        /// Related SQLite: `sqlite3_progress_handler`, `SQLITE_INTERRUPT`
         public static let interrupt = Self(rawValue: 1)
 
         public var description: String {

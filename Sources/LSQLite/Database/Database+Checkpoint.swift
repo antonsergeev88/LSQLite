@@ -11,9 +11,21 @@ extension Database {
             self.rawValue = rawValue
         }
 
+        /// Checkpoints as many frames as possible without blocking.
+        ///
+        /// Related SQLite: `SQLITE_CHECKPOINT_PASSIVE`
         public static let passive = Self(rawValue: SQLITE_CHECKPOINT_PASSIVE)
+        /// Blocks writers and waits for readers, then checkpoints and syncs.
+        ///
+        /// Related SQLite: `SQLITE_CHECKPOINT_FULL`
         public static let full = Self(rawValue: SQLITE_CHECKPOINT_FULL)
+        /// Like `.full`, then waits for readers to restart the WAL.
+        ///
+        /// Related SQLite: `SQLITE_CHECKPOINT_RESTART`
         public static let restart = Self(rawValue: SQLITE_CHECKPOINT_RESTART)
+        /// Like `.restart`, then truncates the WAL file to zero bytes.
+        ///
+        /// Related SQLite: `SQLITE_CHECKPOINT_TRUNCATE`
         public static let truncate = Self(rawValue: SQLITE_CHECKPOINT_TRUNCATE)
 
         public var description: String {
