@@ -11,7 +11,7 @@
 - Do not add documentation for protocol-derived requirements (such as `description`, `debugDescription`, or similar) or for the extension declarations themselves.
 
 ## Testing direction
-- Prefer Swift Testing over XCTest for new or updated tests. Existing XCTest cases are legacy and should be migrated opportunistically. Keep tests runnable across Apple and non-Apple platforms.
+- Use Swift Testing for tests.
 - Follow the Swift Testing style used in the blob tests: group by feature under `Tests/LSQLiteTests`, use `@Suite("...")`, and give `@Test` cases descriptive names.
 - Test files mirror source files with a `Tests` suffix, and each test file defines exactly one `@Suite` named after the original file (without the `Tests` suffix).
 - Use in-memory databases for isolation, set up shared fixtures in `init()` with `#require` on result codes and optional unwrapping, and tear down with `deinit` or `defer` when a handle must be closed.
@@ -21,7 +21,7 @@
 - Focus tests on validating the wrapper behavior and surface (rawValue round trips, ResultCode mapping, handle lifecycle), not SQLite's own functionality.
 
 ## Platform expectations
-- Non-Apple platforms are fully supported. Gate Apple-only constants and behaviors with the appropriate `canImport` checks, and rely on the `MissedSwiftSQLite` target to expose any SQLite constants or helpers that the Swift importer misses on Linux.
+- The Swift SQLite interface is generated automatically and can miss symbols; rely on the `MissedSwiftSQLite` target to expose missing constants or helpers. Use `@available` for version-specific differences.
 - Link and runtime assumptions should work with the system-provided `sqlite3` on each platform; avoid Apple-only or Darwin-specific APIs unless properly conditioned.
 
 ## Code organization
