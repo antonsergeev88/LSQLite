@@ -5,16 +5,18 @@ import Testing
 struct ValueGettersTests {
     @Test("value getters expose underlying data")
     func valueGettersExposeUnderlyingData() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         let probe = ValueGetterProbe()
         let userData = Unmanaged.passUnretained(probe).toOpaque()
-        #expect(openDatabase.createFunction(name: "value_getters", argumentCount: 5, textEncoding: .utf8, userData: userData, funcHandler: valueGetterHandler) == .ok)
+        #expect(connection.createFunction(name: "value_getters", argumentCount: 5, textEncoding: .utf8, userData: userData, funcHandler: valueGetterHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT value_getters(?1, ?2, ?3, ?4, ?5)", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT value_getters(?1, ?2, ?3, ?4, ?5)", for: connection) == .ok)
         let prepared = try #require(statement)
 
         let blobBytes: [UInt8] = [0x01, 0x02, 0x03]
@@ -36,21 +38,23 @@ struct ValueGettersTests {
         #expect(probe.intValue == 7)
         #expect(probe.int64Value == 9_000_000_000)
         #expect(probe.textValue == "text")
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 
     @Test("text getter returns nil for NULL values")
     func textGetterReturnsNilForNullValues() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         let probe = ValueGetterProbe()
         let userData = Unmanaged.passUnretained(probe).toOpaque()
-        #expect(openDatabase.createFunction(name: "value_getters", argumentCount: 5, textEncoding: .utf8, userData: userData, funcHandler: valueGetterHandler) == .ok)
+        #expect(connection.createFunction(name: "value_getters", argumentCount: 5, textEncoding: .utf8, userData: userData, funcHandler: valueGetterHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT value_getters(?1, ?2, ?3, ?4, ?5)", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT value_getters(?1, ?2, ?3, ?4, ?5)", for: connection) == .ok)
         let prepared = try #require(statement)
 
         #expect(prepared.bindInt(1, at: 1) == .ok)
@@ -64,7 +68,7 @@ struct ValueGettersTests {
         #expect(prepared.finalize() == .ok)
 
         #expect(probe.textValue == nil)
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

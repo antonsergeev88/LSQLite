@@ -68,7 +68,7 @@ extension Value {
     ///
     /// Requires a protected value; using an unprotected value is not thread-safe.
     /// Subtypes are preserved for SQL functions registered with
-    /// `Database.FunctionFlag.subtype`.
+    /// `Connection.FunctionFlag.subtype`.
     /// - Returns: Subtype tag for the value, or 0 if none is set.
     ///
     /// Related SQLite: `sqlite3_value_subtype`

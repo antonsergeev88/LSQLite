@@ -1,6 +1,6 @@
 /// Wrapper around an open BLOB handle for incremental I/O.
 ///
-/// Create a handle with `Database.openBlob(_:databaseName:tableName:columnName:rowID:flags:)`
+/// Create a handle with `Connection.openBlob(_:databaseName:tableName:columnName:rowID:flags:)`
 /// and close it when finished. Do not use the handle after closing.
 ///
 /// Related SQLite: `sqlite3_blob`, `sqlite3_blob_open`, `sqlite3_blob_close`, `sqlite3_blob_read`, `sqlite3_blob_write`, `sqlite3_blob_bytes`

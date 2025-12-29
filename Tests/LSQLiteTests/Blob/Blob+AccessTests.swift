@@ -3,30 +3,32 @@ import Testing
 
 @Suite("Blob+Access")
 final class BlobAccessTests {
-    private let database: Database
+    private let connection: Connection
     private let rowID: RowID
     private let missingRowID: RowID
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
-        self.database = openDatabase
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
 
-        try #require(openDatabase.exec("CREATE TABLE blobs(data BLOB NOT NULL)") == .ok)
-        try #require(openDatabase.exec("INSERT INTO blobs(data) VALUES (zeroblob(4))") == .ok)
-        rowID = openDatabase.lastInsertedRowID()
+        try #require(connection.exec("CREATE TABLE blobs(data BLOB NOT NULL)") == .ok)
+        try #require(connection.exec("INSERT INTO blobs(data) VALUES (zeroblob(4))") == .ok)
+        rowID = connection.lastInsertedRowID()
         missingRowID = RowID(rawValue: rowID.rawValue + 1)
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
 
     @Test("read/write and byteCount for open blob")
     func readWriteAndByteCount() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readwrite)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readwrite)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }
@@ -44,7 +46,7 @@ final class BlobAccessTests {
     @Test("read returns error when out of range")
     func readOutOfRangeReturnsError() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readonly)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readonly)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }
@@ -56,7 +58,7 @@ final class BlobAccessTests {
     @Test("write on readonly blob returns readonly")
     func writeOnReadonlyBlobReturnsReadonly() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readonly)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readonly)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }
@@ -68,7 +70,7 @@ final class BlobAccessTests {
     @Test("read/write on aborted blob returns abort")
     func readWriteOnAbortedBlobReturnsAbort() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readwrite)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: rowID, flags: .readwrite)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }

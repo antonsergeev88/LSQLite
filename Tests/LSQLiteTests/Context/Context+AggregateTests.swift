@@ -5,17 +5,19 @@ import Testing
 struct ContextAggregateTests {
     @Test("aggregateContext allocates state for aggregates")
     func aggregateContextAllocatesState() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
-        try #require(openDatabase.exec("CREATE TABLE agg(value INTEGER)") == .ok)
-        try #require(openDatabase.exec("INSERT INTO agg(value) VALUES (1), (2), (3)") == .ok)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        try #require(connection.exec("CREATE TABLE agg(value INTEGER)") == .ok)
+        try #require(connection.exec("INSERT INTO agg(value) VALUES (1), (2), (3)") == .ok)
 
         var probe = AggregateProbe()
-        #expect(openDatabase.createFunction(name: "ctx_count", argumentCount: 1, textEncoding: .utf8, userData: &probe, stepHandler: aggregateStep, finalHandler: aggregateFinal) == .ok)
+        #expect(connection.createFunction(name: "ctx_count", argumentCount: 1, textEncoding: .utf8, userData: &probe, stepHandler: aggregateStep, finalHandler: aggregateFinal) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_count(value) FROM agg", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ctx_count(value) FROM agg", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.step() == .row)
         #expect(prepared.columnInt64(at: 0) == 3)
@@ -23,7 +25,7 @@ struct ContextAggregateTests {
         #expect(prepared.finalize() == .ok)
 
         #expect(probe.allocated)
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

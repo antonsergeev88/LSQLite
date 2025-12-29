@@ -72,13 +72,13 @@ extension Statement {
     ///   - statement: Receives the prepared statement, or nil if the input
     ///     contains no SQL.
     ///   - sql: SQL text to compile.
-    ///   - database: Connection used to compile the statement.
+    ///   - connection: Connection used to compile the statement.
     /// - Returns: Result code from compilation.
     ///
     /// Related SQLite: `sqlite3_prepare_v2`
-    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for database: Database) -> ResultCode {
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for connection: Connection) -> ResultCode {
         var tail: String?
-        return prepare(&statement, sql: sql, tail: &tail, for: database)
+        return prepare(&statement, sql: sql, tail: &tail, for: connection)
     }
 
     /// Compiles the first statement in a UTF-8 SQL string.
@@ -87,16 +87,16 @@ extension Statement {
     ///     contains no SQL.
     ///   - sql: SQL text to compile.
     ///   - tail: Receives any remaining SQL text after the first statement.
-    ///   - database: Connection used to compile the statement.
+    ///   - connection: Connection used to compile the statement.
     /// - Returns: Result code from compilation.
     ///
     /// Related SQLite: `sqlite3_prepare_v2`
-    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for database: Database) -> ResultCode {
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for connection: Connection) -> ResultCode {
         var statementPointer: OpaquePointer?
         var tailString: String?
         let resultCode = sql.withCString { cString in
             var tailPointer: UnsafePointer<Int8>?
-            let result = sqlite3_prepare_v2(database.rawValue, cString, -1, &statementPointer, &tailPointer).resultCode
+            let result = sqlite3_prepare_v2(connection.rawValue, cString, -1, &statementPointer, &tailPointer).resultCode
             tailString = tailPointer.map { String(cString: $0) }
             return result
         }
@@ -110,15 +110,15 @@ extension Statement {
     ///   - statement: Receives the prepared statement, or nil if the input
     ///     contains no SQL.
     ///   - sql: SQL text to compile.
-    ///   - database: Connection used to compile the statement.
+    ///   - connection: Connection used to compile the statement.
     ///   - prepareFlag: Options that influence compilation.
     /// - Returns: Result code from compilation.
     ///
     /// Related SQLite: `sqlite3_prepare_v3`
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
-    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, for connection: Connection, prepareFlag: PrepareFlag) -> ResultCode {
         var tail: String?
-        return prepare(&statement, sql: sql, tail: &tail, for: database, prepareFlag: prepareFlag)
+        return prepare(&statement, sql: sql, tail: &tail, for: connection, prepareFlag: prepareFlag)
     }
 
     /// Compiles the first statement in a UTF-8 SQL string with compilation options.
@@ -127,18 +127,18 @@ extension Statement {
     ///     contains no SQL.
     ///   - sql: SQL text to compile.
     ///   - tail: Receives any remaining SQL text after the first statement.
-    ///   - database: Connection used to compile the statement.
+    ///   - connection: Connection used to compile the statement.
     ///   - prepareFlag: Options that influence compilation.
     /// - Returns: Result code from compilation.
     ///
     /// Related SQLite: `sqlite3_prepare_v3`
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
-    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for database: Database, prepareFlag: PrepareFlag) -> ResultCode {
+    @inlinable public static func prepare(_ statement: inout Statement?, sql: String, tail: inout String?, for connection: Connection, prepareFlag: PrepareFlag) -> ResultCode {
         var statementPointer: OpaquePointer? = nil
         var tailString: String? = nil
         let resultCode = sql.withCString { cString in
             var tailPointer: UnsafePointer<Int8>? = nil
-            let result = sqlite3_prepare_v3(database.rawValue, cString, -1, prepareFlag.rawValue, &statementPointer, &tailPointer).resultCode
+            let result = sqlite3_prepare_v3(connection.rawValue, cString, -1, prepareFlag.rawValue, &statementPointer, &tailPointer).resultCode
             tailString = tailPointer.map { String(cString: $0) }
             return result
         }

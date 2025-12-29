@@ -3,14 +3,16 @@ import Testing
 
 @Suite("Statement+Bind")
 final class StatementBindTests {
-    private let database: Database
+    private let connection: Connection
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
-        self.database = openDatabase
-        try #require(openDatabase.exec("""
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
+        try #require(connection.exec("""
             CREATE TABLE bindings(
                 int_value INTEGER,
                 double_value REAL,
@@ -24,13 +26,13 @@ final class StatementBindTests {
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
 
     @Test("binding metadata is available")
     func bindingMetadataIsAvailable() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ?1, :name, ?3", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ?1, :name, ?3", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.bindingCount == 3)
         let firstName = prepared.bindingName(at: 1)
@@ -46,7 +48,7 @@ final class StatementBindTests {
     @Test("binds scalar and blob values")
     func bindsScalarAndBlobValues() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "INSERT INTO bindings(int_value, double_value, text_value, blob_value, zero_blob, null_value, int64_value) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "INSERT INTO bindings(int_value, double_value, text_value, blob_value, zero_blob, null_value, int64_value) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)", for: connection) == .ok)
         let prepared = try #require(statement)
 
         #expect(prepared.bindInt(12, at: 1) == .ok)
@@ -86,7 +88,7 @@ final class StatementBindTests {
     @Test("bindBlob uses destructor")
     func bindBlobUsesDestructor() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "INSERT INTO bindings(blob_value) VALUES (?1)", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "INSERT INTO bindings(blob_value) VALUES (?1)", for: connection) == .ok)
         let prepared = try #require(statement)
 
         let pointer = UnsafeMutableRawPointer.allocate(byteCount: 2, alignment: MemoryLayout<UInt8>.alignment)

@@ -3,14 +3,16 @@ import Testing
 
 @Suite("Statement+Column")
 final class StatementColumnTests {
-    private let database: Database
+    private let connection: Connection
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
-        self.database = openDatabase
-        try #require(openDatabase.exec("""
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
+        try #require(connection.exec("""
             CREATE TABLE col_table(
                 text_col TEXT,
                 blob_col BLOB,
@@ -19,17 +21,17 @@ final class StatementColumnTests {
                 declared_col TEXT
             )
             """) == .ok)
-        try #require(openDatabase.exec("INSERT INTO col_table(text_col, blob_col, int_col, real_col, declared_col) VALUES ('', X'0102', 42, 3.5, 'x')") == .ok)
+        try #require(connection.exec("INSERT INTO col_table(text_col, blob_col, int_col, real_col, declared_col) VALUES ('', X'0102', 42, 3.5, 'x')") == .ok)
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
 
     @Test("column metadata and values are available")
     func columnMetadataAndValuesAreAvailable() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT text_col, blob_col, int_col, real_col, declared_col, NULL AS null_col, 99 AS literal_col FROM col_table", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT text_col, blob_col, int_col, real_col, declared_col, NULL AS null_col, 99 AS literal_col FROM col_table", for: connection) == .ok)
         let prepared = try #require(statement)
 
         #expect(prepared.columnCount == 7)
@@ -68,12 +70,12 @@ final class StatementColumnTests {
 
     @Test("column metadata returns empty identifiers")
     func columnMetadataReturnsEmptyIdentifiers() throws {
-        try #require(database.exec("ATTACH DATABASE ':memory:' AS \"\"") == .ok)
-        try #require(database.exec("CREATE TABLE \"\".\"\" (\"\" \"\")") == .ok)
-        try #require(database.exec("INSERT INTO \"\".\"\" VALUES ('x')") == .ok)
+        try #require(connection.exec("ATTACH DATABASE ':memory:' AS \"\"") == .ok)
+        try #require(connection.exec("CREATE TABLE \"\".\"\" (\"\" \"\")") == .ok)
+        try #require(connection.exec("INSERT INTO \"\".\"\" VALUES ('x')") == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT \"\" FROM \"\".\"\"", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT \"\" FROM \"\".\"\"", for: connection) == .ok)
         let prepared = try #require(statement)
 
         #expect(prepared.step() == .row)

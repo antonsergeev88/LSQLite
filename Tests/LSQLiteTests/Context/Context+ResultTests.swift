@@ -3,26 +3,29 @@ import Testing
 
 @Suite("Context+Result")
 final class ContextResultTests {
-    private let database: Database
+    private let connection: Connection
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        self.database = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
 
     @Test("resultInt, resultInt64, and resultDouble set values")
     func resultScalarValues() throws {
-        #expect(database.createFunction(name: "ctx_int", argumentCount: 0, textEncoding: .utf8, funcHandler: resultIntHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_int64", argumentCount: 0, textEncoding: .utf8, funcHandler: resultInt64Handler) == .ok)
-        #expect(database.createFunction(name: "ctx_double", argumentCount: 0, textEncoding: .utf8, funcHandler: resultDoubleHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_int", argumentCount: 0, textEncoding: .utf8, funcHandler: resultIntHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_int64", argumentCount: 0, textEncoding: .utf8, funcHandler: resultInt64Handler) == .ok)
+        #expect(connection.createFunction(name: "ctx_double", argumentCount: 0, textEncoding: .utf8, funcHandler: resultDoubleHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_int()", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ctx_int()", for: connection) == .ok)
         let intStatement = try #require(statement)
         #expect(intStatement.step() == .row)
         #expect(intStatement.columnInt(at: 0) == 7)
@@ -30,7 +33,7 @@ final class ContextResultTests {
         #expect(intStatement.finalize() == .ok)
 
         var int64Statement: Statement?
-        try #require(Statement.prepare(&int64Statement, sql: "SELECT ctx_int64()", for: database) == .ok)
+        try #require(Statement.prepare(&int64Statement, sql: "SELECT ctx_int64()", for: connection) == .ok)
         let preparedInt64 = try #require(int64Statement)
         #expect(preparedInt64.step() == .row)
         #expect(preparedInt64.columnInt64(at: 0) == 9_000_000_000)
@@ -38,7 +41,7 @@ final class ContextResultTests {
         #expect(preparedInt64.finalize() == .ok)
 
         var doubleStatement: Statement?
-        try #require(Statement.prepare(&doubleStatement, sql: "SELECT ctx_double()", for: database) == .ok)
+        try #require(Statement.prepare(&doubleStatement, sql: "SELECT ctx_double()", for: connection) == .ok)
         let preparedDouble = try #require(doubleStatement)
         #expect(preparedDouble.step() == .row)
         #expect(preparedDouble.columnDouble(at: 0) == 3.25)
@@ -48,12 +51,12 @@ final class ContextResultTests {
 
     @Test("resultText, resultNull, and resultValue set values")
     func resultTextNullAndValue() throws {
-        #expect(database.createFunction(name: "ctx_text", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTextHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_null", argumentCount: 0, textEncoding: .utf8, funcHandler: resultNullHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_value", argumentCount: 1, textEncoding: .utf8, funcHandler: resultValueHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_text", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTextHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_null", argumentCount: 0, textEncoding: .utf8, funcHandler: resultNullHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_value", argumentCount: 1, textEncoding: .utf8, funcHandler: resultValueHandler) == .ok)
 
         var textStatement: Statement?
-        try #require(Statement.prepare(&textStatement, sql: "SELECT ctx_text()", for: database) == .ok)
+        try #require(Statement.prepare(&textStatement, sql: "SELECT ctx_text()", for: connection) == .ok)
         let preparedText = try #require(textStatement)
         #expect(preparedText.step() == .row)
         #expect(preparedText.columnText(at: 0) == "hello")
@@ -61,7 +64,7 @@ final class ContextResultTests {
         #expect(preparedText.finalize() == .ok)
 
         var nullStatement: Statement?
-        try #require(Statement.prepare(&nullStatement, sql: "SELECT ctx_null()", for: database) == .ok)
+        try #require(Statement.prepare(&nullStatement, sql: "SELECT ctx_null()", for: connection) == .ok)
         let preparedNull = try #require(nullStatement)
         #expect(preparedNull.step() == .row)
         #expect(preparedNull.columnType(at: 0) == .null)
@@ -69,7 +72,7 @@ final class ContextResultTests {
         #expect(preparedNull.finalize() == .ok)
 
         var valueStatement: Statement?
-        try #require(Statement.prepare(&valueStatement, sql: "SELECT ctx_value(42)", for: database) == .ok)
+        try #require(Statement.prepare(&valueStatement, sql: "SELECT ctx_value(42)", for: connection) == .ok)
         let preparedValue = try #require(valueStatement)
         #expect(preparedValue.step() == .row)
         #expect(preparedValue.columnInt(at: 0) == 42)
@@ -79,13 +82,13 @@ final class ContextResultTests {
 
     @Test("resultBlob variants set blob values")
     func resultBlobVariants() throws {
-        #expect(database.createFunction(name: "ctx_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultBlobHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_transient_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTransientBlobHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_static_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultStaticBlobHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_zero_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultZeroBlobHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultBlobHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_transient_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTransientBlobHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_static_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultStaticBlobHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_zero_blob", argumentCount: 0, textEncoding: .utf8, funcHandler: resultZeroBlobHandler) == .ok)
 
         var blobStatement: Statement?
-        try #require(Statement.prepare(&blobStatement, sql: "SELECT ctx_blob()", for: database) == .ok)
+        try #require(Statement.prepare(&blobStatement, sql: "SELECT ctx_blob()", for: connection) == .ok)
         let preparedBlob = try #require(blobStatement)
         #expect(preparedBlob.step() == .row)
         #expect(preparedBlob.columnBytes(at: 0) == 2)
@@ -93,7 +96,7 @@ final class ContextResultTests {
         #expect(preparedBlob.finalize() == .ok)
 
         var transientStatement: Statement?
-        try #require(Statement.prepare(&transientStatement, sql: "SELECT ctx_transient_blob()", for: database) == .ok)
+        try #require(Statement.prepare(&transientStatement, sql: "SELECT ctx_transient_blob()", for: connection) == .ok)
         let preparedTransient = try #require(transientStatement)
         #expect(preparedTransient.step() == .row)
         #expect(preparedTransient.columnBytes(at: 0) == 3)
@@ -101,7 +104,7 @@ final class ContextResultTests {
         #expect(preparedTransient.finalize() == .ok)
 
         var staticStatement: Statement?
-        try #require(Statement.prepare(&staticStatement, sql: "SELECT ctx_static_blob()", for: database) == .ok)
+        try #require(Statement.prepare(&staticStatement, sql: "SELECT ctx_static_blob()", for: connection) == .ok)
         let preparedStatic = try #require(staticStatement)
         #expect(preparedStatic.step() == .row)
         #expect(preparedStatic.columnBytes(at: 0) == 2)
@@ -109,7 +112,7 @@ final class ContextResultTests {
         #expect(preparedStatic.finalize() == .ok)
 
         var zeroStatement: Statement?
-        try #require(Statement.prepare(&zeroStatement, sql: "SELECT ctx_zero_blob()", for: database) == .ok)
+        try #require(Statement.prepare(&zeroStatement, sql: "SELECT ctx_zero_blob()", for: connection) == .ok)
         let preparedZero = try #require(zeroStatement)
         #expect(preparedZero.step() == .row)
         #expect(preparedZero.columnBytes(at: 0) == 4)
@@ -119,34 +122,34 @@ final class ContextResultTests {
 
     @Test("error result helpers produce expected codes")
     func errorResultHelpers() throws {
-        #expect(database.createFunction(name: "ctx_error", argumentCount: 0, textEncoding: .utf8, funcHandler: resultErrorHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_error_code", argumentCount: 0, textEncoding: .utf8, funcHandler: resultErrorCodeHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_toobig", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTooBigHandler) == .ok)
-        #expect(database.createFunction(name: "ctx_nomem", argumentCount: 0, textEncoding: .utf8, funcHandler: resultNoMemoryHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_error", argumentCount: 0, textEncoding: .utf8, funcHandler: resultErrorHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_error_code", argumentCount: 0, textEncoding: .utf8, funcHandler: resultErrorCodeHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_toobig", argumentCount: 0, textEncoding: .utf8, funcHandler: resultTooBigHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_nomem", argumentCount: 0, textEncoding: .utf8, funcHandler: resultNoMemoryHandler) == .ok)
 
         var errorStatement: Statement?
-        try #require(Statement.prepare(&errorStatement, sql: "SELECT ctx_error()", for: database) == .ok)
+        try #require(Statement.prepare(&errorStatement, sql: "SELECT ctx_error()", for: connection) == .ok)
         let preparedError = try #require(errorStatement)
         let errorResult = preparedError.step()
         #expect(errorResult != .row && errorResult != .done)
         _ = preparedError.finalize()
 
         var errorCodeStatement: Statement?
-        try #require(Statement.prepare(&errorCodeStatement, sql: "SELECT ctx_error_code()", for: database) == .ok)
+        try #require(Statement.prepare(&errorCodeStatement, sql: "SELECT ctx_error_code()", for: connection) == .ok)
         let preparedErrorCode = try #require(errorCodeStatement)
         let errorCodeResult = preparedErrorCode.step()
         #expect(errorCodeResult != .row && errorCodeResult != .done)
         _ = preparedErrorCode.finalize()
 
         var tooBigStatement: Statement?
-        try #require(Statement.prepare(&tooBigStatement, sql: "SELECT ctx_toobig()", for: database) == .ok)
+        try #require(Statement.prepare(&tooBigStatement, sql: "SELECT ctx_toobig()", for: connection) == .ok)
         let preparedTooBig = try #require(tooBigStatement)
         let tooBigResult = preparedTooBig.step()
         #expect(tooBigResult != .row && tooBigResult != .done)
         _ = preparedTooBig.finalize()
 
         var noMemoryStatement: Statement?
-        try #require(Statement.prepare(&noMemoryStatement, sql: "SELECT ctx_nomem()", for: database) == .ok)
+        try #require(Statement.prepare(&noMemoryStatement, sql: "SELECT ctx_nomem()", for: connection) == .ok)
         let preparedNoMem = try #require(noMemoryStatement)
         let noMemoryResult = preparedNoMem.step()
         #expect(noMemoryResult != .row && noMemoryResult != .done)
@@ -156,9 +159,9 @@ final class ContextResultTests {
     @Test("resultSubtype assigns subtype when available")
     @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
     func resultSubtypeAssignsSubtype() throws {
-        #expect(database.createFunction(name: "ctx_subtype", argumentCount: 0, textEncoding: .utf8, flags: [.resultSubtype], funcHandler: resultSubtypeHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_subtype", argumentCount: 0, textEncoding: .utf8, flags: [.resultSubtype], funcHandler: resultSubtypeHandler) == .ok)
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_subtype()", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ctx_subtype()", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.step() == .row)
         #expect(prepared.step() == .done)

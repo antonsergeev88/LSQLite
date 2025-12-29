@@ -11,7 +11,7 @@ The SQLite C API is small and powerful, but in Swift it comes with a few pain po
 - The default Swift `SQLite3` module does not expose any inline documentation, because SQLite’s comments are not in the format Swift recognizes for doc comments.
 
 LSQLite keeps the *exact* SQLite API surface and behavior, but:
-- Wraps raw handles like `sqlite3 *` and `sqlite3_stmt *` into small Swift structs (`Database`, `Statement`, …).
+- Wraps raw handles like `sqlite3 *` and `sqlite3_stmt *` into small Swift structs (`Connection`, `Statement`, …).
 - Wraps result codes and flags into typed Swift values (`ResultCode`, `OpenFlag`, …).
 - Leaves control flow and error handling exactly as in the C API: you still check result codes instead of catching errors.
 
@@ -74,8 +74,8 @@ In Xcode, you can also add it via:
 import LSQLite
 
 // 1. Open database
-var db: Database?
-let openResult = Database.open(&db, at: .init(rawValue: databasePath), withOpenFlags: [.readwrite, .create])
+var db: Connection?
+let openResult = Connection.open(&db, at: .init(rawValue: databasePath), withOpenFlags: [.readwrite, .create])
 guard openResult == .ok, let db else {
     fatalError("Failed to open database: \(openResult)")
 }
@@ -123,8 +123,8 @@ if rc != SQLITE_OK { /* handle error */ }
 
 ```swift
 import LSQLite
-var db: Database?
-let rc = Database.open(&db, at: .init(rawValue: "test.db"), withOpenFlags: [.readwrite, .create])
+var db: Connection?
+let rc = Connection.open(&db, at: .init(rawValue: "test.db"), withOpenFlags: [.readwrite, .create])
 if rc != .ok { /* handle error */ }
 ```
 
@@ -166,7 +166,7 @@ let rawCode: Int32 = db.close().rawValue
 From C to LSQLite:
 
 ```swift
-let db = Database(rawValue: someSQLitePointer)
+let db = Connection(rawValue: someSQLitePointer)
 let code = ResultCode(rawValue: SQLITE_BUSY)
 ```
 
@@ -188,7 +188,7 @@ It is a low-level, but safer and more readable, Swift presentation of the origin
 
 - **Zero overhead:** Public APIs are `@inlinable` and forward directly to `sqlite3_*` calls. After inlining, your binary contains the same code as if you had called the C API yourself.
 - **Better constants:** SQLite `#define` values are exposed as real Swift constants, not computed variables. The compiler can see this at compile time, fold expressions, and better optimize flag checks.
-- **Type safety:** Typed wrappers (`Database`, `Statement`, `ResultCode`, `OpenFlag`, etc.) make it harder to pass the wrong pointer or constant.
+- **Type safety:** Typed wrappers (`Connection`, `Statement`, `ResultCode`, `OpenFlag`, etc.) make it harder to pass the wrong pointer or constant.
 
 ## Contributing
 
