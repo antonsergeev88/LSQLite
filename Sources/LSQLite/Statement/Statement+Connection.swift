@@ -1,0 +1,11 @@
+import MissedSwiftSQLite
+
+extension Statement {
+    /// Database connection that owns this prepared statement.
+    /// - Returns: The owning database connection, or nil if unavailable.
+    ///
+    /// Related SQLite: `sqlite3_db_handle`
+    @inlinable public var connection: Connection? {
+        return sqlite3_db_handle(rawValue).map(Connection.init(rawValue:))
+    }
+}

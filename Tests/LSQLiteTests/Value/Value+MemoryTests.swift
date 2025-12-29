@@ -6,15 +6,17 @@ struct ValueMemoryTests {
     @Test("createCopy and free round-trip values")
     @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
     func createCopyAndFreeRoundTripValues() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         var probe = ValueMemoryProbe()
-        #expect(openDatabase.createFunction(name: "value_copy", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: valueCopyHandler) == .ok)
+        #expect(connection.createFunction(name: "value_copy", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: valueCopyHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT value_copy(?1)", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT value_copy(?1)", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.bindInt(99, at: 1) == .ok)
         #expect(prepared.step() == .row)
@@ -22,7 +24,7 @@ struct ValueMemoryTests {
         #expect(prepared.finalize() == .ok)
 
         #expect(probe.copied)
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

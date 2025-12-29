@@ -4,16 +4,19 @@ import Testing
 
 @Suite("Statement+Prepare")
 final class StatementPrepareFlagRawValueTests {
-    private let database: Database
+    private let connection: Connection
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        self.database = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
     @Test("init(rawValue:) preserves rawValue")
     func rawValueRoundTrip() {
@@ -52,7 +55,7 @@ final class StatementPrepareFlagRawValueTests {
     func prepareCompilesSQLAndProvidesTail() throws {
         var statement: Statement?
         var tail: String?
-        try #require(Statement.prepare(&statement, sql: "SELECT 1; SELECT 2", tail: &tail, for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT 1; SELECT 2", tail: &tail, for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(tail?.contains("SELECT 2") == true)
         #expect(prepared.finalize() == .ok)
@@ -61,7 +64,7 @@ final class StatementPrepareFlagRawValueTests {
     @Test("prepare compiles SQL without tail")
     func prepareCompilesSQLWithoutTail() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT 1", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT 1", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.finalize() == .ok)
     }
@@ -70,7 +73,7 @@ final class StatementPrepareFlagRawValueTests {
     @available(iOS 12.0, macOS 10.14, tvOS 12.0, watchOS 5.0, *)
     func prepareWithFlagsCompilesSQL() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT 1", for: database, prepareFlag: [.persistent]) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT 1", for: connection, prepareFlag: [.persistent]) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.finalize() == .ok)
     }

@@ -3,22 +3,25 @@ import Testing
 
 @Suite("Statement+Busy")
 final class StatementBusyTests {
-    private let database: Database
+    private let connection: Connection
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        self.database = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
     }
 
     deinit {
-        _ = database.close()
+        _ = connection.close()
     }
 
     @Test("isBusy reflects step progress")
     func isBusyReflectsStepProgress() throws {
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT 1 UNION ALL SELECT 2", for: database) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT 1 UNION ALL SELECT 2", for: connection) == .ok)
         let prepared = try #require(statement)
 
         #expect(!prepared.isBusy)

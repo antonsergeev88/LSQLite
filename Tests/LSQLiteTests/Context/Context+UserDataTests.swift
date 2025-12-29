@@ -5,22 +5,24 @@ import Testing
 struct ContextUserDataTests {
     @Test("userData returns the registered pointer")
     func userDataReturnsRegisteredPointer() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         var probe = ContextUserDataProbe()
-        #expect(openDatabase.createFunction(name: "ctx_user_data", argumentCount: 0, textEncoding: .utf8, userData: &probe, funcHandler: contextUserDataHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_user_data", argumentCount: 0, textEncoding: .utf8, userData: &probe, funcHandler: contextUserDataHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_user_data()", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ctx_user_data()", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.step() == .row)
         #expect(prepared.step() == .done)
         #expect(prepared.finalize() == .ok)
 
         #expect(probe.matched)
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

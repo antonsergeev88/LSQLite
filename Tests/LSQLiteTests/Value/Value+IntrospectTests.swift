@@ -5,15 +5,17 @@ import Testing
 struct ValueIntrospectTests {
     @Test("value introspection reports metadata")
     func valueIntrospectionReportsMetadata() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         var probe = ValueIntrospectProbe()
-        #expect(openDatabase.createFunction(name: "value_introspect", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: valueIntrospectHandler) == .ok)
+        #expect(connection.createFunction(name: "value_introspect", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: valueIntrospectHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT value_introspect(?1)", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT value_introspect(?1)", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.bindText("123", at: 1) == .ok)
         #expect(prepared.step() == .row)
@@ -26,7 +28,7 @@ struct ValueIntrospectTests {
         if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
             #expect(probe.isFromBind)
         }
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

@@ -5,15 +5,17 @@ import Testing
 struct ContextAuxiliaryTests {
     @Test("setAuxiliaryData and getAuxiliaryData round-trip pointers")
     func auxiliaryDataRoundTrip() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
 
         var probe = ContextAuxiliaryProbe()
-        #expect(openDatabase.createFunction(name: "ctx_aux", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: contextAuxiliaryHandler) == .ok)
+        #expect(connection.createFunction(name: "ctx_aux", argumentCount: 1, textEncoding: .utf8, userData: &probe, funcHandler: contextAuxiliaryHandler) == .ok)
 
         var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_aux(1), ctx_aux(1)", for: openDatabase) == .ok)
+        try #require(Statement.prepare(&statement, sql: "SELECT ctx_aux(1), ctx_aux(1)", for: connection) == .ok)
         let prepared = try #require(statement)
         #expect(prepared.step() == .row)
         #expect(prepared.step() == .done)
@@ -22,7 +24,7 @@ struct ContextAuxiliaryTests {
         #expect(probe.callCount == 2)
         #expect(probe.initialWasNil)
         #expect(probe.setCalled)
-        _ = openDatabase.close()
+        _ = connection.close()
     }
 }
 

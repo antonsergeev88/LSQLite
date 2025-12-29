@@ -3,36 +3,38 @@ import Testing
 
 @Suite("Blob+Lifecycle")
 final class BlobLifecycleTests {
-    private let database: Database
+    private let connection: Connection
     private let firstRowID: RowID
     private let secondRowID: RowID
     private let missingRowID: RowID
-    private var didCloseDatabase = false
+    private var didCloseConnection = false
 
     init() throws {
-        var database: Database?
-        try #require(Database.open(&database, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
-        let openDatabase = try #require(database)
-        self.database = openDatabase
+        let connection: Connection = try {
+            var connection: Connection?
+            try #require(Connection.open(&connection, at: .memory, withOpenFlags: [.readwrite, .create]) == .ok)
+            return try #require(connection)
+        }()
+        self.connection = connection
 
-        try #require(openDatabase.exec("CREATE TABLE blobs(data BLOB NOT NULL)") == .ok)
-        try #require(openDatabase.exec("INSERT INTO blobs(data) VALUES (x'010203')") == .ok)
-        firstRowID = openDatabase.lastInsertedRowID()
+        try #require(connection.exec("CREATE TABLE blobs(data BLOB NOT NULL)") == .ok)
+        try #require(connection.exec("INSERT INTO blobs(data) VALUES (x'010203')") == .ok)
+        firstRowID = connection.lastInsertedRowID()
 
-        try #require(openDatabase.exec("INSERT INTO blobs(data) VALUES (x'0A0B0C')") == .ok)
-        secondRowID = openDatabase.lastInsertedRowID()
+        try #require(connection.exec("INSERT INTO blobs(data) VALUES (x'0A0B0C')") == .ok)
+        secondRowID = connection.lastInsertedRowID()
         missingRowID = RowID(rawValue: secondRowID.rawValue + 1)
     }
 
     deinit {
-        guard !didCloseDatabase else { return }
-        _ = database.close()
+        guard !didCloseConnection else { return }
+        _ = connection.close()
     }
 
     @Test("reopen moves handle to another row")
     func reopenMovesHandleToAnotherRow() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: firstRowID, flags: .readonly)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: firstRowID, flags: .readonly)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }
@@ -52,7 +54,7 @@ final class BlobLifecycleTests {
     @Test("reopen to missing row aborts handle")
     func reopenMissingRowAbortsHandle() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: secondRowID, flags: .readwrite)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: secondRowID, flags: .readwrite)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
         defer { _ = openedBlob.close() }
@@ -71,20 +73,20 @@ final class BlobLifecycleTests {
         #expect(reopenAgainResult == .abort)
     }
 
-    @Test("database close fails while blob is open")
-    func databaseCloseFailsWhileBlobIsOpen() throws {
+    @Test("connection close fails while blob is open")
+    func connectionCloseFailsWhileBlobIsOpen() throws {
         var blob: Blob?
-        let openResult = database.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: firstRowID, flags: .readonly)
+        let openResult = connection.openBlob(&blob, databaseName: "main", tableName: "blobs", columnName: "data", rowID: firstRowID, flags: .readonly)
         #expect(openResult == .ok)
         let openedBlob = try #require(blob)
 
-        let closeWhileOpen = database.close()
+        let closeWhileOpen = connection.close()
         #expect(closeWhileOpen == .busy)
 
         _ = openedBlob.close()
-        let closeAfterBlob = database.close()
+        let closeAfterBlob = connection.close()
         #expect(closeAfterBlob == .ok)
-        didCloseDatabase = closeAfterBlob == .ok
+        didCloseConnection = closeAfterBlob == .ok
     }
 }
 
