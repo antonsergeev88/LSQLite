@@ -13,16 +13,10 @@ let package = Package(
     targets: [
         .target(
             name: "LSQLite",
-            dependencies: ["MissedSwiftSQLite"],
-            linkerSettings: [
-                .linkedLibrary("sqlite3")
-            ]
+            dependencies: ["MissedSwiftSQLite"]
         ),
         .target(
-            name: "MissedSwiftSQLite",
-            linkerSettings: [
-                .linkedLibrary("sqlite3")
-            ]
+            name: "MissedSwiftSQLite"
         ),
         .testTarget(
             name: "LSQLiteTests",
