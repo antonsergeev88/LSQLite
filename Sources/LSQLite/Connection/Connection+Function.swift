@@ -91,7 +91,7 @@ extension Connection {
 
     /// Function flags describing determinism and security properties for user-defined SQL functions.
     ///
-    /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_create_window_function`, `SQLITE_DETERMINISTIC`, `SQLITE_DIRECTONLY`, `SQLITE_SUBTYPE`, `SQLITE_INNOCUOUS`, `SQLITE_RESULT_SUBTYPE`, `SQLITE_SELFORDER1`
+    /// Related SQLite: `sqlite3_create_function_v2`, `sqlite3_create_window_function`, `SQLITE_DETERMINISTIC`, `SQLITE_DIRECTONLY`, `SQLITE_SUBTYPE`, `SQLITE_INNOCUOUS`, `SQLITE_SELFORDER1`
     @frozen public struct FunctionFlag: Hashable, OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
         public let rawValue: Int32
 
@@ -119,17 +119,11 @@ extension Connection {
         /// Related SQLite: `SQLITE_INNOCUOUS`
         public static let innocuous = Self(rawValue: SQLITE_INNOCUOUS)
 
-        /// Indicates the function may call `sqlite3_result_subtype`.
-        ///
-        /// Related SQLite: `SQLITE_RESULT_SUBTYPE`
-        public static let resultSubtype = Self(rawValue: SQLITE_RESULT_SUBTYPE)
-
         private static let knownMask: UInt32 = {
             var mask = UInt32(bitPattern: Self.deterministic.rawValue)
             mask |= UInt32(bitPattern: Self.directOnly.rawValue)
             mask |= UInt32(bitPattern: Self.subtype.rawValue)
             mask |= UInt32(bitPattern: Self.innocuous.rawValue)
-            mask |= UInt32(bitPattern: Self.resultSubtype.rawValue)
             return mask
         }()
 
@@ -143,7 +137,6 @@ extension Connection {
             if contains(.directOnly) { parts.append(".directOnly") }
             if contains(.subtype) { parts.append(".subtype") }
             if contains(.innocuous) { parts.append(".innocuous") }
-            if contains(.resultSubtype) { parts.append(".resultSubtype") }
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask
@@ -161,7 +154,6 @@ extension Connection {
             if contains(.directOnly) { parts.append("SQLITE_DIRECTONLY") }
             if contains(.subtype) { parts.append("SQLITE_SUBTYPE") }
             if contains(.innocuous) { parts.append("SQLITE_INNOCUOUS") }
-            if contains(.resultSubtype) { parts.append("SQLITE_RESULT_SUBTYPE") }
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask

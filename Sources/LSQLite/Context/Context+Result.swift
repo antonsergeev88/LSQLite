@@ -163,18 +163,4 @@ extension Context {
     @inlinable public func resultZeroBlob(length: Int32) {
         sqlite3_result_zeroblob(rawValue, length)
     }
-
-    /// Assigns an application-defined subtype to the current result value.
-    ///
-    /// Only the low 8 bits are preserved by SQLite.
-    /// Register the function with the result subtype flag or this may have no effect.
-    /// SQLite builds with strict subtype enforcement can raise an error without the flag.
-    /// - Parameter subtype: Subtype value to associate with the result.
-    /// - Returns: None.
-    ///
-    /// Related SQLite: `sqlite3_result_subtype`, `SQLITE_RESULT_SUBTYPE`
-    @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
-    @inlinable public func resultSubtype(_ subtype: Subtype) {
-        sqlite3_result_subtype(rawValue, subtype.rawValue)
-    }
 }

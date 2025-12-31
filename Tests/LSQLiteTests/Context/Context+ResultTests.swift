@@ -155,18 +155,6 @@ final class ContextResultTests {
         #expect(noMemoryResult != .row && noMemoryResult != .done)
         _ = preparedNoMem.finalize()
     }
-
-    @Test("resultSubtype assigns subtype when available")
-    @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
-    func resultSubtypeAssignsSubtype() throws {
-        #expect(connection.createFunction(name: "ctx_subtype", argumentCount: 0, textEncoding: .utf8, flags: [.resultSubtype], funcHandler: resultSubtypeHandler) == .ok)
-        var statement: Statement?
-        try #require(Statement.prepare(&statement, sql: "SELECT ctx_subtype()", for: connection) == .ok)
-        let prepared = try #require(statement)
-        #expect(prepared.step() == .row)
-        #expect(prepared.step() == .done)
-        #expect(prepared.finalize() == .ok)
-    }
 }
 
 private func resultIntHandler(_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) {
@@ -252,14 +240,6 @@ private func resultTooBigHandler(_ context: OpaquePointer?, _ valueCount: Int32,
 private func resultNoMemoryHandler(_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) {
     guard let context else { return }
     Context(rawValue: context).resultNoMemoryError()
-}
-
-@available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
-private func resultSubtypeHandler(_ context: OpaquePointer?, _ valueCount: Int32, _ values: UnsafeMutablePointer<OpaquePointer?>?) {
-    guard let context else { return }
-    let wrapper = Context(rawValue: context)
-    wrapper.resultInt(1)
-    wrapper.resultSubtype(Subtype(rawValue: 7))
 }
 
 private func resultBlobDestructor(_ blob: UnsafeMutableRawPointer?) {

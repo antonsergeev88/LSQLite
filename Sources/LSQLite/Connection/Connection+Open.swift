@@ -126,7 +126,6 @@ extension Connection {
         ///
         /// Related SQLite: `SQLITE_OPEN_WAL`
         public static let wal = Self(rawValue: SQLITE_OPEN_WAL)
-#if canImport(Darwin)
         /// Applies complete file protection on Apple platforms.
         ///
         /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_COMPLETE`
@@ -147,7 +146,6 @@ extension Connection {
         ///
         /// Related SQLite: `SQLITE_OPEN_FILEPROTECTION_MASK`
         public static let fileProtectionMask = Self(rawValue: SQLITE_OPEN_FILEPROTECTION_MASK)
-#endif
 
         private static let knownMask: UInt32 = {
             var mask = UInt32(bitPattern: Self.readonly.rawValue)
@@ -170,13 +168,11 @@ extension Connection {
             mask |= UInt32(bitPattern: Self.sharedCache.rawValue)
             mask |= UInt32(bitPattern: Self.privateCache.rawValue)
             mask |= UInt32(bitPattern: Self.wal.rawValue)
-#if canImport(Darwin)
             mask |= UInt32(bitPattern: Self.fileProtectionComplete.rawValue)
             mask |= UInt32(bitPattern: Self.fileProtectionCompleteUnlessOpen.rawValue)
             mask |= UInt32(bitPattern: Self.fileProtectionCompleteUntilFirstUserAuthentication.rawValue)
             mask |= UInt32(bitPattern: Self.fileProtectionNone.rawValue)
             mask |= UInt32(bitPattern: Self.fileProtectionMask.rawValue)
-#endif
             return mask
         }()
 
@@ -206,13 +202,11 @@ extension Connection {
             if contains(.sharedCache) { parts.append(".sharedCache") }
             if contains(.privateCache) { parts.append(".privateCache") }
             if contains(.wal) { parts.append(".wal") }
-#if canImport(Darwin)
             if contains(.fileProtectionComplete) { parts.append(".fileProtectionComplete") }
             if contains(.fileProtectionCompleteUnlessOpen) { parts.append(".fileProtectionCompleteUnlessOpen") }
             if contains(.fileProtectionCompleteUntilFirstUserAuthentication) { parts.append(".fileProtectionCompleteUntilFirstUserAuthentication") }
             if contains(.fileProtectionNone) { parts.append(".fileProtectionNone") }
             if contains(.fileProtectionMask) { parts.append(".fileProtectionMask") }
-#endif
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask
@@ -246,13 +240,11 @@ extension Connection {
             if contains(.sharedCache) { parts.append("SQLITE_OPEN_SHAREDCACHE") }
             if contains(.privateCache) { parts.append("SQLITE_OPEN_PRIVATECACHE") }
             if contains(.wal) { parts.append("SQLITE_OPEN_WAL") }
-#if canImport(Darwin)
             if contains(.fileProtectionComplete) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETE") }
             if contains(.fileProtectionCompleteUnlessOpen) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN") }
             if contains(.fileProtectionCompleteUntilFirstUserAuthentication) { parts.append("SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION") }
             if contains(.fileProtectionNone) { parts.append("SQLITE_OPEN_FILEPROTECTION_NONE") }
             if contains(.fileProtectionMask) { parts.append("SQLITE_OPEN_FILEPROTECTION_MASK") }
-#endif
 
             let rawBits = UInt32(bitPattern: rawValue)
             let unknownBits = rawBits & ~Self.knownMask
