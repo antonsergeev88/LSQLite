@@ -51,7 +51,7 @@ import PackageDescription
 let package = Package(
     // ...
     dependencies: [
-        .package(url: "https://github.com/antonsergeev88/LSQLite.git", from: "3.51.0")
+        .package(url: "https://github.com/antonsergeev88/LSQLite.git", from: "4.0.0")
     ],
     targets: [
         .target(
