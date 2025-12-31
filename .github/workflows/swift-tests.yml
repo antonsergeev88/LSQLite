@@ -15,8 +15,4 @@ jobs:
         with:
           swift-version: '6.2'
       - name: Run tests
-        run: |
-          SQLITE_PREFIX="$(brew --prefix sqlite)"
-          export CPATH="$SQLITE_PREFIX/include:$CPATH"
-          export LIBRARY_PATH="$SQLITE_PREFIX/lib:$LIBRARY_PATH"
-          swift test
+        run: swift test
