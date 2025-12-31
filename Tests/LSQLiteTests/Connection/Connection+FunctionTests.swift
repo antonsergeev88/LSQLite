@@ -55,7 +55,6 @@ final class ConnectionFunctionTests {
         #expect(Connection.FunctionFlag.directOnly.rawValue == SQLITE_DIRECTONLY)
         #expect(Connection.FunctionFlag.subtype.rawValue == SQLITE_SUBTYPE)
         #expect(Connection.FunctionFlag.innocuous.rawValue == SQLITE_INNOCUOUS)
-        #expect(Connection.FunctionFlag.resultSubtype.rawValue == SQLITE_RESULT_SUBTYPE)
     }
 
     @Test("TextEncoding descriptions map values")
@@ -77,7 +76,6 @@ final class ConnectionFunctionTests {
             | UInt32(bitPattern: Connection.FunctionFlag.directOnly.rawValue)
             | UInt32(bitPattern: Connection.FunctionFlag.subtype.rawValue)
             | UInt32(bitPattern: Connection.FunctionFlag.innocuous.rawValue)
-            | UInt32(bitPattern: Connection.FunctionFlag.resultSubtype.rawValue)
         let unknownOnlyRaw = Int32(bitPattern: ~knownMask)
         #expect(Connection.FunctionFlag(rawValue: unknownOnlyRaw).description == "unknown")
         let mixed = Connection.FunctionFlag(rawValue: Connection.FunctionFlag.deterministic.rawValue | unknownOnlyRaw)
