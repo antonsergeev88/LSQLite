@@ -16,24 +16,36 @@
 
 --- above are implemented ---
 
-2. Statement lifecycle conveniences
-   - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
+2. Codable binding & decoding
+   - Add statement-backed Codable helpers for binding and row decoding (no intermediate representation).
+     - Implement custom `Encoder` / `Decoder` that operate directly on `Statement` (bind/read) with no intermediate formats (no JSON, no plist, no other serialization) for performance.
+       - If key discovery is needed, implement a separate lightweight “key-only” encoder that captures coding keys and ignores values, rather than encoding to an intermediate representation.
+     - `Statement.bind<Binding: Encodable>(_ binding: Binding) -> Bool`
+       - Support only named parameters with `:` prefix.
+       - Support only `nil`, `Data`, `String`, `Int` (assume 64-bit), and `Double`; any other encoded type fails.
+       - Require an exact match between statement parameter names and encoded keys; missing or extra parameters fail.
+       - Support only flat types (top-level keyed container; no nested/unkeyed containers).
+     - `Statement.row<Row: Decodable>(_: Row.Type = Row.self) -> Row?`
+       - Support only `nil`, `Data`, `String`, `Int` (assume 64-bit), and `Double`; any other decoded type fails.
+       - Require an exact match between result column names and decoded keys; missing or extra columns fail.
+       - Support only flat types (top-level keyed container; no nested/unkeyed containers).
 
-3. Transactions & savepoints
+3. Statement lifecycle conveniences
+   - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
+   - Implement one-shot patterns as `Connection` extensions.
+
+4. Transactions & savepoints
    - Transaction helpers (begin/commit/rollback) and nested transactional behavior via savepoints.
 
-4. Pragmas
+5. Pragmas
    - Read/write helpers for commonly used pragmas and convenience around pragma-related queries.
 
-5. Introspection & system tables
+6. Introspection & system tables
    - Helpers for working with `sqlite_schema` / `sqlite_master` and schema discovery (tables/views/indexes/triggers).
    - Helpers for pragma-driven metadata (table info, index info, foreign keys, etc).
 
-6. Migrations
+7. Migrations
    - Versioning helpers (e.g. `user_version`) and a migration runner built on the previous features.
-
-7. Codable
-   - Optional Codable-based binding/decoding helpers for statement parameters and result columns.
 
 8. WAL & checkpoint
    - Convenience APIs around WAL checkpointing and related WAL controls.
