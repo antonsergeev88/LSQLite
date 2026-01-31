@@ -14,8 +14,6 @@
 1. Package scaffolding
    - Add the `LSQLiteExtensions` target + product and wire it into CI/tests.
 
---- above are implemented ---
-
 2. Codable binding & decoding
    - Add statement-backed Codable helpers for binding and row decoding (no intermediate representation).
      - Implement custom `Encoder` / `Decoder` that operate directly on `Statement` (bind/read) with no intermediate formats (no JSON, no plist, no other serialization) for performance.
@@ -25,10 +23,12 @@
        - Support only `nil`, `Data`, `String`, `Int` (assume 64-bit), and `Double`; any other encoded type fails.
        - Require an exact match between statement parameter names and encoded keys; missing or extra parameters fail.
        - Support only flat types (top-level keyed container; no nested/unkeyed containers).
-     - `Statement.row<Row: Decodable>(_: Row.Type = Row.self) -> Row?`
-       - Support only `nil`, `Data`, `String`, `Int` (assume 64-bit), and `Double`; any other decoded type fails.
-       - Require an exact match between result column names and decoded keys; missing or extra columns fail.
-       - Support only flat types (top-level keyed container; no nested/unkeyed containers).
+    - `Statement.row<Row: Decodable>(_: Row.Type = Row.self) -> Row?`
+      - Support only `nil`, `Data`, `String`, `Int` (assume 64-bit), and `Double`; any other decoded type fails.
+      - Require an exact match between result column names and decoded keys; missing or extra columns fail.
+      - Support only flat types (top-level keyed container; no nested/unkeyed containers).
+
+--- above are implemented ---
 
 3. Statement lifecycle conveniences
    - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
