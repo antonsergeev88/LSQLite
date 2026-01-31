@@ -1,6 +1,30 @@
 import Foundation
 import LSQLite
 
+struct StatementColumnMap {
+    let map: [String: Int32]
+    let columnCount: Int
+}
+
+func statementColumnMap(for statement: Statement) throws -> StatementColumnMap {
+    let count = Int(statement.columnCount)
+    var map: [String: Int32] = [:]
+    map.reserveCapacity(count)
+    if count > 0 {
+        for offset in 0..<count {
+            let index = Int32(offset)
+            guard let name = statement.columnName(at: index), !name.isEmpty else {
+                throw StatementCodingFailure.invalidColumn
+            }
+            if map[name] != nil {
+                throw StatementCodingFailure.duplicateColumn
+            }
+            map[name] = index
+        }
+    }
+    return StatementColumnMap(map: map, columnCount: count)
+}
+
 final class StatementRowDecoder: Decoder {
     var codingPath: [CodingKey] = []
     var userInfo: [CodingUserInfoKey: Any] = [:]
@@ -11,24 +35,16 @@ final class StatementRowDecoder: Decoder {
     var decodedIndices: Set<Int32> = []
 
     init(statement: Statement) throws {
-        let count = Int(statement.columnCount)
-        var map: [String: Int32] = [:]
-        map.reserveCapacity(count)
-        if count > 0 {
-            for offset in 0..<count {
-                let index = Int32(offset)
-                guard let name = statement.columnName(at: index), !name.isEmpty else {
-                    throw StatementCodingFailure.invalidColumn
-                }
-                if map[name] != nil {
-                    throw StatementCodingFailure.duplicateColumn
-                }
-                map[name] = index
-            }
-        }
+        let columnMap = try statementColumnMap(for: statement)
         self.statement = statement
-        self.columnMap = map
-        self.columnCount = count
+        self.columnMap = columnMap.map
+        self.columnCount = columnMap.columnCount
+    }
+
+    init(statement: Statement, columnMap: StatementColumnMap) {
+        self.statement = statement
+        self.columnMap = columnMap.map
+        self.columnCount = columnMap.columnCount
     }
 
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> {
