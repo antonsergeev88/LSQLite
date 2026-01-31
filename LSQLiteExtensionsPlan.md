@@ -14,6 +14,8 @@
 1. Package scaffolding
    - Add the `LSQLiteExtensions` target + product and wire it into CI/tests.
 
+--- above are implemented ---
+
 2. Statement lifecycle conveniences
    - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
 

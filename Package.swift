@@ -8,6 +8,10 @@ let package = Package(
         .library(
             name: "LSQLite",
             targets: ["LSQLite"]
+        ),
+        .library(
+            name: "LSQLiteExtensions",
+            targets: ["LSQLiteExtensions"]
         )
     ],
     targets: [
@@ -16,11 +20,19 @@ let package = Package(
             dependencies: ["MissedSwiftSQLite"]
         ),
         .target(
+            name: "LSQLiteExtensions",
+            dependencies: ["LSQLite"]
+        ),
+        .target(
             name: "MissedSwiftSQLite"
         ),
         .testTarget(
             name: "LSQLiteTests",
             dependencies: ["LSQLite", "MissedSwiftSQLite"]
+        ),
+        .testTarget(
+            name: "LSQLiteExtensionsTests",
+            dependencies: ["LSQLiteExtensions"]
         ),
     ]
 )
