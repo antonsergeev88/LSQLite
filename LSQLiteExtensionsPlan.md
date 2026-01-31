@@ -32,7 +32,37 @@
 
 3. Statement lifecycle conveniences
    - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
-   - Implement one-shot patterns as `Connection` extensions.
+   - Add exactly **6** `query` overloads on `Statement` (prepared statement helpers) and exactly **6** `query` overloads on `Connection` (one-shot helpers that prepare/finalize and delegate to `Statement`).
+   - `Statement` API surface (6 overloads):
+     - `query() -> ResultCode`
+     - `query<Binding: Encodable>(_ binding: Binding) -> ResultCode`
+     - `query<Row: Decodable>(row type: Row.Type = Row.self) -> (ResultCode, Row?)`
+     - `query<Row: Decodable>(rows type: Row.Type = Row.self) -> (ResultCode, [Row])`
+     - `query<Binding: Encodable, Row: Decodable>(_ binding: Binding, row type: Row.Type = Row.self) -> (ResultCode, Row?)`
+     - `query<Binding: Encodable, Row: Decodable>(_ binding: Binding, rows type: Row.Type = Row.self) -> (ResultCode, [Row])`
+   - `Connection` API surface (6 overloads, implemented via `Statement.prepare` + `Statement.query` + `finalize()`):
+     - `query(_ sql: String) -> ResultCode`
+     - `query<Binding: Encodable>(_ sql: String, binding: Binding) -> ResultCode`
+     - `query<Row: Decodable>(_ sql: String, row type: Row.Type = Row.self) -> (ResultCode, Row?)`
+     - `query<Row: Decodable>(_ sql: String, rows type: Row.Type = Row.self) -> (ResultCode, [Row])`
+     - `query<Binding: Encodable, Row: Decodable>(_ sql: String, binding: Binding, row type: Row.Type = Row.self) -> (ResultCode, Row?)`
+     - `query<Binding: Encodable, Row: Decodable>(_ sql: String, binding: Binding, rows type: Row.Type = Row.self) -> (ResultCode, [Row])`
+   - Strictness rules:
+     - No-row overloads fail with `.misuse` if a row is produced.
+     - Single-row overloads must enforce **0 or 1** row total; if a second row exists, fail with `.misuse`.
+     - Binding failure (via `Statement.bind(_:)`) fails with `.misuse`.
+     - Row decoding failure (via `Statement.row(_:)`) fails with `.misuse`.
+     - Underlying SQLite result codes from stepping propagate (for example `.busy`, `.error`).
+     - `Statement` is left reusable: always `reset()` before returning; binding overloads also `clearBindings()` (at least on success, ideally on all paths).
+   - Implementation notes:
+     - Add `Statement+Query.swift` in `Sources/LSQLiteExtensions` with a small internal helper that runs the statement and (optionally) collects/validates rows.
+     - Add `Connection+Query.swift` in `Sources/LSQLiteExtensions` that prepares exactly one statement, delegates to `Statement.query`, and finalizes via `defer`.
+     - If the SQL string contains multiple statements, only the first prepared statement is executed; any remaining SQL (including comments) is ignored.
+     - Performance: for row-returning overloads, build/validate the result column name map once per query (not per row) and reuse it while stepping; similarly, avoid recomputing the statement parameter map multiple times within a single query call.
+   - Tests (Swift Testing):
+     - `Tests/LSQLiteExtensionsTests/Statement+QueryTests.swift` (`@Suite("Statement+Query")`)
+     - `Tests/LSQLiteExtensionsTests/Connection+QueryTests.swift` (`@Suite("Connection+Query")`)
+     - Cover: `.misuse` on >1 row for single-row overloads, `.misuse` when using no-row overloads on a row-producing statement, and statement reusability across multiple calls.
 
 4. Transactions & savepoints
    - Transaction helpers (begin/commit/rollback) and nested transactional behavior via savepoints.
