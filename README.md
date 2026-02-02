@@ -2,6 +2,8 @@
 
 A zero-overhead, typed Swift wrapper around the SQLite C API — same functions, no `OpaquePointer`, no magic constants.
 
+LSQLiteExtensions is an add-on target in this package that layers opt-in conveniences on top of LSQLite while keeping SQLite semantics intact. It focuses on reducing boilerplate for common workflows (for example, Codable binding and row decoding) without introducing higher-level abstractions or a throwing error model.
+
 ## Motivation
 
 The SQLite C API is small and powerful, but in Swift it comes with a few pain points:
