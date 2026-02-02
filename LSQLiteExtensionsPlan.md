@@ -80,6 +80,19 @@
 
 5. Pragmas
    - Read/write helpers for commonly used pragmas and convenience around pragma-related queries.
+   - Approach: typed-only APIs. Do not add a public generic “run arbitrary PRAGMA by name” API.
+   - Implementation notes:
+     - Add `Sources/LSQLiteExtensions/Connection+Pragma.swift`.
+     - Implement a tiny private helper that prepares exactly one PRAGMA statement via `Statement.prepare`, steps, reads column 0, enforces **0 or 1** row total, and finalizes via `defer`.
+     - Return `.misuse` when the PRAGMA produces more than one row, when the value type does not match the expected Swift type, or when a scalar PRAGMA unexpectedly returns no rows.
+     - Keep SQLite semantics: propagate `ResultCode` from prepare/step; do not introduce throwing flows.
+     - Avoid string interpolation of PRAGMA names. Each public method hardcodes its PRAGMA SQL; if a database name must be accepted, quote it as an identifier.
+   - Initial surface (examples; keep the set small and additive):
+     - `user_version` (`Int32` round-trip).
+     - `application_id` (`Int32` round-trip).
+     - `foreign_keys` (`Bool` read/write).
+   - Tests (Swift Testing):
+     - `Tests/LSQLiteExtensionsTests/Connection+PragmaTests.swift` (`@Suite("Connection+Pragma")`), using an in-memory database and asserting round-trips and `.misuse` strictness.
 
 6. Introspection & system tables
    - Helpers for working with `sqlite_schema` / `sqlite_master` and schema discovery (tables/views/indexes/triggers).
