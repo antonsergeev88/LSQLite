@@ -62,10 +62,21 @@
      - `Tests/LSQLiteExtensionsTests/Connection+QueryTests.swift` (`@Suite("Connection+Query")`)
      - Cover: `.misuse` on >1 row for single-row overloads, `.misuse` when using no-row overloads on a row-producing statement, and statement reusability across multiple calls.
 
---- above are implemented ---
-
 4. Transactions & savepoints
-   - Transaction helpers (begin/commit/rollback) and nested transactional behavior via savepoints.
+   - Add thin helpers for explicit transaction control and savepoints.
+     - `TransactionMode` with `deferred` / `immediate` / `exclusive` behavior.
+     - `SavepointName` for typed savepoint identifiers.
+     - `Connection.beginTransaction(_:)`, `commitTransaction()`, `rollbackTransaction()`.
+     - `Connection.savepoint(_:)`, `releaseSavepoint(_:)`, `rollbackToSavepoint(_:)` (quote identifiers).
+   - Add a closure-based helper that uses savepoints when already inside a transaction.
+     - `Connection.transaction(_:_:)` uses `isAutocommit` to choose `BEGIN` vs `SAVEPOINT`.
+     - Commit/release when body returns `.ok` or `.done`; rollback otherwise.
+     - Use `exec(_:)` for SQL that includes multiple statements.
+   - Tests (Swift Testing):
+     - `Tests/LSQLiteExtensionsTests/Connection+TransactionTests.swift` (`@Suite("Connection+Transaction")`)
+     - Cover autocommit toggling and nested savepoint behavior.
+
+--- above are implemented ---
 
 5. Pragmas
    - Read/write helpers for commonly used pragmas and convenience around pragma-related queries.
