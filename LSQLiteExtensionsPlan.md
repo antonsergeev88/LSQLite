@@ -28,8 +28,6 @@
       - Require an exact match between result column names and decoded keys; missing or extra columns fail.
       - Support only flat types (top-level keyed container; no nested/unkeyed containers).
 
---- above are implemented ---
-
 3. Statement lifecycle conveniences
    - Reduce boilerplate around prepare/bind/step/reset/finalize for common one-shot and repeated-use patterns.
    - Add exactly **6** `query` overloads on `Statement` (prepared statement helpers) and exactly **6** `query` overloads on `Connection` (one-shot helpers that prepare/finalize and delegate to `Statement`).
@@ -63,6 +61,8 @@
      - `Tests/LSQLiteExtensionsTests/Statement+QueryTests.swift` (`@Suite("Statement+Query")`)
      - `Tests/LSQLiteExtensionsTests/Connection+QueryTests.swift` (`@Suite("Connection+Query")`)
      - Cover: `.misuse` on >1 row for single-row overloads, `.misuse` when using no-row overloads on a row-producing statement, and statement reusability across multiple calls.
+
+--- above are implemented ---
 
 4. Transactions & savepoints
    - Transaction helpers (begin/commit/rollback) and nested transactional behavior via savepoints.
