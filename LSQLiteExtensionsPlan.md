@@ -76,8 +76,6 @@
      - `Tests/LSQLiteExtensionsTests/Connection+TransactionTests.swift` (`@Suite("Connection+Transaction")`)
      - Cover autocommit toggling and nested savepoint behavior.
 
---- above are implemented ---
-
 5. Pragmas
    - Read/write helpers for commonly used pragmas and convenience around pragma-related queries.
    - Approach: typed-only APIs. Do not add a public generic “run arbitrary PRAGMA by name” API.
@@ -93,6 +91,8 @@
      - `foreign_keys` (`Bool` read/write).
    - Tests (Swift Testing):
      - `Tests/LSQLiteExtensionsTests/Connection+PragmaTests.swift` (`@Suite("Connection+Pragma")`), using an in-memory database and asserting round-trips and `.misuse` strictness.
+
+--- above are implemented ---
 
 6. Introspection & system tables
    - Helpers for working with `sqlite_schema` / `sqlite_master` and schema discovery (tables/views/indexes/triggers).
